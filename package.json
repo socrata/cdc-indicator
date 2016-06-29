@@ -1,0 +1,22 @@
+{
+  "name": "cdc-indicator",
+  "version": "0.0.1",
+  "description": "CDC Disease Indicator Tool",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/socrata/cdc-indicator.git"
+  },
+  "author": "James Chuang & Austin Valeske",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/socrata/cdc-indicator/issues"
+  },
+  "homepage": "https://github.com/socrata/cdc-indicator#readme",
+  "devDependencies": {
+    "hjs-webpack": "^8.3.0"
+  }
+}
