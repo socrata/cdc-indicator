@@ -1,0 +1,24 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true,
+    "node": true
+  },
+  "parser": "babel-eslint",
+  "extends": "airbnb",
+  "rules": {
+    "camelcase": 1,
+    "comma-dangle": [2, "never"],
+    "no-underscore-dangle": ["error", { "allowAfterThis": true }],
+    "no-use-before-define": [2, "nofunc"],
+    "arrow-body-style":[0, "as-needed"],
+    "new-cap": [ 0 ],
+  },
+  "globals": {
+    "$": true,
+    "_": true,
+    "blist": true,
+    "jQuery": true,
+    "__ENV__": true
+  }
+}
