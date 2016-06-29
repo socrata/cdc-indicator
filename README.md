@@ -8,7 +8,7 @@ To install all the dependencies needed for this module, please run the following
 npm install
 ```
 
-You can run the local dev server by running `npm start` in your terminal. The server will be `localhost:4000`.
+You can run the local dev server by running `npm start` in your terminal. The server will be `localhost:8080`.
 
 ## Testing
 - To Do
