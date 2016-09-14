@@ -1,11 +1,27 @@
 const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  entry: "./src/app.js",
+  entry: [
+    'whatwg-fetch',
+    './src/index.jsx'
+  ],
   output: {
-    filename: "./js/app.js"
+    filename: 'app.js',
+    path: path.join(__dirname, 'build')
   },
-  watch: true, // Webpack will watch your files and when one of them changes, it will immediately rerun the build and recreate your output file.
+  // Webpack will watch your files and when one of them changes,
+  // it will immediately rerun the build and recreate your output file.
+  watch: true,
+  plugins: [
+    // new webpack.HotModuleReplacementPlugin(),
+    // new webpack.NoErrorsPlugin(),
+    new HtmlWebpackPlugin({
+      filename: 'index.html',
+      template: 'src/index.template.html',
+      inject: true
+    })
+  ],
   module: {
     preLoaders: [
       {
@@ -27,10 +43,15 @@ module.exports = {
       {
         test: /\.json$/,
         loader: 'json-loader'
-      }, {
+      },
+      {
         test: /\.js$/,
         include: path.resolve('node_modules/mapbox-gl-shaders/index.js'),
         loader: 'transform/cacheable?brfs'
+      },
+      {
+        test: /\.css$/,
+        loaders: ['style', 'css']
       }],
       postLoaders: [{
         include: /node_modules\/mapbox-gl-shaders/,
@@ -42,4 +63,4 @@ module.exports = {
   resolve: {
     extensions: ['', '.js', '.jsx']
   },
-}
+};

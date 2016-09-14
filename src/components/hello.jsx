@@ -1,24 +1,21 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 
 export default class Hello extends Component {
 
-  shouldComponentMount() {
-    return false;
+  componentWillMount() {
+    this.props.onChange('Sekai');
   }
 
   render() {
     return (
       <div>
-        Hello, {this.props.name}!
+        Hello, {this.props.indicator}!
       </div>
     );
   }
 }
 
-Hello.defaultProps = {
-  name: 'World'
-};
-
 Hello.propTypes = {
-  name: React.PropTypes.string.isRequired
+  onChange: PropTypes.func.isRequired,
+  indicator: PropTypes.string.isRequired
 };
