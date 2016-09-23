@@ -41,7 +41,7 @@ function flatten(array) {
  * @param {*} literal - literal to check
  * @return {Number|String} - formatted value for SoQL
  */
-const formatLiteral = function (literal) {
+const formatLiteral = function formatLiteral(literal) {
   if (is('String', literal)) {
     // escape single quote, then wrap in single quotes
     return `'${literal.replace(/'/g, "''")}'`; // eslint-disable-line quotes
@@ -57,7 +57,7 @@ const formatLiteral = function (literal) {
  * @param {*} element - an array element
  * @return {Boolean} - is this element null or empty?
  */
-const filterEmptyValues = function (element) {
+const filterEmptyValues = function filterEmptyValues(element) {
   return element !== undefined && element !== null && element !== '';
 };
 
@@ -67,7 +67,7 @@ const filterEmptyValues = function (element) {
  * @param {String} operator - 'AND' | 'OR'
  * @return {String} - properly formatted order string
  */
-const parseQueryObject = function (conditions, operator) {
+const parseQueryObject = function parseQueryObject(conditions, operator) {
   return conditions.map((element) => {
     // string is assumed to be a valid where condition string
     if (is('String', element)) {
@@ -75,22 +75,24 @@ const parseQueryObject = function (conditions, operator) {
     }
 
     // recursively parse conditions if we have AND or OR condition
-    if (conditions.condition && is('Array', conditions.condition)) {
+    if (element.condition && is('Array', element.condition)) {
       // enclose in parenthesis
-      return `(${parseQueryObject(conditions.condition, conditions.operator)})`;
+      return `(${parseQueryObject(element.condition, element.operator)})`;
     }
 
     // TODO handle 'NOT'
     // TODO handle IN, NOT IN
 
-    switch (conditions.operator.toUpperCase()) {
+    const opr = (element.operator || '=').toUpperCase();
+
+    switch (opr) {
       case 'STARTS_WITH':
-        return `STARTS_WITH(${conditions.column}, ${formatLiteral(conditions.value)})`;
+        return `STARTS_WITH(${element.column}, ${formatLiteral(element.value)})`;
       case 'IS NULL':
       case 'IS NOT NULL':
-        return `${conditions.column} ${conditions.operator}`;
+        return `${element.column} ${opr}`;
       default:
-        return `${conditions.column} ${conditions.operator} ${formatLiteral(conditions.value)}`;
+        return `${element.column} ${opr} ${formatLiteral(element.value)}`;
     }
   }).join(` ${operator} `);
 };
@@ -100,7 +102,7 @@ const parseQueryObject = function (conditions, operator) {
  * @param {Array} element - columns parameter
  * @return {Object} - properly formatted where or having object
  */
-const formatQueryObject = function (element) {
+const formatQueryObject = function formatQueryObject(element) {
   // conditions were specified as an array or multiple parameters
   if (element.length > 1) {
     return {
@@ -124,6 +126,26 @@ const formatQueryObject = function (element) {
       // looks like an already properly formatted object
       return element[0];
     }
+
+    // assume key: value object
+    const condition = Object.keys(element[0]).map((key) => {
+      if (element[0][key] === 'IS NULL' || element[0][key] === 'IS NOT NULL') {
+        return {
+          column: key,
+          operator: element[0][key]
+        };
+      }
+
+      return {
+        column: key,
+        value: element[0][key]
+      };
+    });
+
+    return {
+      operator: 'AND',
+      condition
+    };
   }
 
   // return empty object if something unexpected was received
@@ -140,7 +162,7 @@ const formatQueryObject = function (element) {
  * @param {String|Object} element - order element
  * @return {String} - properly formatted order string
  */
-const parseOrder = function (element) {
+const parseOrder = function parseOrder(element) {
   // return as is if it is a string (expected to be correct)
   if (is('String', element)) {
     return element;
@@ -263,6 +285,12 @@ export default class Soda {
    *   - when specifying conditions as string, make sure to enclose string literal in single quotes
    *   where("last_name = 'Smith' AND first_name = 'John'")
    *   where(["last_name = 'Smith'", "UPPER(first_name) LIKE '%J%'"])
+   *
+   *   where({
+   *     col1: 'val1',
+   *     col2: 'val2'
+   *   })
+   *   Result: col1 = 'val1' AND col2 = 'val2'
    *
    *   where({
    *     column: 'last_name',

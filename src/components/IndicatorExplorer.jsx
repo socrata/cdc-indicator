@@ -1,25 +1,32 @@
 import React, { Component, PropTypes } from 'react';
-import C3Chart from 'react-c3js';
-import Test from '../containers/Test';
-import 'c3/c3.css';
+import * as Charts from '../components/charts';
+import DataFilter from '../containers/DataFilter';
+
+import filters from '../config/filters.yml';
 
 export default class IndicatorExplorer extends Component {
 
   componentWillMount() {
-    this.props.onLoad();
+    this.props.loadData(this.props.filter);
   }
 
   render() {
     return (
       <div>
-        <Test />
-        <C3Chart data={this.props.data} />
+        <DataFilter filters={filters} />
+        <Charts.ColumnChart data={this.props.data} majorAxis="breakout" />
+        <Charts.ColumnChart data={this.props.data} majorAxis="year" />
+        <Charts.BarChart data={this.props.data} majorAxis="breakout" />
+        <Charts.BarChart data={this.props.data} majorAxis="year" />
+        <Charts.LineChart data={this.props.data} majorAxis="breakout" />
+        <Charts.LineChart data={this.props.data} majorAxis="year" />
       </div>
     );
   }
 }
 
 IndicatorExplorer.propTypes = {
-  data: PropTypes.object.isRequired,
-  onLoad: PropTypes.func.isRequired
+  data: PropTypes.array.isRequired,
+  filter: PropTypes.object.isRequired,
+  loadData: PropTypes.func.isRequired
 };

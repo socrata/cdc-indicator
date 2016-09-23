@@ -35,10 +35,13 @@
     "path": "^0.12.7",
     "style-loader": "^0.13.1",
     "webpack": "^1.13.1",
-    "webpack-dev-server": "^1.14.1"
+    "webpack-dev-server": "^1.14.1",
+    "yaml-loader": "^0.4.0"
   },
   "dependencies": {
+    "babel-polyfill": "^6.13.0",
     "json-loader": "^0.5.4",
+    "lodash": "^4.16.1",
     "mapbox-gl": "^0.20.1",
     "react": "^15.1.0",
     "react-c3js": "^0.1.8",

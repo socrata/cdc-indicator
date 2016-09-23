@@ -3,6 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   entry: [
+    'babel-polyfill',
     'whatwg-fetch',
     './src/index.jsx'
   ],
@@ -48,6 +49,10 @@ module.exports = {
         test: /\.js$/,
         include: path.resolve('node_modules/mapbox-gl-shaders/index.js'),
         loader: 'transform/cacheable?brfs'
+      },
+      {
+        test: [/\.yml$/, /\.yaml$/],
+        loader: 'json!yaml'
       },
       {
         test: /\.css$/,

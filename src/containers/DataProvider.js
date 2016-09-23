@@ -4,14 +4,15 @@ import IndicatorExplorer from '../components/IndicatorExplorer';
 
 const mapStateToProps = (state) => {
   return {
-    data: state.data
+    data: state.data,
+    filter: state.filter
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onLoad: () => {
-      dispatch(fetchData());
+    loadData: (filter) => {
+      dispatch(fetchData(filter));
     }
   };
 };

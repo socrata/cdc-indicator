@@ -1,2 +1,2 @@
-export { default as indicator } from './indicator';
 export { default as data } from './data';
+export { default as filter } from './filter';

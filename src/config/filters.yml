@@ -1,0 +1,32 @@
+- label: Select an indicator
+  name: questionid
+  defaultValue: AL002
+  optionGroups:
+  - text: Activity Limitation
+    options:
+    - text: Mean days of activity limitation
+      value: AL002
+    - text: Percentage with 14 or more physically unhealthy days
+      value: PHY001
+  - text: General Health
+    options:
+    - text: Mean physically or mentally unhealthy days
+      value: GEN002
+    - text: Percentage with fair or poor self-rated health
+      value: GEN001
+- label: Select a state
+  name: locationabbr
+  defaultValue: CO
+  options:
+  - text: National Average
+    value: US
+  - text: Colorado
+    value: CO
+  - text: Maryland
+    value: MD
+- label: Select a break out category
+  name: breakoutcategoryid
+  defaultValue: GPSEX
+  options:
+  - text: Gender
+    value: GPSEX

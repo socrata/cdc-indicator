@@ -1,8 +1,6 @@
 import { FETCH_DATA } from '../constants';
 
-const initialState = {
-  columns: []
-};
+const initialState = [];
 
 const actionsMap = {
   [FETCH_DATA]: (state, action) => action.data

@@ -1,43 +1,52 @@
-import { UPDATE_INDICATOR, FETCH_DATA } from '../constants';
+import { FETCH_DATA, UPDATE_FILTER } from '../constants';
 import Soda from '../lib/Soda';
 
-function setIndicator(indicator) {
+export function setFilter(key, value) {
   return {
-    type: UPDATE_INDICATOR,
-    indicator
-  };
-}
-
-export function delayedSetIndicator(indicator) {
-  return (dispatch) => {
-    setTimeout(() => {
-      dispatch(setIndicator(indicator));
-    }, 5000);
+    type: UPDATE_FILTER,
+    key,
+    value
   };
 }
 
 function transformData(data) {
-  const transformedData = data.map((row) => {
-    return +row.data_value;
-  });
-
-  const xAxis = data.map((row) => {
-    return row.year;
-  });
-
   return {
     type: FETCH_DATA,
-    data: {
-      x: 'x',
-      columns: [
-        ['x'].concat(xAxis),
-        ['National Data'].concat(transformedData)
-      ]
-    }
+    data
   };
 }
 
-export function fetchData() {
+export function fetchData(filter) {
+  // format query
+  const filterCondition = Object.keys(filter).map((key) => {
+    // if state data is requested, also query national (US) data
+    if (key === 'locationabbr' && filter[key] !== 'US') {
+      return {
+        operator: 'OR',
+        condition: [{
+          column: key,
+          operator: '=',
+          value: filter[key]
+        }, {
+          column: key,
+          operator: '=',
+          value: 'US'
+        }]
+      };
+    }
+
+    return {
+      column: key,
+      operator: '=',
+      value: filter[key]
+    };
+  });
+
+  filterCondition.push({
+    column: 'year',
+    operator: 'IS NOT NULL'
+  });
+
   return (dispatch) => {
     new Soda({
       appToken: 'bSaNXzPH3PxsgXK3u85KKdTOh',
@@ -45,12 +54,7 @@ export function fetchData() {
       useSecure: true
     })
       .dataset('xuxn-8kju')
-      .where([
-        'locationid = 59',
-        'questionid = \'AL002\'',
-        'breakoutid = \'GEN1\'',
-        'year IS NOT NULL'
-      ])
+      .where(filterCondition)
       .order('year')
       .fetchData()
         .then((data) => {
