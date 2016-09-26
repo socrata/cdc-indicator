@@ -4,10 +4,6 @@
 
 import _ from 'lodash';
 
-function sumDataValue(sum, row) {
-  return sum + parseFloat(row.data_value || 0);
-}
-
 export default class ChartData {
 
   constructor(data = [], majorAxis = 'breakout') {
@@ -62,7 +58,7 @@ export default class ChartData {
           if (!values[year] || !values[year].data_value) {
             return null;
           }
-          return parseFloat(values[year].data_value);
+          return _.round(+values[year].data_value, 1);
         }));
       })
     );
@@ -78,6 +74,15 @@ export default class ChartData {
           type: 'timeseries',
           tick: {
             format: '%Y'
+          }
+        }
+      },
+      tooltip: {
+        format: {
+          value: (value, ratio, id, index) => {
+            const lc = _.round(+groupedData[id][years[index]].low_confidence_limit, 1);
+            const hc = _.round(+groupedData[id][years[index]].high_confidence_limit, 1);
+            return `${_.round(value, 1)} (${lc} - ${hc})`;
           }
         }
       }
@@ -97,7 +102,14 @@ export default class ChartData {
             .reduce((groupByBreakout, valuesByBreakout, breakout) => {
               return Object.assign({}, groupByBreakout, {
                 [breakout]: _.chain(valuesByBreakout)
-                  .reduce(sumDataValue, 0)
+                  .map((row) => {
+                    if (row.data_value && !isNaN(parseFloat(row.data_value))) {
+                      return +row.data_value;
+                    }
+                    return null;
+                  })
+                  .filter((row) => row !== null)
+                  .mean()
                   .round(1)
                   .value()
               });
@@ -152,7 +164,17 @@ export default class ChartData {
       .groupBy('break_out')
       .reduce((groupedByBreakout, valuesByBreakout, breakout) => {
         return Object.assign({}, groupedByBreakout, {
-          [breakout]: valuesByBreakout.map((row) => +row.data_value)
+          [breakout]: _.chain(valuesByBreakout)
+            .map((row) => {
+              if (row.data_value && !isNaN(parseFloat(row.data_value))) {
+                return +row.data_value;
+              }
+              return null;
+            })
+            .filter((row) => row !== null)
+            .mean()
+            .round(1)
+            .value()
         });
       }, {})
       .value();
