@@ -20,6 +20,7 @@ export default class IndicatorExplorer extends Component {
         <Charts.BarChart data={this.props.data} majorAxis="year" />
         <Charts.LineChart data={this.props.data} majorAxis="breakout" />
         <Charts.LineChart data={this.props.data} majorAxis="year" />
+        <Charts.PieChart data={this.props.data} />
       </div>
     );
   }

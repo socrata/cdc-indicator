@@ -26,6 +26,8 @@ export default class ChartData {
         return this._getConfigByBreakout();
       case 'year':
         return this._getConfigByYear();
+      case 'pie':
+        return this._getConfigForPieChart();
       default:
         // do nothing
     }
@@ -128,6 +130,46 @@ export default class ChartData {
           categories,
           type: 'category'
         }
+      }
+    };
+  }
+
+  // get C3 config for pie chart, where data array is a breakout category
+  _getConfigForPieChart() {
+    // group data by state (data series) to see if we are displaying state or national data
+    const groupedByLocation = _.groupBy(this.data, 'locationabbr');
+
+    // use National data by default
+    let groupedData = groupedByLocation.US;
+
+    // .. but if there are two locations, use state's
+    if (groupedByLocation.length === 2) {
+      const state = _.without(Object.keys(groupedByLocation), 'US')[0];
+      groupedData = groupedByLocation[state];
+    }
+
+    const transformedData = _.chain(groupedData)
+      .groupBy('break_out')
+      .reduce((groupedByBreakout, valuesByBreakout, breakout) => {
+        return Object.assign({}, groupedByBreakout, {
+          [breakout]: valuesByBreakout.map((row) => +row.data_value)
+        });
+      }, {})
+      .value();
+
+    // generate data array based on categories (order is important)
+    const columns = _.chain(groupedData)
+      .groupBy('break_out')
+      .keys()
+      .sortBy()
+      .value()
+      .map((breakout) => {
+        return [breakout].concat(transformedData[breakout]);
+      });
+
+    return {
+      data: {
+        columns
       }
     };
   }
