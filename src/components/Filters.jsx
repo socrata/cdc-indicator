@@ -22,7 +22,10 @@ Filters.propTypes = {
     PropTypes.shape({
       label: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
-      defaultValue: PropTypes.string.isRequired,
+      defaultValue: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number
+      ]).isRequired,
       options: PropTypes.array,
       optionGroups: PropTypes.array
     })

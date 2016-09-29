@@ -52,11 +52,17 @@ export default class Filter extends Component {
 Filter.propTypes = {
   label: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  defaultValue: PropTypes.string.isRequired,
+  defaultValue: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number
+  ]).isRequired,
   options: PropTypes.arrayOf(
     PropTypes.shape({
       text: PropTypes.string,
-      value: PropTypes.string.isRequired
+      value: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number
+      ]).isRequired
     })
   ),
   optionGroups: PropTypes.arrayOf(
@@ -65,7 +71,10 @@ Filter.propTypes = {
       options: PropTypes.arrayOf(
         PropTypes.shape({
           text: PropTypes.string,
-          value: PropTypes.string.isRequired
+          value: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.number
+          ]).isRequired
         })
       )
     })

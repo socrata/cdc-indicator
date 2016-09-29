@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import * as Charts from '../components/charts';
+import * as Charts from '../components/Charts';
+import MapDataProvider from '../containers/MapDataProvider';
 import DataFilter from '../containers/DataFilter';
 
 import filters from '../config/filters.yml';
@@ -7,20 +8,26 @@ import filters from '../config/filters.yml';
 export default class IndicatorExplorer extends Component {
 
   componentWillMount() {
-    this.props.loadData(this.props.filter);
+    const { loadData,
+            filter } = this.props;
+
+    loadData(filter);
   }
 
   render() {
+    const { data } = this.props;
+
     return (
       <div>
         <DataFilter filters={filters} />
-        <Charts.ColumnChart data={this.props.data} majorAxis="breakout" />
-        <Charts.ColumnChart data={this.props.data} majorAxis="year" />
-        <Charts.BarChart data={this.props.data} majorAxis="breakout" />
-        <Charts.BarChart data={this.props.data} majorAxis="year" />
-        <Charts.LineChart data={this.props.data} majorAxis="breakout" />
-        <Charts.LineChart data={this.props.data} majorAxis="year" />
-        <Charts.PieChart data={this.props.data} />
+        <Charts.Column data={data} majorAxis="breakout" />
+        <Charts.Column data={data} majorAxis="year" />
+        <Charts.Bar data={data} majorAxis="breakout" />
+        <Charts.Bar data={data} majorAxis="year" />
+        <Charts.Line data={data} majorAxis="breakout" />
+        <Charts.Line data={data} majorAxis="year" />
+        <Charts.Pie data={data} />
+        <MapDataProvider />
       </div>
     );
   }

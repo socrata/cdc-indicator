@@ -33,6 +33,7 @@
     "eslint-plugin-react": "^5.2.2",
     "html-webpack-plugin": "^2.22.0",
     "path": "^0.12.7",
+    "react-leaflet": "^0.12.3",
     "style-loader": "^0.13.1",
     "webpack": "^1.13.1",
     "webpack-dev-server": "^1.14.1",
@@ -41,6 +42,7 @@
   "dependencies": {
     "babel-polyfill": "^6.13.0",
     "json-loader": "^0.5.4",
+    "leaflet": "^0.7.7",
     "lodash": "^4.16.1",
     "mapbox-gl": "^0.20.1",
     "react": "^15.1.0",

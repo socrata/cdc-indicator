@@ -156,7 +156,7 @@ export default class ChartData {
 
     // .. but if there are two locations, use state's
     if (groupedByLocation.length === 2) {
-      const state = _.without(Object.keys(groupedByLocation), 'US')[0];
+      const state = _.without(Object.keys(groupedByLocation), 'US').shift();
       groupedData = groupedByLocation[state];
     }
 

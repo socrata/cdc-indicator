@@ -3,13 +3,13 @@ import ChartData from '../lib/ChartData';
 import C3Chart from 'react-c3js';
 import 'c3/c3.css';
 
-const PieChart = ({ data, majorAxis }) => {
+const PieChart = ({ data }) => {
   // if data is empty, return empty component
   if (data.length === 0) {
     return null;
   }
 
-  const chartConfig = new ChartData(data, majorAxis).chartConfig();
+  const chartConfig = new ChartData(data, 'pie').chartConfig();
   chartConfig.data.type = 'pie';
 
   return (
@@ -18,12 +18,7 @@ const PieChart = ({ data, majorAxis }) => {
 };
 
 PieChart.propTypes = {
-  data: PropTypes.array.isRequired,
-  majorAxis: PropTypes.oneOf(['pie']).isRequired
-};
-
-PieChart.defaultProps = {
-  majorAxis: 'pie'
+  data: PropTypes.array.isRequired
 };
 
 export default PieChart;

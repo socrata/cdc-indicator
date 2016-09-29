@@ -1,0 +1,50 @@
+year:
+  label: Select a year
+  name: year
+  defaultValue: 2010
+  options:
+  - value: 1993
+  - value: 1994
+  - value: 1995
+  - value: 1996
+  - value: 1997
+  - value: 1998
+  - value: 1999
+  - value: 2000
+  - value: 2001
+  - value: 2002
+  - value: 2003
+  - value: 2004
+  - value: 2005
+  - value: 2006
+  - value: 2007
+  - value: 2008
+  - value: 2009
+  - value: 2010
+GPSEX:
+  label: Select a gender
+  name: breakoutid
+  defaultValue: GEN3
+  options:
+  - text: Female
+    value: GEN3
+  - text: Male
+    value: GEN2
+GPAGE:
+  label: Select an age group
+  name: breakoutid
+  defaultValue: Age1
+  options:
+  - text: 18-24 years old
+    value: Age1
+GPRACE:
+  label: Select a race
+  name: breakoutid
+  defaultValue: RAC1
+  options:
+  - text: White non-Hispanic
+    value: RAC1
+GPOVER:
+  label: Select a category
+  name: breakoutid
+  defaultValue: GEN1
