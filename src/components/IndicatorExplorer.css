@@ -1,0 +1,30 @@
+.indicator-explorer-app .row {
+   *zoom: 1;
+   display: block;
+   margin-bottom: 2em;
+ }
+
+.indicator-explorer-app .row:before,
+.indicator-explorer-app .row:after {
+  content: " ";
+  display: table;
+}
+
+.indicator-explorer-app .row:after {
+  clear: both;
+}
+
+.indicator-explorer-app .column-one-third {
+  display: block;
+  float: left;
+  margin-right: 2%;
+  width: 32%;
+}
+
+.indicator-explorer-app .column-one-third:last-child {
+  margin-right: 0;
+}
+
+.indicator-explorer-app .c3 {
+  width: 100%;
+}

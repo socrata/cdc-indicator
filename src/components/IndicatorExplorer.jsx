@@ -5,6 +5,8 @@ import DataFilter from '../containers/DataFilter';
 
 import filters from '../config/filters.yml';
 
+import './IndicatorExplorer.css';
+
 export default class IndicatorExplorer extends Component {
 
   componentWillMount() {
@@ -18,16 +20,30 @@ export default class IndicatorExplorer extends Component {
     const { data } = this.props;
 
     return (
-      <div>
+      <div className="indicator-explorer-app">
         <DataFilter filters={filters} />
-        <Charts.Column data={data} majorAxis="breakout" />
-        <Charts.Column data={data} majorAxis="year" />
-        <Charts.Bar data={data} majorAxis="breakout" />
-        <Charts.Bar data={data} majorAxis="year" />
-        <Charts.Line data={data} majorAxis="breakout" />
-        <Charts.Line data={data} majorAxis="year" />
-        <Charts.Pie data={data} />
-        <MapDataProvider />
+        <div className="row">
+          <div className="column-one-third">
+            <Charts.Line data={data} majorAxis="year" />
+          </div>
+          <div className="column-one-third">
+            <Charts.Column data={data} majorAxis="breakout" />
+          </div>
+          <div className="column-one-third">
+            <MapDataProvider />
+          </div>
+        </div>
+        <div className="row">
+          <div className="column-one-third">
+            <Charts.Column data={data} majorAxis="year" />
+          </div>
+          <div className="column-one-third">
+            <Charts.Bar data={data} majorAxis="breakout" />
+          </div>
+          <div className="column-one-third">
+            <Charts.Pie data={data} />
+          </div>
+        </div>
       </div>
     );
   }

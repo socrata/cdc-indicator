@@ -37,7 +37,7 @@ export default class ChoroplethMap extends Component {
       if (!prop) {
         this.infoContent._container.innerHTML = 'Hover over a state';
       } else {
-        this.infoContent._container.innerHTML = `${prop.name}: ${prop.value}`;
+        this.infoContent._container.innerHTML = `${prop.name}: ${prop.value || 'N/A'}`;
       }
       /* eslint-enable no-underscore-dangle */
     };
