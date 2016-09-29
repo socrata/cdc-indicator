@@ -3,6 +3,7 @@ import { Map, TileLayer, GeoJson } from 'react-leaflet';
 import * as MapControl from './MapControl';
 import L from 'leaflet';
 import d3 from 'd3';
+import _ from 'lodash';
 
 import './Choropleth.css';
 

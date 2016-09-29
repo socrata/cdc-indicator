@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack --optimize-minimize",
+    "dev-build": "webpack",
     "start": "webpack-dev-server --inline --hot",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
