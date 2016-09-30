@@ -15,10 +15,8 @@ const LineChart = ({ data, majorAxis }) => {
   chartConfig.line = {
     connectNull: true
   };
-  chartConfig.axis.y = {
-    tick: {
-      format: d3.format('.1f')
-    }
+  chartConfig.axis.y.tick = {
+    format: d3.format('.1f')
   };
 
   return (

@@ -75,6 +75,9 @@ export default class ChartData {
           tick: {
             format: '%Y'
           }
+        },
+        y: {
+          label: this.data[0].data_value_type || ''
         }
       },
       tooltip: {
@@ -147,6 +150,9 @@ export default class ChartData {
         x: {
           categories,
           type: 'category'
+        },
+        y: {
+          label: this.data[0].data_value_type || ''
         }
       }
     };
