@@ -80,8 +80,14 @@ export default class ChartData {
       tooltip: {
         format: {
           value: (value, ratio, id, index) => {
-            const lc = _.round(+groupedData[id][years[index]].low_confidence_limit, 1);
-            const hc = _.round(+groupedData[id][years[index]].high_confidence_limit, 1);
+            let lc = 'N/A';
+            let hc = 'N/A';
+
+            if (groupedData[id] && years[index] && groupedData[id][years[index]]) {
+              lc = _.round(+groupedData[id][years[index]].low_confidence_limit, 1);
+              hc = _.round(+groupedData[id][years[index]].high_confidence_limit, 1);
+            }
+
             return `${_.round(value, 1)} (${lc} - ${hc})`;
           }
         }

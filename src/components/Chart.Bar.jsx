@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import ChartData from '../lib/ChartData';
-import C3Chart from 'react-c3js';
+import C3ChartUpdatable from './C3ChartUpdatable';
 import 'c3/c3.css';
 
 const BarChart = ({ data, majorAxis }) => {
@@ -14,7 +14,7 @@ const BarChart = ({ data, majorAxis }) => {
   chartConfig.axis.rotated = true;
 
   return (
-    <C3Chart {...chartConfig} />
+    <C3ChartUpdatable {...chartConfig} />
   );
 };
 

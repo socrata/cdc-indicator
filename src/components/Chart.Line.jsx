@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import ChartData from '../lib/ChartData';
-import C3Chart from 'react-c3js';
+import C3ChartUpdatable from './C3ChartUpdatable';
 import d3 from 'd3';
 import 'c3/c3.css';
 
@@ -22,7 +22,7 @@ const LineChart = ({ data, majorAxis }) => {
   };
 
   return (
-    <C3Chart {...chartConfig} />
+    <C3ChartUpdatable {...chartConfig} />
   );
 };
 
