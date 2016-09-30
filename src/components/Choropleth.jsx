@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import { Map, TileLayer, GeoJson } from 'react-leaflet';
+import { Map, TileLayer } from 'react-leaflet';
+import GeoJsonUpdatable from './GeoJsonUpdatable';
 import * as MapControl from './MapControl';
 import L from 'leaflet';
 import d3 from 'd3';
@@ -11,6 +12,10 @@ const token =
   'pk.eyJ1IjoiaGlrb25haXRvIiwiYSI6ImNpdGtoNjNlbzBibGYyb21rb3VhYWJsbzcifQ.hM8fZcBoGykyLgezk_c85A';
 
 function getColor(d) {
+  if (isNaN(d)) {
+    return 'transparent';
+  }
+
   const scale = d3.scale.linear()
     .domain([0, 3])
     .range(['#FFEDA0', '#E31A1C']);
@@ -112,9 +117,11 @@ export default class ChoroplethMap extends Component {
             '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
             'Imagery © <a href="http://mapbox.com">Mapbox</a>'}
         />
-        <GeoJson
+        <GeoJsonUpdatable
           ref={(ref) => {
-            this.leafletElement = ref.leafletElement;
+            if (ref) {
+              this.leafletElement = ref.leafletElement;
+            }
           }}
           data={data}
           style={style}
@@ -122,7 +129,9 @@ export default class ChoroplethMap extends Component {
         />
         <MapControl.Info
           ref={(ref) => {
-            this.infoContent = ref.leafletElement;
+            if (ref) {
+              this.infoContent = ref.leafletElement;
+            }
           }}
         >
           Hover over a state

@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import * as Charts from '../components/Charts';
 import MapDataProvider from '../containers/MapDataProvider';
 import DataFilter from '../containers/DataFilter';
+import _ from 'lodash';
 
 import filters from '../config/filters.yml';
 
@@ -14,6 +15,15 @@ export default class IndicatorExplorer extends Component {
             filter } = this.props;
 
     loadData(filter);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { loadData,
+            filter } = this.props;
+
+    if (!_.isEqual(nextProps.filter, filter)) {
+      loadData(nextProps.filter);
+    }
   }
 
   render() {

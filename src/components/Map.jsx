@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import Choropleth from '../components/Choropleth';
 import MapFilter from '../containers/MapFilter';
+import _ from 'lodash';
 
 import breakouts from '../config/breakouts.yml';
 
@@ -12,6 +13,16 @@ export default class Map extends Component {
             mapFilter } = this.props;
 
     loadData(filter, mapFilter);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { loadData,
+            filter,
+            mapFilter } = this.props;
+
+    if (!_.isEqual(nextProps.filter, filter) || !_.isEqual(nextProps.mapFilter, mapFilter)) {
+      loadData(nextProps.filter, nextProps.mapFilter);
+    }
   }
 
   render() {
