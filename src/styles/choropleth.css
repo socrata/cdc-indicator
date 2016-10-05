@@ -26,3 +26,7 @@
   height: 18px;
   margin-right: 0.5em;
 }
+
+.spinner {
+  composes: spinner from './spinner.css';
+}

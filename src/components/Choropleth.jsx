@@ -81,9 +81,13 @@ export default class ChoroplethMap extends Component {
   render() {
     const { data } = this.props;
 
-    // if data is empty, return empty component
+    // if data is empty, return loading icon div
     if (!data.type) {
-      return null;
+      return (
+        <div className={styles.spinner}>
+          <i className="fa fa-circle-o-notch fa-spin"></i>
+        </div>
+      );
     }
 
     // generate legend

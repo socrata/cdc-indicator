@@ -3,7 +3,11 @@
  * Pass an array of options, or key:value pairs of option groups
  */
 
+/** dependencies **/
+// vendors
 import React, { Component, PropTypes } from 'react';
+// styles
+import styles from '../styles/filter.css';
 
 export default class Filter extends Component {
 
@@ -57,7 +61,7 @@ export default class Filter extends Component {
     }
 
     return (
-      <div>
+      <div className={styles.filter}>
         <label>{label}</label>
         <select name={name} defaultValue={defaultValue} onChange={onChange}>
           {optionElements}

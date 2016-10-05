@@ -23,6 +23,7 @@ export default class IndicatorExplorer extends Component {
     const { loadData,
             filter } = this.props;
 
+    // load data when filter changed
     if (!_.isEqual(nextProps.filter, filter)) {
       loadData(nextProps.filter);
     }

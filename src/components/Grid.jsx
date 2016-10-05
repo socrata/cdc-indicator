@@ -2,8 +2,11 @@
  * Helper to wrap elements into a grid layout
  */
 
+/** dependencies **/
+// vendors
 import React, { PropTypes } from 'react';
 import _ from 'lodash';
+// styles
 import styles from '../styles/grid.css';
 
 function getGridStyle(length) {
@@ -17,7 +20,7 @@ function getGridStyle(length) {
   }
 }
 
-const Grid = ({ children }) => {
+const Grid = ({ additionalClasses, children }) => {
   const childrenArray = _.castArray(children);
   const gridStyle = getGridStyle(childrenArray.length);
   const childElements = childrenArray.map((child, index) => (
@@ -27,13 +30,14 @@ const Grid = ({ children }) => {
   ));
 
   return (
-    <div className={styles.row}>
+    <div className={`${styles.row} ${additionalClasses || ''}`}>
       {childElements}
     </div>
   );
 };
 
 Grid.propTypes = {
+  additionalClasses: PropTypes.string,
   children: PropTypes.element
 };
 

@@ -1,0 +1,8 @@
+.filter label {
+  display: block;
+}
+
+.filter select {
+  display: block;
+  width: 100%;
+}
