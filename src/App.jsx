@@ -1,9 +1,10 @@
+// enable react-redux with redux-thunk middleware
 import React from 'react';
 import { Provider } from 'react-redux';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 
-import DataProvider from './containers/DataProvider';
+import DataProvider from './containers/DataProvider'; // renders IndicatorExplorer
 import * as reducers from './reducers';
 
 const reducer = combineReducers(reducers);

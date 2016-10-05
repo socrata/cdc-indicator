@@ -5,12 +5,13 @@
 import React, { PropTypes } from 'react';
 import Filter from '../components/Filter';
 
-const Filters = ({ filters, onChange }) => (
+const Filters = ({ filters, onChange, onLoad }) => (
   <div>
     {filters.map(filter =>
       <Filter
         key={filter.name}
         onChange={onChange}
+        onLoad={onLoad}
         {...filter}
       />
     )}
@@ -30,7 +31,8 @@ Filters.propTypes = {
       optionGroups: PropTypes.array
     })
   ).isRequired,
-  onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
+  onLoad: PropTypes.func.isRequired
 };
 
 export default Filters;

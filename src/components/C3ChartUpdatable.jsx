@@ -9,12 +9,21 @@ export default class C3ChartUpdatable extends C3Chart {
       const newKeys = nextProps.data.columns.map((row) => row[0]);
       _.pullAll(oldKeys, newKeys); // old keys to unload
 
+      const newConfig = {
+        unload: oldKeys
+      };
+
       if (nextProps.axis && nextProps.axis.y) {
         this.chart.axis.labels({
-          y: nextProps.axis.y.label
+          y: nextProps.axis.y.label.text
         });
       }
-      this.chart.load(Object.assign({}, nextProps.data, { unload: oldKeys }));
+
+      if (nextProps.axis && nextProps.axis.x && nextProps.axis.x.categories) {
+        newConfig.categories = nextProps.axis.x.categories;
+      }
+
+      this.chart.load(Object.assign({}, nextProps.data, newConfig));
     }
   }
 }

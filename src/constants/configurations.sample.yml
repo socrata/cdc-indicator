@@ -1,0 +1,225 @@
+# application configuration parameters
+# save as "configurations.yml" after completing
+
+# Socrata dataset configurations
+data:
+  host: ENTER SOCRATA OPEN DATA PORTAL HOSTNAME
+  appToken: ENTER SOCRATA APP TOKEN
+  datasetId: ENTER SOCRATA DATASET ID
+
+# Mapbox and other map related configurations
+map:
+  tileUrl: ENTER MAPBOX TILE URL
+  tileId: mapbox.light
+  mapboxToken: ENTER MAPBOX TOKEN
+  attribution: |
+    Map data ©
+    <a href="http://openstreetmap.org">OpenStreetMap</a> contributors,
+    <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>,
+    Imagery © <a href="http://mapbox.com">Mapbox</a>
+  geojson: ENTER URL TO GET GEOJSON
+
+# List of filters
+filters:
+  - label: Select an indicator
+    name: questionid
+    defaultValue: AL002
+    optionGroups:
+    - text: Activity Limitation
+      options:
+      - text: Mean days of activity limitation
+        value: AL002
+      - text: Percentage with 14 or more activity limitation days
+        value: AL001
+    - text: General Health
+      options:
+      - text: Mean physically or mentally unhealthy days
+        value: GEN002
+      - text: Percentage with fair or poor self-rated health
+        value: GEN001
+    - text: Mental Health
+      options:
+      - text: Mean mentally unhealthy days
+        value: MHL002
+      - text: Percentage with 14 or more mentally unhealthy days (Frequent Mental Distress)
+        value: MHL001
+    - text: Physical Health
+      options:
+      - text: Mean physically unhealthy days
+        value: PHY002
+      - text: Percentage with 14 or more physically unhealthy days
+        value: PHY001
+  - label: Select a state
+    name: locationabbr
+    defaultValue: US
+    options:
+    - value: US
+      text: National Average
+    - value: AL
+      text: Alabama
+    - value: AK
+      text: Alaska
+    - value: AZ
+      text: Arizona
+    - value: AR
+      text: Arkansas
+    - value: CA
+      text: California
+    - value: CO
+      text: Colorado
+    - value: CT
+      text: Connecticut
+    - value: DE
+      text: Delaware
+    - value: DC
+      text: District of Columbia
+    - value: FL
+      text: Florida
+    - value: GA
+      text: Georgia
+    - value: HI
+      text: Hawaii
+    - value: ID
+      text: Idaho
+    - value: IL
+      text: Illinois
+    - value: IN
+      text: Indiana
+    - value: IA
+      text: Iowa
+    - value: KS
+      text: Kansas
+    - value: KY
+      text: Kentucky
+    - value: LA
+      text: Louisiana
+    - value: ME
+      text: Maine
+    - value: MD
+      text: Maryland
+    - value: MA
+      text: Massachusetts
+    - value: MI
+      text: Michigan
+    - value: MN
+      text: Minnesota
+    - value: MS
+      text: Mississippi
+    - value: MO
+      text: Missouri
+    - value: MT
+      text: Montana
+    - value: US
+      text: Nationwide
+    - value: NE
+      text: Nebraska
+    - value: NV
+      text: Nevada
+    - value: NH
+      text: New Hampshire
+    - value: NJ
+      text: New Jersey
+    - value: NM
+      text: New Mexico
+    - value: NY
+      text: New York
+    - value: NC
+      text: North Carolina
+    - value: ND
+      text: North Dakota
+    - value: OH
+      text: Ohio
+    - value: OK
+      text: Oklahoma
+    - value: OR
+      text: Oregon
+    - value: PA
+      text: Pennsylvania
+    - value: RI
+      text: Rhode Island
+    - value: SC
+      text: South Carolina
+    - value: SD
+      text: South Dakota
+    - value: TN
+      text: Tennessee
+    - value: TX
+      text: Texas
+    - value: UT
+      text: Utah
+    - value: VT
+      text: Vermont
+    - value: VA
+      text: Virginia
+    - value: WA
+      text: Washington
+    - value: WV
+      text: West Virginia
+    - value: WI
+      text: Wisconsin
+    - value: WY
+      text: Wyoming
+  - label: Select a break out category
+    name: breakoutcategoryid
+    defaultValue: GPOVER
+    options:
+    - text: Overall
+      value: GPOVER
+    - text: Gender
+      value: GPSEX
+    - text: Age Group
+      value: GPAGE
+    - text: Race
+      value: GPRACE
+
+# List of breakouts
+breakouts:
+  GPSEX:
+    label: Select a gender
+    name: breakoutid
+    defaultValue: GEN3
+    options:
+    - text: Female
+      value: GEN3
+    - text: Male
+      value: GEN2
+  GPAGE:
+    label: Select an age group
+    name: breakoutid
+    defaultValue: Age1
+    options:
+    - text: 18-24 years old
+      value: Age1
+    - text: 25-34 years old
+      value: Age2
+    - text: 35-44 years old
+      value: Age3
+    - text: 45-54 years old
+      value: Age4
+    - text: 55-64 years old
+      value: Age5
+    - text: 65-74 years old
+      value: Age6
+    - text: 75+
+      value: Age7
+  GPRACE:
+    label: Select a race
+    name: breakoutid
+    defaultValue: RAC1
+    options:
+    - text: White non-Hispanic
+      value: RAC1
+    - text: Black non-Hispanic
+      value: RAC2
+    - text: Hispanic
+      value: RAC3
+    - text: Asian/Pacific Islander
+      value: RAC4
+    - text: Native American/Alaskan Native
+      value: RAC5
+    - text: Other non-Hispanic
+      value: RAC6
+  GPOVER:
+    label: Select a category
+    name: breakoutid
+    defaultValue: GEN1

@@ -6,10 +6,9 @@ import L from 'leaflet';
 import d3 from 'd3';
 import _ from 'lodash';
 
-import './Choropleth.css';
+import { CONFIG } from '../constants';
 
-const token =
-  'pk.eyJ1IjoiaGlrb25haXRvIiwiYSI6ImNpdGtoNjNlbzBibGYyb21rb3VhYWJsbzcifQ.hM8fZcBoGykyLgezk_c85A';
+import './Choropleth.css';
 
 function getColor(d) {
   if (isNaN(d)) {
@@ -110,12 +109,9 @@ export default class ChoroplethMap extends Component {
         scrollWheelZoom={false}
       >
         <TileLayer
-          url={`https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=${token}`}
-          id="mapbox.light"
-          attribution={'Map data © ' +
-            '<a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-            '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-            'Imagery © <a href="http://mapbox.com">Mapbox</a>'}
+          url={`${CONFIG.map.tileUrl}?access_token=${CONFIG.map.mapboxToken}`}
+          id={CONFIG.map.tileId}
+          attribution={CONFIG.map.attribution}
         />
         <GeoJsonUpdatable
           ref={(ref) => {

@@ -11,6 +11,7 @@ const ColumnChart = ({ data, majorAxis }) => {
 
   const chartConfig = new ChartData(data, majorAxis).chartConfig();
   chartConfig.data.type = 'bar';
+  chartConfig.padding = { bottom: 30 };
 
   return (
     <C3ChartUpdatable {...chartConfig} />

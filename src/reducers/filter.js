@@ -1,17 +1,9 @@
 import { UPDATE_FILTER } from '../constants';
 
-// get list of filter names from configuration
-import filters from '../config/filters.yml';
-
-const initialState = filters.reduce((accumulator, row) => {
-  const acc = accumulator;
-  acc[row.name] = row.defaultValue;
-  return acc;
-}, {});
+const initialState = {};
 
 const actionsMap = {
-  [UPDATE_FILTER]: (state, action) =>
-    Object.assign({}, state, { [action.key]: action.value })
+  [UPDATE_FILTER]: (state, action) => Object.assign({}, state, { [action.key]: action.value })
 };
 
 export default function filter(state = initialState, action) {

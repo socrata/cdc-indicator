@@ -4,6 +4,29 @@
 
 import _ from 'lodash';
 
+/** Helper functions **/
+
+// get max value by key from an array of objects
+function getMaxValueByKey(array, key) {
+  return _.chain(array)                 // start chain
+    .groupBy(key)                       // group by key
+    .keys()                             // so we can grab all key values
+    .map((str) => +str)                 // conver to number
+    .filter((value) => !isNaN(value))   // filter out invalid values
+    .max()                              // get max value
+    .value();                           // end chain and return value
+}
+
+// find data from latest year
+function getDataForYear(array, year) {
+  const dataForYear = _.find(array, { year: _.toString(year) });
+  const value = _.round(dataForYear.data_value || null, 1);
+
+  // return null if value is invalid
+  return isNaN(value) ? null : value;
+}
+
+/** main class **/
 export default class ChartData {
 
   constructor(data = [], majorAxis = 'breakout') {
@@ -29,6 +52,10 @@ export default class ChartData {
     }
 
     return {};
+  }
+
+  getLatestYear() {
+    return getMaxValueByKey(this.data, 'year');
   }
 
   _getConfigByYear() {
@@ -77,7 +104,10 @@ export default class ChartData {
           }
         },
         y: {
-          label: this.data[0].data_value_type || ''
+          label: {
+            text: this.data[0].data_value_type || '',
+            position: 'outer-middle'
+          }
         }
       },
       tooltip: {
@@ -98,10 +128,13 @@ export default class ChartData {
     };
   }
 
-  // get C3 config where major axis is breakout categories
+  // generate C3 configuration object, when major axis is breakout categories
   _getConfigByBreakout() {
-    // group data by state (data series),
-    // then by breakout, and sum results
+    // get latest year from data received
+    const latestYear = getMaxValueByKey(this.data, 'year');
+
+    // group data by state (main data series),
+    // then by breakout, and get values from the latest year
     const groupedData = _.chain(this.data)
       .groupBy('locationdesc')
       .reduce((groupByLocation, valuesByLocation, location) => {
@@ -110,17 +143,7 @@ export default class ChartData {
             .groupBy('break_out')
             .reduce((groupByBreakout, valuesByBreakout, breakout) => {
               return Object.assign({}, groupByBreakout, {
-                [breakout]: _.chain(valuesByBreakout)
-                  .map((row) => {
-                    if (row.data_value && !isNaN(parseFloat(row.data_value))) {
-                      return +row.data_value;
-                    }
-                    return null;
-                  })
-                  .filter((row) => row !== null)
-                  .mean()
-                  .round(1)
-                  .value()
+                [breakout]: getDataForYear(valuesByBreakout, latestYear)
               });
             }, {})
             .value()
@@ -152,14 +175,20 @@ export default class ChartData {
           type: 'category'
         },
         y: {
-          label: this.data[0].data_value_type || ''
+          label: {
+            text: `${this.data[0].data_value_type || ''} (in year ${latestYear})`,
+            position: 'outer-middle'
+          }
         }
       }
     };
   }
 
-  // get C3 config for pie chart, where data array is a breakout category
+  // get C3 config for a pie chart, where data array is a breakout category
   _getConfigForPieChart() {
+    // get latest year from data received
+    const latestYear = getMaxValueByKey(this.data, 'year');
+
     // group data by state (data series) to see if we are displaying state or national data
     const groupedByLocation = _.groupBy(this.data, 'locationabbr');
 
@@ -167,38 +196,31 @@ export default class ChartData {
     let groupedData = groupedByLocation.US;
 
     // .. but if there are two locations, use state's
-    if (groupedByLocation.length === 2) {
+    if (_.size(groupedByLocation) === 2) {
       const state = _.without(Object.keys(groupedByLocation), 'US').shift();
       groupedData = groupedByLocation[state];
     }
 
     const transformedData = _.chain(groupedData)
-      .groupBy('break_out')
+      .groupBy('breakoutid')
       .reduce((groupedByBreakout, valuesByBreakout, breakout) => {
         return Object.assign({}, groupedByBreakout, {
-          [breakout]: _.chain(valuesByBreakout)
-            .map((row) => {
-              if (row.data_value && !isNaN(parseFloat(row.data_value))) {
-                return +row.data_value;
-              }
-              return null;
-            })
-            .filter((row) => row !== null)
-            .mean()
-            .round(1)
-            .value()
+          [breakout]: {
+            value: getDataForYear(valuesByBreakout, latestYear),
+            label: valuesByBreakout[0].break_out
+          }
         });
       }, {})
       .value();
 
     // generate data array based on categories (order is important)
     const columns = _.chain(groupedData)
-      .groupBy('break_out')
+      .groupBy('breakoutid')
       .keys()
       .sortBy()
       .value()
       .map((breakout) => {
-        return [breakout].concat(transformedData[breakout]);
+        return [transformedData[breakout].label].concat(transformedData[breakout].value);
       });
 
     return {

@@ -29,3 +29,6 @@ Temporary Items
 
 node_modules
 build
+
+# Application specific
+src/constants/configurations.yml

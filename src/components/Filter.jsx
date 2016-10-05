@@ -7,6 +7,24 @@ import React, { Component, PropTypes } from 'react';
 
 export default class Filter extends Component {
 
+  componentDidMount() {
+    const { name,
+            defaultValue,
+            onLoad } = this.props;
+
+    onLoad(name, defaultValue);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { defaultValue,
+            onLoad } = this.props;
+
+    // when filter is rendered with a different defaultValue, reset value
+    if (defaultValue !== nextProps.defaultValue) {
+      onLoad(nextProps.name, nextProps.defaultValue);
+    }
+  }
+
   // generate <option> element
   createOption(data) {
     const { text,
@@ -79,5 +97,6 @@ Filter.propTypes = {
       )
     })
   ),
-  onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
+  onLoad: PropTypes.func.isRequired
 };

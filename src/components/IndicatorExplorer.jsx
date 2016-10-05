@@ -1,21 +1,24 @@
+/**
+ * Main content container for top-level application
+ */
+
+/** dependencies **/
+// vendors
 import React, { Component, PropTypes } from 'react';
-import * as Charts from '../components/Charts';
-import MapDataProvider from '../containers/MapDataProvider';
-import DataFilter from '../containers/DataFilter';
 import _ from 'lodash';
-
-import filters from '../config/filters.yml';
-
+// custom
+import * as Charts from '../components/Charts';
+import DataFilter from '../containers/DataFilter';
+import MapDataProvider from '../containers/MapDataProvider';
+import { CONFIG } from '../constants';
+// styles
 import './IndicatorExplorer.css';
 
+/** main class **/
 export default class IndicatorExplorer extends Component {
 
-  componentWillMount() {
-    const { loadData,
-            filter } = this.props;
-
-    loadData(filter);
-  }
+  // data is not loaded on componentWillMount()
+  // because filter props are not set on load
 
   componentWillReceiveProps(nextProps) {
     const { loadData,
@@ -31,7 +34,7 @@ export default class IndicatorExplorer extends Component {
 
     return (
       <div className="indicator-explorer-app">
-        <DataFilter filters={filters} />
+        <DataFilter filters={CONFIG.filters} />
         <div className="row">
           <div className="column-one-third">
             <Charts.Line data={data} majorAxis="year" />
@@ -59,6 +62,7 @@ export default class IndicatorExplorer extends Component {
   }
 }
 
+// props provided by redux - see ../containes/DataProvider
 IndicatorExplorer.propTypes = {
   data: PropTypes.array.isRequired,
   filter: PropTypes.object.isRequired,

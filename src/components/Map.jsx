@@ -1,27 +1,37 @@
 import React, { Component, PropTypes } from 'react';
 import Choropleth from '../components/Choropleth';
-import MapFilter from '../containers/MapFilter';
+import DataFilter from '../containers/DataFilter';
+import { CONFIG } from '../constants';
 import _ from 'lodash';
-
-import breakouts from '../config/breakouts.yml';
 
 export default class Map extends Component {
 
-  componentWillMount() {
-    const { loadData,
-            filter,
-            mapFilter } = this.props;
-
-    loadData(filter, mapFilter);
-  }
-
   componentWillReceiveProps(nextProps) {
     const { loadData,
-            filter,
-            mapFilter } = this.props;
+            filter } = this.props;
 
-    if (!_.isEqual(nextProps.filter, filter) || !_.isEqual(nextProps.mapFilter, mapFilter)) {
-      loadData(nextProps.filter, nextProps.mapFilter);
+    // on initial load, year is not set; do not load data until year is set
+    if (!nextProps.filter.year) {
+      return;
+    }
+
+    // while switching breakout category, component is loaded w/o valid breakoutid
+    if (nextProps.filter.breakoutcategoryid !== 'GPOVER' && !nextProps.filter.breakoutid) {
+      return;
+    }
+
+    // if breakout category is set, load data only if a valid breakoutID is specified
+    // (this happens as components are refreshed while selecting a different category)
+    const options = _.get(CONFIG, `breakouts[${nextProps.filter.breakoutcategoryid}].options`);
+    if (options) {
+      const validIds = options.map((row) => row.value);
+      if (validIds.indexOf(nextProps.filter.breakoutid) === -1) {
+        return;
+      }
+    }
+
+    if (!_.isEqual(nextProps.filter, filter)) {
+      loadData(nextProps.filter);
     }
   }
 
@@ -29,17 +39,17 @@ export default class Map extends Component {
     const { data,
             filter } = this.props;
 
-    let filters = [breakouts.year];
+    let filters = [];
 
     // use main filter to determine which secondary filters are applicable
-    // display filter for year only if selected breakout is "Overall"
-    if (filter.breakoutcategoryid !== 'GPOVER') {
-      filters.push(breakouts[filter.breakoutcategoryid]);
+    // do not display if selected breakout is "Overall"
+    if (filter.breakoutcategoryid && filter.breakoutcategoryid !== 'GPOVER') {
+      filters.push(CONFIG.breakouts[filter.breakoutcategoryid]);
     }
 
     return (
       <div>
-        <MapFilter filters={filters} />
+        <DataFilter filters={filters} />
         <Choropleth data={data} />
       </div>
     );
@@ -49,6 +59,5 @@ export default class Map extends Component {
 Map.propTypes = {
   data: PropTypes.object.isRequired,
   filter: PropTypes.object.isRequired,
-  mapFilter: PropTypes.object.isRequired,
   loadData: PropTypes.func.isRequired
 };

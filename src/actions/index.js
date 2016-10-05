@@ -1,9 +1,11 @@
 import { FETCH_DATA,
          UPDATE_FILTER,
          FETCH_MAP_DATA,
-         UPDATE_MAP_FILTER } from '../constants';
+         UPDATE_MAP_FILTER,
+         CONFIG } from '../constants';
 import _ from 'lodash';
 import Soda from '../lib/Soda';
+import ChartData from '../lib/ChartData';
 
 export function setFilter(key, value) {
   return {
@@ -28,32 +30,43 @@ function updateData(data) {
   };
 }
 
+function updateYear(data) {
+  const year = new ChartData(data).getLatestYear();
+  return {
+    type: UPDATE_FILTER,
+    key: 'year',
+    value: year
+  };
+}
+
 export function fetchData(filter) {
   // format query
-  const filterCondition = Object.keys(filter).map((key) => {
-    // if state data is requested, also query national (US) data
-    if (key === 'locationabbr' && filter[key] !== 'US') {
+  const filterCondition = Object.keys(filter)
+    .map((key) => {
+      // if state data is requested, also query national (US) data
+      if (key === 'locationabbr' && filter[key] !== 'US') {
+        return {
+          operator: 'OR',
+          condition: [{
+            column: key,
+            operator: '=',
+            value: filter[key]
+          }, {
+            column: key,
+            operator: '=',
+            value: 'US'
+          }]
+        };
+      }
+
       return {
-        operator: 'OR',
-        condition: [{
-          column: key,
-          operator: '=',
-          value: filter[key]
-        }, {
-          column: key,
-          operator: '=',
-          value: 'US'
-        }]
+        column: key,
+        operator: '=',
+        value: filter[key]
       };
-    }
+    });
 
-    return {
-      column: key,
-      operator: '=',
-      value: filter[key]
-    };
-  });
-
+  // always add a condition where year is not null
   filterCondition.push({
     column: 'year',
     operator: 'IS NOT NULL'
@@ -61,16 +74,17 @@ export function fetchData(filter) {
 
   return (dispatch) => {
     new Soda({
-      appToken: 'bSaNXzPH3PxsgXK3u85KKdTOh',
-      hostname: 'chronicdata.cdc.gov',
+      appToken: CONFIG.data.appToken,
+      hostname: CONFIG.data.host,
       useSecure: true
     })
-      .dataset('xuxn-8kju')
+      .dataset(CONFIG.data.datasetId)
       .where(filterCondition)
       .order('year')
       .fetchData()
         .then((data) => {
           dispatch(updateData(data));
+          dispatch(updateYear(data));
         });
   };
 }
@@ -104,26 +118,19 @@ function updateMapData(responses) {
   };
 }
 
-export function fetchMapData(primaryFilter, secondaryFilter) {
-  const filterCondition = {
-    year: secondaryFilter.year,
-    breakoutid: secondaryFilter.breakoutid,
-    questionid: primaryFilter.questionid
-  };
-
+export function fetchMapData(filter) {
   const dataRequest = new Soda({
-    appToken: 'bSaNXzPH3PxsgXK3u85KKdTOh',
-    hostname: 'chronicdata.cdc.gov',
+    appToken: CONFIG.data.appToken,
+    hostname: CONFIG.data.host,
     useSecure: true
   })
-    .dataset('xuxn-8kju')
-    .where(filterCondition)
+    .dataset(CONFIG.data.datasetId)
+    .where(filter)
     .order('year')
     .fetchData();
 
-  const geoJsonRequest = fetch(
-    'https://chronicdata.cdc.gov/api/assets/DB7C6A89-BA44-4B22-8AA5-D204CC71EF45?us-states.geojson'
-  ).then((response) => response.json());
+  const geoJsonRequest = fetch(CONFIG.map.geojson)
+    .then((response) => response.json());
 
   return (dispatch) => {
     Promise.all([dataRequest, geoJsonRequest])

@@ -6,6 +6,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     onChange: (event) => {
       dispatch(setFilter(event.target.name, event.target.value));
+    },
+    onLoad: (key, value) => {
+      dispatch(setFilter(key, value));
     }
   };
 };
