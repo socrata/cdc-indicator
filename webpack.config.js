@@ -1,9 +1,12 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const combineLoaders = require('webpack-combine-loaders');
 
 module.exports = {
   entry: [
+    'es6-promise',
     'babel-polyfill',
     'whatwg-fetch',
     './src/index.jsx'
@@ -27,7 +30,8 @@ module.exports = {
       'process.env':{
         'NODE_ENV': JSON.stringify('production')
       }
-    })
+    }),
+    new ExtractTextPlugin('app.css')
     // new webpack.optimize.UglifyJsPlugin({
     //   compress:{
     //     warnings: true
@@ -65,9 +69,26 @@ module.exports = {
         test: [/\.yml$/, /\.yaml$/],
         loader: 'json!yaml'
       },
+      // process custom css (in src/styles) as CSS modules
       {
         test: /\.css$/,
-        loaders: ['style', 'css']
+        include: path.resolve('src/styles'),
+        loader: ExtractTextPlugin.extract(
+          'style-loader',
+          combineLoaders([{
+            loader: 'css-loader',
+            query: {
+              modules: true,
+              localIdentName: '[name]__[local]___[hash:base64:5]'
+            }
+          }])
+        )
+      },
+      // process other css (like vendors) normally
+      {
+        test: /\.css$/,
+        exclude: path.resolve('src/styles'),
+        loader: ExtractTextPlugin.extract('style-loader', 'css-loader')
       }],
       postLoaders: [{
         include: /node_modules\/mapbox-gl-shaders/,

@@ -1,0 +1,28 @@
+.legend {
+  margin: 0;
+  padding: 0.5em;
+  border-radius: 3px;
+  font-size: 14px;
+  line-height: 18px;
+  background: #fff;
+  opacity: 0.8;
+  list-style: none;
+}
+
+.info {
+  composes: legend;
+  opacity: 0.9;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+}
+
+.legend li {
+  margin: 0;
+  padding: 0;
+}
+
+.legend i {
+  float: left;
+  width: 18px;
+  height: 18px;
+  margin-right: 0.5em;
+}

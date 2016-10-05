@@ -32,11 +32,13 @@
     "eslint-plugin-import": "^1.9.2",
     "eslint-plugin-jsx-a11y": "^1.5.3",
     "eslint-plugin-react": "^5.2.2",
+    "extract-text-webpack-plugin": "^1.0.1",
     "html-webpack-plugin": "^2.22.0",
     "path": "^0.12.7",
     "react-leaflet": "^0.12.3",
     "style-loader": "^0.13.1",
     "webpack": "^1.13.1",
+    "webpack-combine-loaders": "^2.0.0",
     "webpack-dev-server": "^1.14.1",
     "yaml-loader": "^0.4.0"
   },

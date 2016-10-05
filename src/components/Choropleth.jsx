@@ -8,7 +8,7 @@ import _ from 'lodash';
 
 import { CONFIG } from '../constants';
 
-import './Choropleth.css';
+import styles from '../styles/choropleth.css';
 
 function getColor(d) {
   if (isNaN(d)) {
@@ -133,7 +133,7 @@ export default class ChoroplethMap extends Component {
           Hover over a state
         </MapControl.Info>
         <MapControl.Legend>
-          <ul className="choropleth-legend">
+          <ul className={styles.legend}>
             {legends}
           </ul>
         </MapControl.Legend>

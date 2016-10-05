@@ -1,0 +1,40 @@
+.row {
+  *zoom: 1;
+  display: block;
+}
+
+.row:before,
+.row:after {
+  content: " ";
+  display: table;
+}
+
+.row:after {
+  clear: both;
+}
+
+.grid {
+  box-sizing: border-box;
+  float: left;
+  margin-right: 2%;
+}
+
+.grid:last-child {
+  margin-right: 0;
+}
+
+.gridFull {
+  composes: grid;
+
+  width: 100%;
+}
+
+.gridHalf {
+  composes: grid;
+  width: 49%;
+}
+
+.gridThird {
+  composes: grid;
+  width: 32%;
+}
