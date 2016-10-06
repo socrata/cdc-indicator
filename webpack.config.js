@@ -3,12 +3,13 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const combineLoaders = require('webpack-combine-loaders');
+const autoprefixer = require('autoprefixer');
 
 module.exports = {
   entry: [
-    'es6-promise',
-    'babel-polyfill',
-    'whatwg-fetch',
+    // 'es6-promise',
+    // 'babel-polyfill',
+    // 'whatwg-fetch',
     './src/index.jsx'
   ],
   output: {
@@ -50,7 +51,7 @@ module.exports = {
     loaders: [
       {
         test: [/\.js$/, /\.jsx$/],
-        exclude: /node_modules/,
+        exclude: path.resolve('node_modules/'),
         loader: 'babel-loader',
         query: {
           presets: ['react', 'es2015']
@@ -60,11 +61,11 @@ module.exports = {
         test: /\.json$/,
         loader: 'json-loader'
       },
-      {
-        test: /\.js$/,
-        include: path.resolve('node_modules/mapbox-gl-shaders/index.js'),
-        loader: 'transform/cacheable?brfs'
-      },
+      // {
+      //   test: /\.js$/,
+      //   include: path.resolve('node_modules/mapbox-gl-shaders/index.js'),
+      //   loader: 'transform/cacheable?brfs'
+      // },
       {
         test: [/\.yml$/, /\.yaml$/],
         loader: 'json!yaml'
@@ -74,13 +75,16 @@ module.exports = {
         test: /\.css$/,
         include: path.resolve('src/styles'),
         loader: ExtractTextPlugin.extract(
-          'style-loader',
+          'style',
           combineLoaders([{
-            loader: 'css-loader',
+            loader: 'css',
             query: {
               modules: true,
-              localIdentName: '[name]__[local]___[hash:base64:5]'
+              localIdentName: '[name]__[local]___[hash:base64:5]',
+              importLoaders: 1
             }
+          }, {
+            loader: 'postcss'
           }])
         )
       },
@@ -88,16 +92,21 @@ module.exports = {
       {
         test: /\.css$/,
         exclude: path.resolve('src/styles'),
-        loader: ExtractTextPlugin.extract('style-loader', 'css-loader')
-      }],
-      postLoaders: [{
-        include: /node_modules\/mapbox-gl-shaders/,
-        loader: 'transform',
-        query: 'brfs'
+        loader: ExtractTextPlugin.extract('style', 'css')
       }
     ]
+    // postLoaders: [{
+    //   include: /node_modules\/mapbox-gl-shaders/,
+    //   loader: 'transform',
+    //   query: 'brfs'
+    // }]
   },
   resolve: {
     extensions: ['', '.js', '.jsx']
   },
+  postcss() {
+    return [
+      autoprefixer({ browsers: ['last 2 versions'] })
+    ];
+  }
 };
