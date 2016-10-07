@@ -12,6 +12,8 @@ import Grid from '../components/Grid';
 import DataFilter from '../containers/DataFilter';
 import MapDataProvider from '../containers/MapDataProvider';
 import { CONFIG } from '../constants';
+// styles
+import styles from '../styles/app.css';
 
 /** main class **/
 export default class IndicatorExplorer extends Component {
@@ -30,21 +32,29 @@ export default class IndicatorExplorer extends Component {
   }
 
   render() {
-    const { data } = this.props;
+    const { data,
+            label } = this.props;
 
     return (
       <div className="indicator-explorer-app">
-        <DataFilter filters={CONFIG.filters} />
-        <Grid>
+        <h1 className={styles.appTitle}>Indicator Explorer</h1>
+        <DataFilter
+          filters={CONFIG.filters}
+          customClass={styles.mainFilter}
+        />
+        <h2 className={styles.sectionTitle}>{label.questionid || ''}</h2>
+        <Grid customChildClass={styles.chartContainer}>
           <Charts.Line data={data} majorAxis="year" />
           <Charts.Column data={data} majorAxis="breakout" />
           <MapDataProvider />
         </Grid>
-        <Grid>
-          <Charts.Column data={data} majorAxis="year" />
+        <h2 className={styles.sectionTitle}>Example of a 2-chart layout</h2>
+        <Grid customChildClass={styles.chartContainer}>
+          <Charts.Column data={data} majorAxis="breakout" />
           <Charts.Pie data={data} />
         </Grid>
-        <Grid>
+        <h2 className={styles.sectionTitle}>Example of a single chart layout</h2>
+        <Grid customChildClass={styles.chartContainer}>
           <Charts.Bar data={data} majorAxis="breakout" />
         </Grid>
       </div>
@@ -56,5 +66,6 @@ export default class IndicatorExplorer extends Component {
 IndicatorExplorer.propTypes = {
   data: PropTypes.array.isRequired,
   filter: PropTypes.object.isRequired,
+  label: PropTypes.object.isRequired,
   loadData: PropTypes.func.isRequired
 };

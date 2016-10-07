@@ -20,24 +20,25 @@ function getGridStyle(length) {
   }
 }
 
-const Grid = ({ additionalClasses, children }) => {
+const Grid = ({ children, customClass, customChildClass }) => {
   const childrenArray = _.castArray(children);
   const gridStyle = getGridStyle(childrenArray.length);
   const childElements = childrenArray.map((child, index) => (
-    <div key={index} className={styles[gridStyle]}>
+    <div key={index} className={`${styles[gridStyle]} ${customChildClass || ''}`}>
       {child}
     </div>
   ));
 
   return (
-    <div className={`${styles.row} ${additionalClasses || ''}`}>
+    <div className={`${styles.row} ${customClass || ''}`}>
       {childElements}
     </div>
   );
 };
 
 Grid.propTypes = {
-  additionalClasses: PropTypes.string,
+  customClass: PropTypes.string,
+  customChildClass: PropTypes.string,
   children: PropTypes.element
 };
 

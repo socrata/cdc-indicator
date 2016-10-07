@@ -29,6 +29,7 @@ Temporary Items
 
 node_modules
 build
+npm-debug.log
 
 # Application specific
 src/constants/configurations.yml

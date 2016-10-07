@@ -10,7 +10,8 @@ const mapStateToProps = (state) => {
 
   return {
     data: state.data,
-    filter: _.pick(state.filter, validFilters)
+    filter: _.pick(state.filter, validFilters),
+    label: state.label
   };
 };
 

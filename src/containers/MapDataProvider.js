@@ -1,5 +1,6 @@
 import { connect } from 'react-redux';
-import { fetchMapData } from '../actions';
+import { fetchMapData,
+         setFilter } from '../actions';
 import Map from '../components/Map';
 import _ from 'lodash';
 
@@ -15,6 +16,9 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    onClick: (state) => {
+      dispatch(setFilter('locationabbr', state));
+    },
     loadData: (filter) => {
       dispatch(fetchMapData(filter));
     }

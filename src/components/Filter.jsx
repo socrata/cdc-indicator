@@ -27,6 +27,11 @@ export default class Filter extends Component {
     if (defaultValue !== nextProps.defaultValue) {
       onLoad(nextProps.name, nextProps.defaultValue);
     }
+
+    // if a new currentValue is passed in, but existing value is different select that value
+    if (nextProps.currentValue !== this.select.value) {
+      this.select.value = nextProps.currentValue;
+    }
   }
 
   // generate <option> element
@@ -62,8 +67,17 @@ export default class Filter extends Component {
 
     return (
       <div className={styles.filter}>
-        <label>{label}</label>
-        <select name={name} defaultValue={defaultValue} onChange={onChange}>
+        <label>{`${label}:`}</label>
+        <select
+          name={name}
+          defaultValue={defaultValue}
+          onChange={onChange}
+          ref={(ref) => {
+            if (ref) {
+              this.select = ref;
+            }
+          }}
+        >
           {optionElements}
         </select>
       </div>

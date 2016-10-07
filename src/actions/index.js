@@ -1,25 +1,64 @@
 import { FETCH_DATA,
-         UPDATE_FILTER,
+         UPDATE_FILTER_VALUE,
+         UPDATE_FILTER_LABEL,
          FETCH_MAP_DATA,
-         UPDATE_MAP_FILTER,
+         GEOJSON,
          CONFIG } from '../constants';
 import _ from 'lodash';
 import Soda from '../lib/Soda';
 import ChartData from '../lib/ChartData';
 
-export function setFilter(key, value) {
+function setFilterValue(key, value) {
   return {
-    type: UPDATE_FILTER,
+    type: UPDATE_FILTER_VALUE,
     key,
     value
   };
 }
 
-export function setMapFilter(key, value) {
+function setFilterLabel(key, value) {
+  // find the corresponding label to filter value
+  let label;
+
+  // "breakoutid" is in a separate configuration
+  if (key === 'breakoutid') {
+    label = _.chain(CONFIG.breakouts)
+      .map((row) => row.options)
+      .flatten()
+      .find({ value })
+      .value()
+      .text;
+  } else {
+    const filters = _.find(CONFIG.filters, { name: key });
+    if (_.get(filters, 'options')) {
+      label = _.find(filters.options, { value }).text;
+    } else {
+      label = _.chain(filters.optionGroups)
+        .map((group) => group.options)
+        .flatten()
+        .find({ value })
+        .value()
+        .text;
+    }
+  }
+
   return {
-    type: UPDATE_MAP_FILTER,
+    type: UPDATE_FILTER_LABEL,
     key,
-    value
+    value: label
+  };
+}
+
+export function setFilter(key, value) {
+  return (dispatch) => {
+    dispatch(setFilterValue(key, value));
+    dispatch(setFilterLabel(key, value));
+  };
+}
+
+export function setState(state) {
+  return (dispatch) => {
+    dispatch(setFilter('locationabbr', state));
   };
 }
 
@@ -33,7 +72,7 @@ function updateData(data) {
 function updateYear(data) {
   const year = new ChartData(data).getLatestYear();
   return {
-    type: UPDATE_FILTER,
+    type: UPDATE_FILTER_VALUE,
     key: 'year',
     value: year
   };
@@ -89,13 +128,11 @@ export function fetchData(filter) {
   };
 }
 
-function updateMapData(responses) {
-  const [data, geojson] = responses;
-
+function updateMapData(data) {
   const dataByState = _.groupBy(data, 'locationdesc');
 
   // iterate over geojson and put data in
-  const features = geojson.features.map((feature) => {
+  const features = GEOJSON.features.map((feature) => {
     const state = feature.properties.name;
 
     if (!dataByState.hasOwnProperty(state)) {
@@ -103,6 +140,7 @@ function updateMapData(responses) {
     }
 
     const properties = Object.assign({}, feature.properties, {
+      abbreviation: dataByState[feature.properties.name][0].locationabbr,
       value: +dataByState[feature.properties.name][0].data_value
     });
 
@@ -119,23 +157,18 @@ function updateMapData(responses) {
 }
 
 export function fetchMapData(filter) {
-  const dataRequest = new Soda({
-    appToken: CONFIG.data.appToken,
-    hostname: CONFIG.data.host,
-    useSecure: true
-  })
-    .dataset(CONFIG.data.datasetId)
-    .where(filter)
-    .order('year')
-    .fetchData();
-
-  const geoJsonRequest = fetch(CONFIG.map.geojson)
-    .then((response) => response.json());
-
   return (dispatch) => {
-    Promise.all([dataRequest, geoJsonRequest])
-      .then((responses) => {
-        dispatch(updateMapData(responses));
-      });
+    new Soda({
+      appToken: CONFIG.data.appToken,
+      hostname: CONFIG.data.host,
+      useSecure: true
+    })
+      .dataset(CONFIG.data.datasetId)
+      .where(filter)
+      .order('year')
+      .fetchData()
+        .then((response) => {
+          dispatch(updateMapData(response));
+        });
   };
 }

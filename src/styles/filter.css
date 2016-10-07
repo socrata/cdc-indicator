@@ -1,8 +1,26 @@
 .filter label {
   display: block;
+  margin-bottom: 0.5em;
 }
 
 .filter select {
   display: block;
+  box-sizing: border-box;
   width: 100%;
+  height: 2em;
+  padding: 0.6em 1em;
+  border: 1px solid #ccc;
+  color: #333;
+  background: #fff;
+  font-size: 1em;
+  line-height: 1.5;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  appearance: menulist;
+  transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+}
+
+.filter select:focus {
+  border-color: #66afe9;
+  outline: none;
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, 0.6);
 }

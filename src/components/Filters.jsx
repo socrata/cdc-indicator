@@ -9,13 +9,14 @@ import React, { PropTypes } from 'react';
 import Grid from '../components/Grid';
 import Filter from '../components/Filter';
 
-const Filters = ({ filters, onChange, onLoad }) => (
-  <Grid>
+const Filters = ({ filters, onChange, onLoad, customClass, currentFilter }) => (
+  <Grid customClass={customClass}>
     {filters.map(filter =>
       <Filter
         key={filter.name}
         onChange={onChange}
         onLoad={onLoad}
+        currentValue={currentFilter[filter.name] || undefined}
         {...filter}
       />
     )}
@@ -36,7 +37,9 @@ Filters.propTypes = {
     })
   ).isRequired,
   onChange: PropTypes.func.isRequired,
-  onLoad: PropTypes.func.isRequired
+  onLoad: PropTypes.func.isRequired,
+  customClass: PropTypes.string,
+  currentFilter: PropTypes.object
 };
 
 export default Filters;

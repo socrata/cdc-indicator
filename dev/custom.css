@@ -3542,3 +3542,6 @@ span[class*=sprite-24], i[class*=sprite-24], img[class*=sprite-24] {
     height: 32px;
     width: 32px; }
 
+.indicator-explorer-app {
+  font-size: 14px;
+}

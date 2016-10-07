@@ -1,16 +1,20 @@
 // actions
 const FETCH_DATA = 'FETCH_DATA';
-const UPDATE_FILTER = 'UPDATE_FILTER';
+const UPDATE_FILTER_VALUE = 'UPDATE_FILTER_VALUE';
+const UPDATE_FILTER_LABEL = 'UPDATE_FILTER_LABEL';
 const FETCH_MAP_DATA = 'FETCH_MAP_DATA';
-const UPDATE_MAP_FILTER = 'UPDATE_MAP_FILTER';
 
 // load application configuration parameters
 import CONFIG from './configurations.yml';
 
+// load US States GeoJSON
+import GEOJSON from './us-states-geojson.js';
+
 export {
   FETCH_DATA,
-  UPDATE_FILTER,
+  UPDATE_FILTER_VALUE,
+  UPDATE_FILTER_LABEL,
   FETCH_MAP_DATA,
-  UPDATE_MAP_FILTER,
-  CONFIG
+  CONFIG,
+  GEOJSON
 };

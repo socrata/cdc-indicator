@@ -69,11 +69,15 @@ export default class ChoroplethMap extends Component {
       this.updateInfo();
     };
 
+    this.selectState = (e) => {
+      this.props.onClick(e.target.feature.properties.abbreviation);
+    };
+
     this.onEachFeature = (feature, layer) => {
       layer.on({
         mouseover: this.highlightFeature,
-        mouseout: this.resetHighlight
-        // click: zoomToFeature
+        mouseout: this.resetHighlight,
+        click: this.selectState
       });
     };
   }
@@ -147,5 +151,6 @@ export default class ChoroplethMap extends Component {
 }
 
 ChoroplethMap.propTypes = {
-  data: PropTypes.object.isRequired
+  data: PropTypes.object.isRequired,
+  onClick: PropTypes.func.isRequired
 };

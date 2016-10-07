@@ -2,6 +2,12 @@ import { connect } from 'react-redux';
 import { setFilter } from '../actions';
 import Filters from '../components/Filters';
 
+const mapStateToProps = (state) => {
+  return {
+    currentFilter: state.filter
+  };
+};
+
 const mapDispatchToProps = (dispatch) => {
   return {
     onChange: (event) => {
@@ -14,7 +20,7 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 const DataFilter = connect(
-  undefined,
+  mapStateToProps,
   mapDispatchToProps
 )(Filters);
 

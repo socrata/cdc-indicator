@@ -31,13 +31,19 @@ export default class Map extends Component {
     }
 
     if (!_.isEqual(nextProps.filter, filter)) {
-      loadData(nextProps.filter);
+      // if breakout category is overall, don't pass breakoutid
+      if (nextProps.filter.breakoutcategoryid === 'GPOVER') {
+        loadData(_.omit(nextProps.filter, 'breakoutid'));
+      } else {
+        loadData(nextProps.filter);
+      }
     }
   }
 
   render() {
     const { data,
-            filter } = this.props;
+            filter,
+            onClick } = this.props;
 
     let filters = [];
 
@@ -50,7 +56,7 @@ export default class Map extends Component {
     return (
       <div>
         <DataFilter filters={filters} />
-        <Choropleth data={data} />
+        <Choropleth data={data} onClick={onClick} />
       </div>
     );
   }
@@ -59,5 +65,6 @@ export default class Map extends Component {
 Map.propTypes = {
   data: PropTypes.object.isRequired,
   filter: PropTypes.object.isRequired,
-  loadData: PropTypes.func.isRequired
+  loadData: PropTypes.func.isRequired,
+  onClick: PropTypes.func.isRequired
 };
