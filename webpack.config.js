@@ -4,12 +4,11 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const combineLoaders = require('webpack-combine-loaders');
 const autoprefixer = require('autoprefixer');
+const merge = require('webpack-merge');
 
-module.exports = {
+var config;
+const common = {
   entry: [
-    // 'es6-promise',
-    // 'babel-polyfill',
-    // 'whatwg-fetch',
     './src/index.jsx'
   ],
   output: {
@@ -20,24 +19,13 @@ module.exports = {
   // it will immediately rerun the build and recreate your output file.
   watch: true,
   plugins: [
-    // new webpack.HotModuleReplacementPlugin(),
     // new webpack.NoErrorsPlugin(),
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: 'src/index.template.html',
       inject: true
     }),
-    new webpack.DefinePlugin({
-      'process.env':{
-        'NODE_ENV': JSON.stringify('production')
-      }
-    }),
     new ExtractTextPlugin('app.css')
-    // new webpack.optimize.UglifyJsPlugin({
-    //   compress:{
-    //     warnings: true
-    //   }
-    // })
   ],
   module: {
     preLoaders: [
@@ -110,3 +98,22 @@ module.exports = {
     ];
   }
 };
+
+switch(process.env.npm_lifecycle_event) {
+  case 'build':
+    config = merge(common, {
+      plugins: [
+        new webpack.DefinePlugin({
+          'process.env':{
+            'NODE_ENV': JSON.stringify('production')
+          }
+        })
+      ]
+    });
+    config.entry.unshift('es6-promise', 'babel-polyfill', 'whatwg-fetch');
+    break;
+  default:
+    config = merge(common, {});
+}
+
+module.exports = config;
