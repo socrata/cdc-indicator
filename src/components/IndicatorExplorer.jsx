@@ -17,6 +17,26 @@ import styles from '../styles/app.css';
 /** main class **/
 export default class IndicatorExplorer extends Component {
 
+  constructor(props) {
+    super(props);
+
+    this.getSourceElement = (label, linkColumn, labelColumn) => {
+      const { config,
+              filter } = this.props;
+
+      const url = _.get(config, `dataSources[${filter.questionid}].${linkColumn}`);
+      let text = _.get(config, `dataSources[${filter.questionid}].${labelColumn}`);
+      let element;
+
+      if (url || text) {
+        text = text || 'Link';
+        element = <p>{label} {(url) ? <a href={url}>{text}</a> : text}</p>;
+      }
+
+      return element;
+    };
+  }
+
   // data is not loaded on componentWillMount()
   // because filter props are not set on load
 
@@ -86,12 +106,17 @@ export default class IndicatorExplorer extends Component {
         return null;
       }
 
+      const title = (chart.data === 'latest') ?
+        `${chart.title} (${config.latestYear} Data)` :
+        chart.title;
       const chartTitle = (chart.title) ? (
-        <h3 className={styles.chartTitle}>{chart.title}</h3>
+        <h3 className={styles.chartTitle}>{title}</h3>
       ) : null;
 
       const chartFootnote = (chart.footnote) ? (
-        <p className={styles.chartFootnote}>{chart.footnote}</p>
+        <div className={styles.chartFootnote}>
+          <p>{chart.footnote}</p>
+        </div>
       ) : null;
 
       return (
@@ -108,8 +133,11 @@ export default class IndicatorExplorer extends Component {
     ) : null;
 
     const footnote = (config.footnote) ? (
-      <p className={styles.footnote}>{config.footnote}</p>
+      <p>{config.footnote}</p>
     ) : null;
+
+    const sourceElement = this.getSourceElement('Source:', 'source_link', 'source_label');
+    const dataElement = this.getSourceElement('Data:', 'data_link', 'data_label');
 
     return (
       <div className="indicator-explorer-app">
@@ -126,16 +154,11 @@ export default class IndicatorExplorer extends Component {
         <Grid customChildClass={styles.chartContainer}>
           {charts}
         </Grid>
-        {footnote}
-        <h2 className={styles.sectionTitle}>Example of a 2-chart layout</h2>
-        <Grid customChildClass={styles.chartContainer}>
-          <Charts.Column data={data} dataSeries="latest" year={config.latestYear} />
-          <Charts.Pie data={data} year={config.latestYear} />
-        </Grid>
-        <h2 className={styles.sectionTitle}>Example of a single chart layout</h2>
-        <Grid customChildClass={styles.chartContainer}>
-          <Charts.Bar data={data} dataSeries="latest" year={config.latestYear} />
-        </Grid>
+        <div className={styles.footnote}>
+          {footnote}
+          {sourceElement}
+          {dataElement}
+        </div>
       </div>
     );
   }

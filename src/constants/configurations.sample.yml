@@ -9,6 +9,7 @@ data:
   appConfigDatasetId: ENTER SOCRATA DATASET ID
   filterConfigDatasetId: ENTER SOCRATA DATASET ID
   chartConfigDatasetId: ENTER SOCRATA DATASET ID
+  indicatorsConfigDatasetId: ENTER SOCRATA DATASET ID
 
 # Mapbox and other map related configurations
 map:

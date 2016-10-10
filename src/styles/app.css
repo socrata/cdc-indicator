@@ -41,8 +41,16 @@
 
 .footnote {
   margin: 2em 0;
+}
+
+.footnote p {
+  margin-bottom: 1em;
   font-size: 1em;
   line-height: 1.5;
+}
+
+.footnote p:last-child {
+  margin-bottom: 0;
 }
 
 .chartFootnote {

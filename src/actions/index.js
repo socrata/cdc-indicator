@@ -142,7 +142,13 @@ export function fetchMapData(filter, year) {
 }
 
 function setConfigurations(responses) {
-  const [appConfig, filterConfig, filters, yearConfig, chartConfig] = responses;
+  const [appConfig,
+         filterConfig,
+         filters,
+         yearConfig,
+         chartConfig,
+         dataSourceConfig] = responses;
+
   let config;
 
   // verify we received critical part of response
@@ -207,11 +213,15 @@ function setConfigurations(responses) {
   const latestYear = yearConfig.map((row) => +row.year).sort().pop();
   const fromYear = latestYear - (+(config.data_points || 10)) + 1;
 
+  // set data source object
+  const dataSources = _.keyBy(dataSourceConfig, 'questionid');
+
   config = Object.assign(config, {
     filterConfig: newFilterConfig,
     chartConfig,
     latestYear,
-    fromYear
+    fromYear,
+    dataSources
   });
 
   return {
@@ -296,8 +306,18 @@ export function fetchAppConfigurations() {
     useSecure: true
   })
     .dataset(CONFIG.data.chartConfigDatasetId)
+    .where('published=true')
     .order('sort')
     .limit(3)
+    .fetchData();
+
+  // indicator data sources configurations
+  const dataSourcesPromise = new Soda({
+    appToken: CONFIG.data.appToken,
+    hostname: CONFIG.data.host,
+    useSecure: true
+  })
+    .dataset(CONFIG.data.indicatorsConfigDatasetId)
     .fetchData();
 
   return (dispatch) => {
@@ -306,7 +326,8 @@ export function fetchAppConfigurations() {
       filterConfigPromise,
       filterPromise,
       yearPromise,
-      chartConfigPromise
+      chartConfigPromise,
+      dataSourcesPromise
     ])
       .then((responses) => {
         dispatch(setConfigurations(responses));
