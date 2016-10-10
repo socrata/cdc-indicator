@@ -6,7 +6,7 @@ const actionsMap = {
   [FETCH_MAP_DATA]: (state, action) => action.data
 };
 
-export default function indicator(state = initialState, action) {
+export default function mapData(state = initialState, action) {
   const fn = actionsMap[action.type];
   if (!fn) {
     return state;

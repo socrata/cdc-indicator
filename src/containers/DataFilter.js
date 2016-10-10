@@ -11,10 +11,13 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     onChange: (event) => {
-      dispatch(setFilter(event.target.name, event.target.value));
+      const index = event.nativeEvent.target.selectedIndex;
+      dispatch(
+        setFilter(event.target.name, event.target.value, event.nativeEvent.target[index].text)
+      );
     },
-    onLoad: (key, value) => {
-      dispatch(setFilter(key, value));
+    onLoad: (key, value, label) => {
+      dispatch(setFilter(key, value, label));
     }
   };
 };

@@ -116,7 +116,7 @@ const formatQueryObject = function formatQueryObject(element) {
         operator: 'AND',
         condition: [element[0]]
       };
-    } else if (element[0].value) {
+    } else if (element[0].value || element[0].operator) {
       // a single object specify 1 query condition
       return {
         operator: 'AND',

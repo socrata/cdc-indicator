@@ -39,7 +39,10 @@ const Grid = ({ children, customClass, customChildClass }) => {
 Grid.propTypes = {
   customClass: PropTypes.string,
   customChildClass: PropTypes.string,
-  children: PropTypes.element
+  children: PropTypes.oneOfType([
+    PropTypes.element,
+    PropTypes.arrayOf(PropTypes.element)
+  ])
 };
 
 export default Grid;

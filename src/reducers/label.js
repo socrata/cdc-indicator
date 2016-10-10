@@ -6,7 +6,7 @@ const actionsMap = {
   [UPDATE_FILTER_LABEL]: (state, action) => Object.assign({}, state, { [action.key]: action.value })
 };
 
-export default function filter(state = initialState, action) {
+export default function label(state = initialState, action) {
   const fn = actionsMap[action.type];
   if (!fn) {
     return state;

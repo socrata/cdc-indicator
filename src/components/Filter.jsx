@@ -14,9 +14,10 @@ export default class Filter extends Component {
   componentDidMount() {
     const { name,
             defaultValue,
+            defaultLabel,
             onLoad } = this.props;
 
-    onLoad(name, defaultValue);
+    onLoad(name, defaultValue, defaultLabel);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -92,6 +93,7 @@ Filter.propTypes = {
     PropTypes.string,
     PropTypes.number
   ]).isRequired,
+  defaultLabel: PropTypes.string.isRequired,
   options: PropTypes.arrayOf(
     PropTypes.shape({
       text: PropTypes.string,

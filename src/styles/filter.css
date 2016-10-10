@@ -1,6 +1,7 @@
 .filter label {
   display: block;
   margin-bottom: 0.5em;
+  font-weight: bold;
 }
 
 .filter select {

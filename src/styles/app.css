@@ -3,6 +3,12 @@
   font-size: 2em;
 }
 
+.appIntro {
+  margin-bottom: 1.67em;
+  font-size: 1.2em;
+  line-height: 1.5;
+}
+
 .sectionTitle {
   margin: 1em 0;
   font-size: 1.6em;
@@ -16,8 +22,30 @@
   background: #efefef;
 }
 
+.mainFilter p {
+  margin-bottom: 2em;
+  font-size: 1em;
+  line-height: 1.5;
+}
+
 .chartContainer {
   padding: 1em;
   border: 1px solid #ccc;
   border-radius: 5px;
+}
+
+.chartTitle {
+  margin-bottom: 1em;
+  font-size: 1.4em;
+}
+
+.footnote {
+  margin: 2em 0;
+  font-size: 1em;
+  line-height: 1.5;
+}
+
+.chartFootnote {
+  composes: footnote;
+  margin: 1em 0 0;
 }

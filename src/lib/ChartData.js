@@ -29,9 +29,9 @@ function getDataForYear(array, year) {
 /** main class **/
 export default class ChartData {
 
-  constructor(data = [], majorAxis = 'breakout') {
+  constructor(data = [], dataSeries = 'breakout') {
     this.data = data;
-    this.majorAxis = majorAxis;
+    this.dataSeries = dataSeries;
   }
 
   chartConfig() {
@@ -40,10 +40,10 @@ export default class ChartData {
       return {};
     }
 
-    switch (this.majorAxis) {
-      case 'breakout':
+    switch (this.dataSeries) {
+      case 'latest':
         return this._getConfigByBreakout();
-      case 'year':
+      case 'trend':
         return this._getConfigByYear();
       case 'pie':
         return this._getConfigForPieChart();
