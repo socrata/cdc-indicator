@@ -76,6 +76,28 @@ export default class ChartData {
       })
     );
 
+    const highConfidence = Object.keys(groupedData).reduce((acc, key) => {
+      return Object.assign({}, acc, {
+        [key]: years.map((year) => {
+          if (!_.get(groupedData, `[${key}][${year}].high_confidence_limit`)) {
+            return null;
+          }
+          return _.round(+groupedData[key][year].high_confidence_limit, 1);
+        })
+      });
+    }, {});
+
+    const lowConfidence = Object.keys(groupedData).reduce((acc, key) => {
+      return Object.assign({}, acc, {
+        [key]: years.map((year) => {
+          if (!_.get(groupedData, `[${key}][${year}].low_confidence_limit`)) {
+            return null;
+          }
+          return _.round(+groupedData[key][year].low_confidence_limit, 1);
+        })
+      });
+    }, {});
+
     return {
       data: {
         columns,
@@ -96,20 +118,10 @@ export default class ChartData {
           }
         }
       },
-      tooltip: {
-        format: {
-          value: (value, ratio, id, index) => {
-            let lc = 'N/A';
-            let hc = 'N/A';
-
-            if (groupedData[id] && years[index] && groupedData[id][years[index]]) {
-              lc = _.round(+groupedData[id][years[index]].low_confidence_limit, 1);
-              hc = _.round(+groupedData[id][years[index]].high_confidence_limit, 1);
-            }
-
-            return `${_.round(value, 1)} (${lc} - ${hc})`;
-          }
-        }
+      custom: {
+        unit: this.data[0].data_value_unit || '',
+        highConfidence,
+        lowConfidence
       }
     };
   }
@@ -163,6 +175,9 @@ export default class ChartData {
             position: 'outer-middle'
           }
         }
+      },
+      custom: {
+        unit: this.data[0].data_value_unit || ''
       }
     };
   }
