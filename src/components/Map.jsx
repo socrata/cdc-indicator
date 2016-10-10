@@ -1,8 +1,13 @@
 import React, { Component, PropTypes } from 'react';
 import Choropleth from '../components/Choropleth';
 import DataFilter from '../containers/DataFilter';
-import { CONFIG } from '../constants';
 import _ from 'lodash';
+
+function startsWithVowel(string) {
+  return ['a', 'e', 'i', 'o', 'u'].reduce((doesStart, vowel) => {
+    return doesStart || string.substring(0, 1) === vowel;
+  }, false);
+}
 
 export default class Map extends Component {
 
@@ -11,7 +16,7 @@ export default class Map extends Component {
             filter } = this.props;
 
     // on initial load, year is not set; do not load data until year is set
-    if (!nextProps.filter.year) {
+    if (!nextProps.year) {
       return;
     }
 
@@ -22,7 +27,7 @@ export default class Map extends Component {
 
     // if breakout category is set, load data only if a valid breakoutID is specified
     // (this happens as components are refreshed while selecting a different category)
-    const options = _.get(CONFIG, `breakouts[${nextProps.filter.breakoutcategoryid}].options`);
+    const options = _.find(nextProps.filters, { name: 'breakoutid' });
     if (options) {
       const validIds = options.map((row) => row.value);
       if (validIds.indexOf(nextProps.filter.breakoutid) === -1) {
@@ -33,16 +38,18 @@ export default class Map extends Component {
     if (!_.isEqual(nextProps.filter, filter)) {
       // if breakout category is overall, don't pass breakoutid
       if (nextProps.filter.breakoutcategoryid === 'GPOVER') {
-        loadData(_.omit(nextProps.filter, 'breakoutid'));
+        loadData(_.omit(nextProps.filter, 'breakoutid'), nextProps.year);
       } else {
-        loadData(nextProps.filter);
+        loadData(nextProps.filter, nextProps.year);
       }
     }
   }
 
   render() {
     const { data,
+            rawData,
             filter,
+            label,
             onClick } = this.props;
 
     let filters = [];
@@ -50,7 +57,28 @@ export default class Map extends Component {
     // use main filter to determine which secondary filters are applicable
     // do not display if selected breakout is "Overall"
     if (filter.breakoutcategoryid && filter.breakoutcategoryid !== 'GPOVER') {
-      filters.push(CONFIG.breakouts[filter.breakoutcategoryid]);
+      // get valid breakout IDs
+      const options = _.chain(rawData)
+        .map((row) => {
+          return {
+            text: row.break_out,
+            value: row.breakoutid
+          };
+        })
+        .uniqBy('value')
+        .sortBy('value')
+        .value();
+
+      const currentLabel = label.breakoutcategoryid.toLowerCase();
+      const article = (startsWithVowel(currentLabel)) ? 'an' : 'a';
+
+      filters.push({
+        label: `Select ${article} ${currentLabel}`,
+        name: 'breakoutid',
+        defaultValue: options[0].value,
+        defaultLabel: options[0].text,
+        options
+      });
     }
 
     return (
@@ -64,7 +92,10 @@ export default class Map extends Component {
 
 Map.propTypes = {
   data: PropTypes.object.isRequired,
+  rawData: PropTypes.array.isRequired,
   filter: PropTypes.object.isRequired,
+  label: PropTypes.object.isRequired,
+  year: PropTypes.number.isRequired,
   loadData: PropTypes.func.isRequired,
   onClick: PropTypes.func.isRequired
 };

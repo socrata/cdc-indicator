@@ -17,8 +17,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    loadData: (filter) => {
-      dispatch(fetchData(filter));
+    loadData: (filter, fromYear) => {
+      dispatch(fetchData(filter, fromYear));
     }
   };
 };

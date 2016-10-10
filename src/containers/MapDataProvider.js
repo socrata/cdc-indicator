@@ -10,17 +10,20 @@ const mapStateToProps = (state) => {
 
   return {
     data: state.mapData,
-    filter: _.pick(state.filter, validFilters)
+    rawData: state.data,
+    filter: _.pick(state.filter, validFilters),
+    label: state.label,
+    year: state.config.latestYear
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onClick: (state) => {
-      dispatch(setFilter('locationabbr', state));
+    onClick: (abbreviation, state) => {
+      dispatch(setFilter('locationabbr', abbreviation, state));
     },
-    loadData: (filter) => {
-      dispatch(fetchMapData(filter));
+    loadData: (filter, year) => {
+      dispatch(fetchMapData(filter, year));
     }
   };
 };

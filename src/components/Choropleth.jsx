@@ -70,7 +70,10 @@ export default class ChoroplethMap extends Component {
     };
 
     this.selectState = (e) => {
-      this.props.onClick(e.target.feature.properties.abbreviation);
+      this.props.onClick(
+        e.target.feature.properties.abbreviation,
+        e.target.feature.properties.name
+      );
     };
 
     this.onEachFeature = (feature, layer) => {
@@ -113,7 +116,7 @@ export default class ChoroplethMap extends Component {
       <Map
         center={[37.8, -96]}
         zoom={3}
-        style={{ height: '300px' }}
+        style={{ height: '320px' }}
         scrollWheelZoom={false}
       >
         <TileLayer

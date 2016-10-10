@@ -5,7 +5,7 @@ import d3 from 'd3';
 import styles from '../styles/spinner.css';
 import 'c3/c3.css';
 
-const PieChart = ({ data }) => {
+const PieChart = ({ data, year }) => {
   // if data is empty, return loading icon div
   if (data.length === 0) {
     return (
@@ -15,7 +15,7 @@ const PieChart = ({ data }) => {
     );
   }
 
-  const chartConfig = new ChartData(data, 'pie').chartConfig();
+  const chartConfig = new ChartData(data, 'pie', year).chartConfig();
   chartConfig.data.type = 'pie';
   chartConfig.tooltip = {
     format: {
@@ -31,7 +31,8 @@ const PieChart = ({ data }) => {
 };
 
 PieChart.propTypes = {
-  data: PropTypes.array.isRequired
+  data: PropTypes.array.isRequired,
+  year: PropTypes.number.isRequired
 };
 
 export default PieChart;

@@ -6,18 +6,7 @@ import _ from 'lodash';
 
 /** Helper functions **/
 
-// get max value by key from an array of objects
-function getMaxValueByKey(array, key) {
-  return _.chain(array)                 // start chain
-    .groupBy(key)                       // group by key
-    .keys()                             // so we can grab all key values
-    .map((str) => +str)                 // conver to number
-    .filter((value) => !isNaN(value))   // filter out invalid values
-    .max()                              // get max value
-    .value();                           // end chain and return value
-}
-
-// find data from latest year
+// find data from year specified
 function getDataForYear(array, year) {
   const dataForYear = _.find(array, { year: _.toString(year) });
   const value = _.round(dataForYear.data_value || null, 1);
@@ -29,9 +18,10 @@ function getDataForYear(array, year) {
 /** main class **/
 export default class ChartData {
 
-  constructor(data = [], dataSeries = 'breakout') {
+  constructor(data, dataSeries, latestYear) {
     this.data = data;
     this.dataSeries = dataSeries;
+    this.latestYear = latestYear;
   }
 
   chartConfig() {
@@ -52,10 +42,6 @@ export default class ChartData {
     }
 
     return {};
-  }
-
-  getLatestYear() {
-    return getMaxValueByKey(this.data, 'year');
   }
 
   _getConfigByYear() {
@@ -130,9 +116,6 @@ export default class ChartData {
 
   // generate C3 configuration object, when major axis is breakout categories
   _getConfigByBreakout() {
-    // get latest year from data received
-    const latestYear = getMaxValueByKey(this.data, 'year');
-
     // group data by state (main data series),
     // then by breakout, and get values from the latest year
     const groupedData = _.chain(this.data)
@@ -143,7 +126,7 @@ export default class ChartData {
             .groupBy('break_out')
             .reduce((groupByBreakout, valuesByBreakout, breakout) => {
               return Object.assign({}, groupByBreakout, {
-                [breakout]: getDataForYear(valuesByBreakout, latestYear)
+                [breakout]: getDataForYear(valuesByBreakout, this.latestYear)
               });
             }, {})
             .value()
@@ -176,7 +159,7 @@ export default class ChartData {
         },
         y: {
           label: {
-            text: `${this.data[0].data_value_type || ''} (in year ${latestYear})`,
+            text: `${this.data[0].data_value_type || ''} (in year ${this.latestYear})`,
             position: 'outer-middle'
           }
         }
@@ -186,9 +169,6 @@ export default class ChartData {
 
   // get C3 config for a pie chart, where data array is a breakout category
   _getConfigForPieChart() {
-    // get latest year from data received
-    const latestYear = getMaxValueByKey(this.data, 'year');
-
     // group data by state (data series) to see if we are displaying state or national data
     const groupedByLocation = _.groupBy(this.data, 'locationabbr');
 
@@ -206,7 +186,7 @@ export default class ChartData {
       .reduce((groupedByBreakout, valuesByBreakout, breakout) => {
         return Object.assign({}, groupedByBreakout, {
           [breakout]: {
-            value: getDataForYear(valuesByBreakout, latestYear),
+            value: getDataForYear(valuesByBreakout, this.latestYear),
             label: valuesByBreakout[0].break_out
           }
         });

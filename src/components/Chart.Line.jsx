@@ -5,7 +5,7 @@ import d3 from 'd3';
 import styles from '../styles/spinner.css';
 import 'c3/c3.css';
 
-const LineChart = ({ data, dataSeries }) => {
+const LineChart = ({ data, dataSeries, year }) => {
   // if data is empty, return loading icon div
   if (data.length === 0) {
     return (
@@ -15,7 +15,7 @@ const LineChart = ({ data, dataSeries }) => {
     );
   }
 
-  const chartConfig = new ChartData(data, dataSeries).chartConfig();
+  const chartConfig = new ChartData(data, dataSeries, year).chartConfig();
   chartConfig.data.type = 'line';
   chartConfig.line = {
     connectNull: true
@@ -31,7 +31,8 @@ const LineChart = ({ data, dataSeries }) => {
 
 LineChart.propTypes = {
   data: PropTypes.array.isRequired,
-  dataSeries: PropTypes.oneOf(['trend', 'latest']).isRequired
+  dataSeries: PropTypes.oneOf(['trend', 'latest']).isRequired,
+  year: PropTypes.number.isRequired
 };
 
 LineChart.defaultProps = {

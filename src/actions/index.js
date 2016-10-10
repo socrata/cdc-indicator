@@ -7,7 +7,6 @@ import { FETCH_DATA,
          CONFIG } from '../constants';
 import _ from 'lodash';
 import Soda from '../lib/Soda';
-import ChartData from '../lib/ChartData';
 
 function setFilterValue(key, value) {
   return {
@@ -45,16 +44,7 @@ function updateData(data) {
   };
 }
 
-function updateYear(data) {
-  const year = new ChartData(data).getLatestYear();
-  return {
-    type: UPDATE_FILTER_VALUE,
-    key: 'year',
-    value: year
-  };
-}
-
-export function fetchData(filter) {
+export function fetchData(filter, fromYear) {
   // format query
   const filterCondition = Object.keys(filter)
     .map((key) => {
@@ -85,6 +75,10 @@ export function fetchData(filter) {
   filterCondition.push({
     column: 'year',
     operator: 'IS NOT NULL'
+  }, {
+    column: 'year',
+    operator: '>=',
+    value: fromYear
   });
 
   return (dispatch) => {
@@ -99,7 +93,6 @@ export function fetchData(filter) {
       .fetchData()
         .then((data) => {
           dispatch(updateData(data));
-          dispatch(updateYear(data));
         });
   };
 }
@@ -132,7 +125,7 @@ function updateMapData(data) {
   };
 }
 
-export function fetchMapData(filter) {
+export function fetchMapData(filter, year) {
   return (dispatch) => {
     new Soda({
       appToken: CONFIG.data.appToken,
@@ -140,8 +133,7 @@ export function fetchMapData(filter) {
       useSecure: true
     })
       .dataset(CONFIG.data.datasetId)
-      .where(filter)
-      .order('year')
+      .where(Object.assign({}, filter, { year }))
       .fetchData()
         .then((response) => {
           dispatch(updateMapData(response));
@@ -211,9 +203,15 @@ function setConfigurations(responses) {
     }
   });
 
+  // set latest year and year range to query data for
+  const latestYear = yearConfig.map((row) => +row.year).sort().pop();
+  const fromYear = latestYear - (+(config.data_points || 10)) + 1;
+
   config = Object.assign(config, {
     filterConfig: newFilterConfig,
-    chartConfig
+    chartConfig,
+    latestYear,
+    fromYear
   });
 
   return {

@@ -4,7 +4,7 @@ import C3ChartUpdatable from './C3ChartUpdatable';
 import styles from '../styles/spinner.css';
 import 'c3/c3.css';
 
-const ColumnChart = ({ data, dataSeries }) => {
+const ColumnChart = ({ data, dataSeries, year }) => {
   // if data is empty, return loading icon div
   if (data.length === 0) {
     return (
@@ -14,7 +14,7 @@ const ColumnChart = ({ data, dataSeries }) => {
     );
   }
 
-  const chartConfig = new ChartData(data, dataSeries).chartConfig();
+  const chartConfig = new ChartData(data, dataSeries, year).chartConfig();
   chartConfig.data.type = 'bar';
   chartConfig.padding = { bottom: 30 };
 
@@ -25,7 +25,8 @@ const ColumnChart = ({ data, dataSeries }) => {
 
 ColumnChart.propTypes = {
   data: PropTypes.array.isRequired,
-  dataSeries: PropTypes.oneOf(['trend', 'latest']).isRequired
+  dataSeries: PropTypes.oneOf(['trend', 'latest']).isRequired,
+  year: PropTypes.number.isRequired
 };
 
 ColumnChart.defaultProps = {

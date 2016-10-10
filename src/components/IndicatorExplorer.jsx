@@ -26,7 +26,7 @@ export default class IndicatorExplorer extends Component {
 
     // load data when filter changed
     if (!_.isEqual(nextProps.filter, filter)) {
-      loadData(nextProps.filter);
+      loadData(nextProps.filter, nextProps.config.fromYear);
     }
   }
 
@@ -41,17 +41,29 @@ export default class IndicatorExplorer extends Component {
       switch (chart.type) {
         case 'bar':
           chartElement = (
-            <Charts.Bar key={i} data={data} dataSeries={chart.data || 'trend'} />
+            <Charts.Bar
+              data={data}
+              year={config.latestYear}
+              dataSeries={chart.data || 'trend'}
+            />
           );
           break;
         case 'column':
           chartElement = (
-            <Charts.Column key={i} data={data} dataSeries={chart.data || 'trend'} />
+            <Charts.Column
+              data={data}
+              year={config.latestYear}
+              dataSeries={chart.data || 'trend'}
+            />
           );
           break;
         case 'line':
           chartElement = (
-            <Charts.Line key={i} data={data} dataSeries={chart.data || 'trend'} />
+            <Charts.Line
+              data={data}
+              year={config.latestYear}
+              dataSeries={chart.data || 'trend'}
+            />
           );
           break;
         case 'map':
@@ -61,7 +73,10 @@ export default class IndicatorExplorer extends Component {
           break;
         case 'pie':
           chartElement = (
-            <Charts.Pie key={i} data={data} />
+            <Charts.Pie
+              data={data}
+              year={config.latestYear}
+            />
           );
           break;
         default:
@@ -80,7 +95,7 @@ export default class IndicatorExplorer extends Component {
       ) : null;
 
       return (
-        <div>
+        <div key={i}>
           {chartTitle}
           {chartElement}
           {chartFootnote}
@@ -114,12 +129,12 @@ export default class IndicatorExplorer extends Component {
         {footnote}
         <h2 className={styles.sectionTitle}>Example of a 2-chart layout</h2>
         <Grid customChildClass={styles.chartContainer}>
-          <Charts.Column data={data} dataSeries="latest" />
-          <Charts.Pie data={data} />
+          <Charts.Column data={data} dataSeries="latest" year={config.latestYear} />
+          <Charts.Pie data={data} year={config.latestYear} />
         </Grid>
         <h2 className={styles.sectionTitle}>Example of a single chart layout</h2>
         <Grid customChildClass={styles.chartContainer}>
-          <Charts.Bar data={data} dataSeries="latest" />
+          <Charts.Bar data={data} dataSeries="latest" year={config.latestYear} />
         </Grid>
       </div>
     );
