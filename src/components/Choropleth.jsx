@@ -42,7 +42,18 @@ export default class ChoroplethMap extends Component {
       if (!prop) {
         this.infoContent._container.innerHTML = 'Hover over a state';
       } else {
-        this.infoContent._container.innerHTML = `${prop.name}: ${prop.value || 'N/A'}`;
+        const hc = _.round(prop.highConfidence, 1);
+        const lc = _.round(prop.lowConfidence, 1);
+        this.infoContent._container.innerHTML = `
+          <div>
+            <strong>${prop.name}</strong>: ${prop.value || 'N/A'}${prop.unit || ''}
+          </div>
+          <div>
+            Confidence limits:
+            ${isNaN(lc) ? 'N/A' : `${lc}${prop.unit || ''}`} -
+            ${isNaN(hc) ? 'N/A' : `${hc}${prop.unit || ''}`}
+          </div>
+        `;
       }
       /* eslint-enable no-underscore-dangle */
     };

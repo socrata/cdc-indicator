@@ -110,7 +110,10 @@ function updateMapData(data) {
 
     const properties = Object.assign({}, feature.properties, {
       abbreviation: dataByState[feature.properties.name][0].locationabbr,
-      value: +dataByState[feature.properties.name][0].data_value
+      value: +dataByState[feature.properties.name][0].data_value,
+      unit: dataByState[feature.properties.name][0].data_value_unit,
+      highConfidence: dataByState[feature.properties.name][0].high_confidence_limit,
+      lowConfidence: dataByState[feature.properties.name][0].low_confidence_limit
     });
 
     return Object.assign({}, feature, { properties });
