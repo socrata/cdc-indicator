@@ -7,11 +7,15 @@ import _ from 'lodash';
 /** Helper functions **/
 
 // find data from year specified
-function getDataForYear(array, year) {
+function getDataForYear(array, key, year) {
   const dataForYear = _.find(array, { year: _.toString(year) });
-  const value = _.round(dataForYear.data_value || null, 1);
+  const value = _.chain(dataForYear)
+    .get(key)
+    .round(1)
+    .value();
 
   // return null if value is invalid
+  // isNaN(undefined) returns true (whereas _.isNaN would've returned false)
   return isNaN(value) ? null : value;
 }
 
@@ -76,24 +80,15 @@ export default class ChartData {
       })
     );
 
-    const highConfidence = Object.keys(groupedData).reduce((acc, key) => {
+    const limits = _.reduce(groupedData, (acc, values, key) => {
       return Object.assign({}, acc, {
         [key]: years.map((year) => {
-          if (!_.get(groupedData, `[${key}][${year}].high_confidence_limit`)) {
-            return null;
-          }
-          return _.round(+groupedData[key][year].high_confidence_limit, 1);
-        })
-      });
-    }, {});
-
-    const lowConfidence = Object.keys(groupedData).reduce((acc, key) => {
-      return Object.assign({}, acc, {
-        [key]: years.map((year) => {
-          if (!_.get(groupedData, `[${key}][${year}].low_confidence_limit`)) {
-            return null;
-          }
-          return _.round(+groupedData[key][year].low_confidence_limit, 1);
+          const hc = _.get(values, `[${year}].high_confidence_limit`);
+          const lc = _.get(values, `[${year}].low_confidence_limit`);
+          return {
+            high: isNaN(+hc) ? null : _.round(+hc, 1),
+            low: isNaN(+lc) ? null : _.round(+lc, 1)
+          };
         })
       });
     }, {});
@@ -120,8 +115,7 @@ export default class ChartData {
       },
       custom: {
         unit: this.data[0].data_value_unit || '',
-        highConfidence,
-        lowConfidence
+        limits
       }
     };
   }
@@ -138,7 +132,17 @@ export default class ChartData {
             .groupBy('break_out')
             .reduce((groupByBreakout, valuesByBreakout, breakout) => {
               return Object.assign({}, groupByBreakout, {
-                [breakout]: getDataForYear(valuesByBreakout, this.latestYear)
+                [breakout]: {
+                  value: getDataForYear(valuesByBreakout, 'data_value', this.latestYear),
+                  limits: {
+                    high: getDataForYear(
+                      valuesByBreakout,
+                      'high_confidence_limit',
+                      this.latestYear
+                    ),
+                    low: getDataForYear(valuesByBreakout, 'low_confidence_limit', this.latestYear)
+                  }
+                }
               });
             }, {})
             .value()
@@ -156,9 +160,18 @@ export default class ChartData {
     // generate data array based on categories (order is important)
     const columns = _.map(groupedData, (value, key) =>
       [key].concat(categories.map((breakout) =>
-        value[breakout] || null
+        _.get(value, `${breakout}.value`, null)
       ))
     );
+
+    // generate data array based on categories (order is important)
+    const limits = _.reduce(groupedData, (acc, value, key) => {
+      return Object.assign({}, acc, {
+        [key]: categories.map((breakout) =>
+          _.get(value, `${breakout}.limits`, null)
+        )
+      });
+    }, {});
 
     return {
       data: {
@@ -177,7 +190,8 @@ export default class ChartData {
         }
       },
       custom: {
-        unit: this.data[0].data_value_unit || ''
+        unit: this.data[0].data_value_unit || '',
+        limits
       }
     };
   }

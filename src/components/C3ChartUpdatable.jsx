@@ -9,10 +9,10 @@ export default class C3ChartUpdatable extends C3Chart {
     // helper to grab updated custom params
     this.getUnit = () => this.props.custom.unit || '';
     this.getHC = (id, index) => {
-      return _.get(this.props.custom.highConfidence, `[${id}][${index}]`) || 'N/A';
+      return _.get(this.props, `custom.limits[${id}][${index}].high`, 'N/A');
     };
     this.getLC = (id, index) => {
-      return _.get(this.props.custom.lowConfidence, `[${id}][${index}]`) || 'N/A';
+      return _.get(this.props, `custom.limits[${id}][${index}].low`, 'N/A');
     };
   }
 
@@ -41,29 +41,17 @@ export default class C3ChartUpdatable extends C3Chart {
   }
 
   componentDidMount() {
-    let props;
-
-    if (_.get(this.props, 'data.x') === 'year') {
-      props = Object.assign({}, this.props, {
-        tooltip: {
-          format: {
-            value: (value, ratio, id, index) => {
-              const lc = `${this.getLC(id, index)}${this.getUnit()}`;
-              const hc = `${this.getHC(id, index)}${this.getUnit()}`;
-              return `${value}${this.getUnit()} (${lc} - ${hc})`;
-            }
+    const props = Object.assign({}, this.props, {
+      tooltip: {
+        format: {
+          value: (value, ratio, id, index) => {
+            const lc = `${this.getLC(id, index)}${this.getUnit()}`;
+            const hc = `${this.getHC(id, index)}${this.getUnit()}`;
+            return `${value}${this.getUnit()} (${lc} - ${hc})`;
           }
         }
-      });
-    } else {
-      props = Object.assign({}, this.props, {
-        tooltip: {
-          format: {
-            value: (value) => `${value}${this.getUnit()}`
-          }
-        }
-      });
-    }
+      }
+    });
 
     this.updateChart(props);
   }

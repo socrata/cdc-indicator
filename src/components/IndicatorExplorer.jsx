@@ -29,6 +29,7 @@ export default class IndicatorExplorer extends Component {
       let element;
 
       if (url || text) {
+        // set default value for text, in case only URL was defined
         text = text || 'Link';
         element = <p>{label} {(url) ? <a href={url}>{text}</a> : text}</p>;
       }
