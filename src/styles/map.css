@@ -1,0 +1,4 @@
+.mapFilter {
+  composes: mainFilter from './app.css';
+  padding: 1em;
+}

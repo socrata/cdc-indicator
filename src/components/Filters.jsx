@@ -10,6 +10,10 @@ import Grid from '../components/Grid';
 import Filter from '../components/Filter';
 
 const Filters = ({ filters, onChange, onLoad, customClass, currentFilter, intro }) => {
+  if (filters.length === 0) {
+    return null;
+  }
+
   const introContent = (intro) ? (
     <p>{intro}</p>
   ) : null;

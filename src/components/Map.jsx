@@ -1,7 +1,11 @@
+// vendors
 import React, { Component, PropTypes } from 'react';
+import _ from 'lodash';
+// custom
 import Choropleth from '../components/Choropleth';
 import DataFilter from '../containers/DataFilter';
-import _ from 'lodash';
+// styles
+import styles from '../styles/map.css';
 
 function startsWithVowel(string) {
   return ['a', 'e', 'i', 'o', 'u'].reduce((doesStart, vowel) => {
@@ -83,7 +87,10 @@ export default class Map extends Component {
 
     return (
       <div>
-        <DataFilter filters={filters} />
+        <DataFilter
+          filters={filters}
+          customClass={styles.mapFilter}
+        />
         <Choropleth data={data} onClick={onClick} />
       </div>
     );
