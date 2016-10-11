@@ -1,35 +1,57 @@
+/**
+ * Updatable Leaflet/Mapbox Choropleth Map component
+ */
+
+// vendors
 import React, { Component, PropTypes } from 'react';
 import { Map, TileLayer } from 'react-leaflet';
-import GeoJsonUpdatable from './GeoJsonUpdatable';
-import MapControlUpdatable from './MapControlUpdatable';
 import L from 'leaflet';
 import d3 from 'd3';
 import _ from 'lodash';
-
+// custom
+import GeoJsonUpdatable from './GeoJsonUpdatable';
+import MapControlUpdatable from './MapControlUpdatable';
 import { CONFIG } from '../constants';
-
+// styles
 import styles from '../styles/choropleth.css';
 
 export default class ChoroplethMap extends Component {
   constructor(props) {
     super(props);
 
+    // store properties of hovered layer in state to update info component
     this.state = {
       properties: undefined
+    };
+
+    // calculate maximum/minimum value of data based on current props
+    this.getMaxValue = () => {
+      return _.chain(this.props.data.features)
+        .map((row) => row.properties.value)
+        .max()
+        .value();
+    };
+    this.getMinValue = () => {
+      return _.chain(this.props.data.features)
+        .map((row) => row.properties.value)
+        .min()
+        .value();
+    };
+
+    // get outer bounds of data value
+    this.getDataRange = () => {
+      // round down/up to nearest integer
+      const min = _.floor(this.getMinValue());
+      const max = _.ceil(this.getMaxValue());
+      return [(isNaN(min) ? 0 : min), (isNaN(max) ? Infinity : max)];
     };
 
     this.getColor = (d) => {
       if (isNaN(d)) {
         return 'transparent';
       }
-      // find maximum data value
-      const maxDataValue = _.chain(this.props.data.features)
-        .map((row) => row.properties.value)
-        .max()
-        .value();
-
       const scale = d3.scale.linear()
-        .domain([0, maxDataValue])
+        .domain(this.getDataRange())
         .range(['#FFEDA0', '#E31A1C']);
 
       return scale(d);
@@ -88,11 +110,74 @@ export default class ChoroplethMap extends Component {
         click: this.selectState
       });
     };
+
+    // populate legend items
+    this.getLegend = (numberOfItems) => {
+      const [min, max] = this.getDataRange();
+      const step = (max - min) / (numberOfItems - 1);
+
+      // invalid data (max is Infinity and min is 0, resulting in Infinity)
+      if (step === Infinity) {
+        return null;
+      }
+
+      const legends = Array(numberOfItems).fill(0).map((value, index) => {
+        const currentValue = min + (step * (numberOfItems - 1 - index));
+        const color = this.getColor(currentValue);
+        return (
+          <li key={index}>
+            <i style={{ background: color }} />
+            {_.round(currentValue)}
+          </li>
+        );
+      });
+
+      return (
+        <ul className={styles.legend}>
+          {legends}
+        </ul>
+      );
+    };
+
+    // get info tooltip element
+    this.getInfoElement = (properties) => {
+      if (!properties) {
+        return <div>Hover over a state</div>;
+      }
+
+      const hc = _.chain(properties)
+        .get('highConfidence')
+        .round(1)
+        .value();
+
+      const lc = _.chain(properties)
+        .get('lowConfidence')
+        .round(1)
+        .value();
+
+      const unit = _.get(properties, 'unit', '');
+
+      return (
+        <div>
+          <div>
+            <strong>{properties.name}</strong>
+          </div>
+          <div>
+            {`${this.props.year} Data: ${properties.value || 'N/A'}${unit}`}
+          </div>
+          <div>
+            {'Confidence Limits: '}
+            {isNaN(lc) ? 'N/A' : `${lc}${unit}`}
+            –
+            {isNaN(hc) ? 'N/A' : `${hc}${unit}`}
+          </div>
+        </div>
+      );
+    };
   }
 
   render() {
-    const { data,
-            year } = this.props;
+    const { data } = this.props;
 
     // if data is empty, return loading icon div
     if (!data.type) {
@@ -103,53 +188,10 @@ export default class ChoroplethMap extends Component {
       );
     }
 
-    // find maximum data value
-    const maxDataValue = _.chain(data.features)
-      .map((row) => row.properties.value)
-      .max()
-      .value();
-
     // generate legend
-    const legendElements = 4;
-    const range = maxDataValue - 0;
-    const step = range / (legendElements - 1);
-    const legends = Array(legendElements).fill(0).map((value, index) => {
-      const currentValue = 0 + step * (legendElements - 1 - index);
-      const color = this.getColor(currentValue);
-      return (
-        <li key={index}>
-          <i style={{ background: color }} />
-          {_.round(currentValue, 1)}
-        </li>
-      );
-    });
-
+    const legend = this.getLegend(4);
     // hover text
-    const properties = this.state.properties;
-    const hc = _.chain(properties)
-      .get('highConfidence')
-      .round(1)
-      .value();
-    const lc = _.chain(properties)
-      .get('lowConfidence')
-      .round(1)
-      .value();
-    const unit = _.get(properties, 'unit', '');
-    const info = (properties) ? (
-      <div>
-        <div>
-          <strong>{properties.name}</strong>
-        </div>
-        <div>
-          {year} Data: {properties.value || 'N/A'}{unit || ''}
-        </div>
-        <div>
-          Confidence Limits:
-          {isNaN(lc) ? 'N/A' : `${lc}${unit || ''}`} -
-          {isNaN(hc) ? 'N/A' : `${hc}${unit || ''}`}
-        </div>
-      </div>
-    ) : <div>Hover over a state</div>;
+    const info = this.getInfoElement(this.state.properties);
 
     return (
       <Map
@@ -173,13 +215,14 @@ export default class ChoroplethMap extends Component {
           style={this.style}
           onEachFeature={this.onEachFeature}
         />
-        <MapControlUpdatable position="topright" styles={styles.info}>
+        <MapControlUpdatable
+          position="topright"
+          styles={styles.info}
+        >
           {info}
         </MapControlUpdatable>
         <MapControlUpdatable>
-          <ul className={styles.legend}>
-            {legends}
-          </ul>
+          {legend}
         </MapControlUpdatable>
       </Map>
     );

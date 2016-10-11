@@ -58,7 +58,7 @@ export default class C3ChartUpdatable extends C3Chart {
           value: (value, ratio, id, index) => {
             const lc = `${this.getLC(id, index)}${this.getUnit()}`;
             const hc = `${this.getHC(id, index)}${this.getUnit()}`;
-            return `${value}${this.getUnit()} (${lc} - ${hc})`;
+            return `${value}${this.getUnit()} (${lc}–${hc})`;
           }
         },
         contents: customTooltip
