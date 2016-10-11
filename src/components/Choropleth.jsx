@@ -11,6 +11,7 @@ import _ from 'lodash';
 // custom
 import GeoJsonUpdatable from './GeoJsonUpdatable';
 import MapControlUpdatable from './MapControlUpdatable';
+import getCentroid from '../lib/geojsonCentroid';
 import { CONFIG } from '../constants';
 // styles
 import styles from '../styles/choropleth.css';
@@ -97,6 +98,15 @@ export default class ChoroplethMap extends Component {
     };
 
     this.selectState = (e) => {
+      const centroid = getCentroid(e.target.feature.geometry).coordinates;
+      this.mapElement.setView(
+        L.latLng({
+          lat: centroid[1],
+          lng: centroid[0]
+        }),
+        4,
+        { animate: true }
+      );
       this.props.onClick(
         e.target.feature.properties.abbreviation,
         e.target.feature.properties.name
@@ -199,6 +209,11 @@ export default class ChoroplethMap extends Component {
         zoom={3}
         style={{ height: '320px' }}
         scrollWheelZoom={false}
+        ref={(ref) => {
+          if (ref) {
+            this.mapElement = ref.leafletElement;
+          }
+        }}
       >
         <TileLayer
           url={`${CONFIG.map.tileUrl}?access_token=${CONFIG.map.mapboxToken}`}
