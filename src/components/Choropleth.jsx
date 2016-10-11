@@ -46,10 +46,13 @@ export default class ChoroplethMap extends Component {
         const lc = _.round(prop.lowConfidence, 1);
         this.infoContent._container.innerHTML = `
           <div>
-            <strong>${prop.name}</strong>: ${prop.value || 'N/A'}${prop.unit || ''}
+            <strong>${prop.name}</strong>
           </div>
           <div>
-            Confidence limits:
+            ${this.props.year} Data: ${prop.value || 'N/A'}${prop.unit || ''}
+          </div>
+          <div>
+            Confidence Limits:
             ${isNaN(lc) ? 'N/A' : `${lc}${prop.unit || ''}`} -
             ${isNaN(hc) ? 'N/A' : `${hc}${prop.unit || ''}`}
           </div>
@@ -166,5 +169,6 @@ export default class ChoroplethMap extends Component {
 
 ChoroplethMap.propTypes = {
   data: PropTypes.object.isRequired,
+  year: PropTypes.number.isRequired,
   onClick: PropTypes.func.isRequired
 };

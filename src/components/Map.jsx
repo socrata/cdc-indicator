@@ -51,6 +51,7 @@ export default class Map extends Component {
 
   render() {
     const { data,
+            year,
             rawData,
             filter,
             label,
@@ -91,7 +92,11 @@ export default class Map extends Component {
           filters={filters}
           customClass={styles.mapFilter}
         />
-        <Choropleth data={data} onClick={onClick} />
+        <Choropleth
+          data={data}
+          year={year}
+          onClick={onClick}
+        />
       </div>
     );
   }

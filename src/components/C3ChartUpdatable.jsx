@@ -2,6 +2,17 @@ import { PropTypes } from 'react';
 import C3Chart from 'react-c3js';
 import _ from 'lodash';
 
+// custom tooltip content
+// this is defined here using function.. syntax because we want "this" to point to c3js
+function customTooltip(data, defaultTitleFormat, defaultValueFormat, color) {
+  // override title format
+  const customTitleFormat = (x) => {
+    return `${defaultTitleFormat(x)} Data (Confidence Limits)`;
+  };
+
+  return this.getTooltipContent(data, customTitleFormat, defaultValueFormat, color);
+}
+
 export default class C3ChartUpdatable extends C3Chart {
   constructor(props) {
     super(props);
@@ -49,7 +60,8 @@ export default class C3ChartUpdatable extends C3Chart {
             const hc = `${this.getHC(id, index)}${this.getUnit()}`;
             return `${value}${this.getUnit()} (${lc} - ${hc})`;
           }
-        }
+        },
+        contents: customTooltip
       }
     });
 
