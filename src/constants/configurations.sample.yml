@@ -21,3 +21,12 @@ map:
     <a href="http://openstreetmap.org">OpenStreetMap</a> contributors,
     <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>,
     Imagery © <a href="http://mapbox.com">Mapbox</a>
+  defaults:
+    # zoom should be numeric value
+    zoom: 3
+    # specify longitude, then latitude value; must be a simple array
+    center:
+      - 37.8
+      - -96
+    # height in pixels, number only
+    height: 320

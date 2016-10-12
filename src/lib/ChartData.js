@@ -3,6 +3,7 @@
  */
 
 import _ from 'lodash';
+import { CONFIG } from '../constants';
 
 /** Helper functions **/
 
@@ -94,6 +95,9 @@ export default class ChartData {
     }, {});
 
     return {
+      size: {
+        height: CONFIG.map.defaults.height || 320
+      },
       data: {
         columns,
         x: 'year',
@@ -174,6 +178,9 @@ export default class ChartData {
     }, {});
 
     return {
+      size: {
+        height: CONFIG.map.defaults.height || 320
+      },
       data: {
         columns
       },
@@ -239,6 +246,9 @@ export default class ChartData {
       });
 
     return {
+      size: {
+        height: CONFIG.map.defaults.height || 320
+      },
       data: {
         columns
       },

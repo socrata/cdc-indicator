@@ -11,7 +11,7 @@ import _ from 'lodash';
 // custom
 import GeoJsonUpdatable from './GeoJsonUpdatable';
 import MapControlUpdatable from './MapControlUpdatable';
-import getCentroid from '../lib/geojsonCentroid';
+import { getLatLongBounds } from '../lib/helpers';
 import { CONFIG } from '../constants';
 // styles
 import styles from '../styles/choropleth.css';
@@ -32,6 +32,7 @@ export default class ChoroplethMap extends Component {
         .max()
         .value();
     };
+
     this.getMinValue = () => {
       return _.chain(this.props.data.features)
         .map((row) => row.properties.value)
@@ -98,15 +99,16 @@ export default class ChoroplethMap extends Component {
     };
 
     this.selectState = (e) => {
-      const centroid = getCentroid(e.target.feature.geometry).coordinates;
-      this.mapElement.setView(
-        L.latLng({
-          lat: centroid[1],
-          lng: centroid[0]
-        }),
-        4,
-        { animate: true }
-      );
+      const boundArray = getLatLongBounds(e.target.feature.geometry, 0.5);
+      if (boundArray) {
+        const bounds = L.latLngBounds(boundArray);
+        this.mapElement.setView(
+          bounds.getCenter(),
+          this.mapElement.getBoundsZoom(bounds),
+          { animate: true }
+        );
+      }
+
       this.props.onClick(
         e.target.feature.properties.abbreviation,
         e.target.feature.properties.name
@@ -207,9 +209,9 @@ export default class ChoroplethMap extends Component {
 
     return (
       <Map
-        center={[37.8, -96]}
-        zoom={3}
-        style={{ height: '320px' }}
+        center={CONFIG.map.defaults.center || [37.8, -96]}
+        zoom={CONFIG.map.defaults.zoom || 3}
+        style={{ height: `${CONFIG.map.defaults.height || 320}px` }}
         scrollWheelZoom={false}
         ref={(ref) => {
           if (ref) {
