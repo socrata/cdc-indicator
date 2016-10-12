@@ -1,3 +1,5 @@
+'use strict';
+
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -6,7 +8,9 @@ const combineLoaders = require('webpack-combine-loaders');
 const autoprefixer = require('autoprefixer');
 const merge = require('webpack-merge');
 
-var config;
+let config;
+
+// common webpack configurations for both build and webpack-dev-server
 const common = {
   entry: [
     './src/index.jsx'
@@ -19,12 +23,12 @@ const common = {
   // it will immediately rerun the build and recreate your output file.
   watch: true,
   plugins: [
-    // new webpack.NoErrorsPlugin(),
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: 'src/index.template.html',
       inject: true
     }),
+    // extract CSS modules to a separate file
     new ExtractTextPlugin('app.css')
   ],
   module: {
@@ -49,11 +53,6 @@ const common = {
         test: /\.json$/,
         loader: 'json-loader'
       },
-      // {
-      //   test: /\.js$/,
-      //   include: path.resolve('node_modules/mapbox-gl-shaders/index.js'),
-      //   loader: 'transform/cacheable?brfs'
-      // },
       {
         test: [/\.yml$/, /\.yaml$/],
         loader: 'json!yaml'
@@ -83,11 +82,6 @@ const common = {
         loader: ExtractTextPlugin.extract('style', 'css')
       }
     ]
-    // postLoaders: [{
-    //   include: /node_modules\/mapbox-gl-shaders/,
-    //   loader: 'transform',
-    //   query: 'brfs'
-    // }]
   },
   resolve: {
     extensions: ['', '.js', '.jsx']
@@ -101,6 +95,7 @@ const common = {
 
 switch(process.env.npm_lifecycle_event) {
   case 'build':
+    // set node env to production while running build process to minimize react
     config = merge(common, {
       plugins: [
         new webpack.DefinePlugin({
@@ -110,7 +105,10 @@ switch(process.env.npm_lifecycle_event) {
         })
       ]
     });
+    // add polyfills to build
     config.entry.unshift('es6-promise', 'babel-polyfill', 'whatwg-fetch');
+    // add no errors plugin
+    config.plugins.unshift(new webpack.NoErrorsPlugin());
     break;
   default:
     config = merge(common, {});

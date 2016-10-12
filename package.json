@@ -35,8 +35,10 @@
     "eslint-plugin-react": "^5.2.2",
     "extract-text-webpack-plugin": "^1.0.1",
     "html-webpack-plugin": "^2.22.0",
+    "json-loader": "^0.5.4",
     "path": "^0.12.7",
     "postcss-loader": "^0.13.0",
+    "react-c3js": "^0.1.8",
     "react-leaflet": "^0.12.3",
     "style-loader": "^0.13.1",
     "webpack": "^1.13.1",
@@ -47,18 +49,13 @@
   },
   "dependencies": {
     "babel-polyfill": "^6.13.0",
-    "json-loader": "^0.5.4",
     "leaflet": "^0.7.7",
     "lodash": "^4.16.1",
-    "mapbox-gl": "^0.20.1",
     "react": "^15.1.0",
-    "react-c3js": "^0.1.8",
     "react-dom": "^15.1.0",
     "react-redux": "^4.4.5",
     "redux": "^3.6.0",
     "redux-thunk": "^2.1.0",
-    "transform-loader": "^0.2.3",
-    "webworkify-webpack": "^1.1.1",
     "whatwg-fetch": "^1.0.0"
   }
 }
