@@ -98,22 +98,21 @@ export function fetchData(filter, fromYear) {
 }
 
 function updateMapData(data) {
-  const dataByState = _.groupBy(data, 'locationdesc');
+  const dataByState = _.groupBy(data, 'locationabbr');
 
   // iterate over geojson and put data in
   const features = GEOJSON.features.map((feature) => {
-    const state = feature.properties.name;
+    const state = feature.properties.abbreviation;
 
     if (!dataByState.hasOwnProperty(state)) {
       return feature;
     }
 
     const properties = Object.assign({}, feature.properties, {
-      abbreviation: dataByState[feature.properties.name][0].locationabbr,
-      value: +dataByState[feature.properties.name][0].data_value,
-      unit: dataByState[feature.properties.name][0].data_value_unit,
-      highConfidence: dataByState[feature.properties.name][0].high_confidence_limit,
-      lowConfidence: dataByState[feature.properties.name][0].low_confidence_limit
+      value: +dataByState[state][0].data_value,
+      unit: dataByState[state][0].data_value_unit,
+      highConfidence: dataByState[state][0].high_confidence_limit,
+      lowConfidence: dataByState[state][0].low_confidence_limit
     });
 
     return Object.assign({}, feature, { properties });
