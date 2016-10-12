@@ -166,6 +166,11 @@ export default class ChoroplethMap extends Component {
         .value();
 
       const unit = _.get(properties, 'unit', '');
+      const value = (properties.value) ? `${properties.value}${unit}` : 'N/A';
+
+      // if both low and high limits are N/A, display a single 'N/A'
+      const cl = (isNaN(lc) && isNaN(hc)) ? 'N/A' :
+        `${isNaN(lc) ? 'N/A' : `${lc}${unit}`}–${isNaN(hc) ? 'N/A' : `${hc}${unit}`}`;
 
       return (
         <div>
@@ -173,13 +178,10 @@ export default class ChoroplethMap extends Component {
             <strong>{properties.name}</strong>
           </div>
           <div>
-            {`${this.props.year} Data: ${properties.value || 'N/A'}${unit}`}
+            {`${this.props.year} Data: ${value}`}
           </div>
           <div>
-            {'Confidence Limits: '}
-            {isNaN(lc) ? 'N/A' : `${lc}${unit}`}
-            –
-            {isNaN(hc) ? 'N/A' : `${hc}${unit}`}
+            {`Confidence Limits: ${cl}`}
           </div>
         </div>
       );
