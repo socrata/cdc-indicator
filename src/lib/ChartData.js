@@ -210,12 +210,18 @@ export default class ChartData {
       groupedData = groupedByLocation[state];
     }
 
+    // use side effects to get a single unit value
+    let unit;
+
     const transformedData = _.chain(groupedData)
       .groupBy('breakoutid')
       .reduce((groupedByBreakout, valuesByBreakout, breakout) => {
+        // side effect
+        unit = valuesByBreakout[0].data_value_unit || '';
+
         return Object.assign({}, groupedByBreakout, {
           [breakout]: {
-            value: getDataForYear(valuesByBreakout, this.latestYear),
+            value: getDataForYear(valuesByBreakout, 'data_value', this.latestYear),
             label: valuesByBreakout[0].break_out
           }
         });
@@ -235,6 +241,9 @@ export default class ChartData {
     return {
       data: {
         columns
+      },
+      custom: {
+        unit
       }
     };
   }

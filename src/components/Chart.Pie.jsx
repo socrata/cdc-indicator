@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react';
 import ChartData from '../lib/ChartData';
 import C3ChartUpdatable from './C3ChartUpdatable';
-import d3 from 'd3';
 import styles from '../styles/spinner.css';
 import 'c3/c3.css';
 
@@ -17,16 +16,9 @@ const PieChart = ({ data, year }) => {
 
   const chartConfig = new ChartData(data, 'pie', year).chartConfig();
   chartConfig.data.type = 'pie';
-  chartConfig.tooltip = {
-    format: {
-      value: (value, ratio) => {
-        return `${value} (${d3.format('.1%')(ratio)})`;
-      }
-    }
-  };
 
   return (
-    <C3ChartUpdatable {...chartConfig} />
+    <C3ChartUpdatable year={year} {...chartConfig} />
   );
 };
 

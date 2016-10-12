@@ -1,5 +1,7 @@
+// vendors
 import { PropTypes } from 'react';
 import C3Chart from 'react-c3js';
+import d3 from 'd3';
 import _ from 'lodash';
 
 // custom tooltip content
@@ -52,18 +54,36 @@ export default class C3ChartUpdatable extends C3Chart {
   }
 
   componentDidMount() {
-    const props = Object.assign({}, this.props, {
-      tooltip: {
-        format: {
-          value: (value, ratio, id, index) => {
-            const lc = `${this.getLC(id, index)}${this.getUnit()}`;
-            const hc = `${this.getHC(id, index)}${this.getUnit()}`;
-            return `${value}${this.getUnit()} (${lc}–${hc})`;
+    let props = this.props;
+
+    // override tooltip format
+    if (_.get(this.props, 'data.type') !== 'pie') {
+      props = Object.assign({}, this.props, {
+        tooltip: {
+          format: {
+            value: (value, ratio, id, index) => {
+              const lc = `${this.getLC(id, index)}${this.getUnit()}`;
+              const hc = `${this.getHC(id, index)}${this.getUnit()}`;
+              return `${value}${this.getUnit()} (${lc}–${hc})`;
+            }
+          },
+          contents: customTooltip
+        }
+      });
+    } else {
+      props = Object.assign({}, this.props, {
+        tooltip: {
+          format: {
+            value: (value, ratio) => {
+              return `
+                ${props.year || ''} Data: ${value}${this.getUnit()}
+                (${d3.format('.1%')(ratio)} of total)
+              `;
+            }
           }
-        },
-        contents: customTooltip
-      }
-    });
+        }
+      });
+    }
 
     this.updateChart(props);
   }
