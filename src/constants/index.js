@@ -8,6 +8,9 @@ const UPDATE_FILTER_LABEL = 'UPDATE_FILTER_LABEL';
 // load application configuration parameters
 import CONFIG from './configurations.yml';
 
+// load local visualizations configurations
+import USER_CONFIGURABLE_OPTIONS from './userConfigurableOptions.yml';
+
 // load US States GeoJSON
 import GEOJSON from './us-states-geojson.js';
 
@@ -18,5 +21,6 @@ export {
   UPDATE_FILTER_VALUE,
   UPDATE_FILTER_LABEL,
   CONFIG,
+  USER_CONFIGURABLE_OPTIONS,
   GEOJSON
 };

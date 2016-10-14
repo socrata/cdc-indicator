@@ -6,6 +6,10 @@ data:
   host: ENTER SOCRATA OPEN DATA PORTAL HOSTNAME
   appToken: ENTER SOCRATA APP TOKEN
   datasetId: ENTER SOCRATA DATASET ID
+  # If following is set to true, it will use Socrata datasets to retrieve
+  # application configuration parameters. If set to false, it will use
+  # values from ./userConfigurableOptions.yml
+  useConfigurationDatasets: false
   appConfigDatasetId: ENTER SOCRATA DATASET ID
   filterConfigDatasetId: ENTER SOCRATA DATASET ID
   chartConfigDatasetId: ENTER SOCRATA DATASET ID

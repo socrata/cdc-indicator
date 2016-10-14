@@ -4,6 +4,7 @@ import { FETCH_DATA,
          UPDATE_FILTER_LABEL,
          FETCH_MAP_DATA,
          GEOJSON,
+         USER_CONFIGURABLE_OPTIONS,
          CONFIG } from '../constants';
 import _ from 'lodash';
 import Soda from '../lib/Soda';
@@ -234,24 +235,53 @@ function setConfigurations(responses) {
 
 export function fetchAppConfigurations() {
   // application configurations
-  const configPromise = new Soda({
-    appToken: CONFIG.data.appToken,
-    hostname: CONFIG.data.host,
-    useSecure: true
-  })
-    .dataset(CONFIG.data.appConfigDatasetId)
-    .limit(1)
-    .fetchData();
+  const configPromise = (!CONFIG.useConfigurationDatasets) ?
+    Promise.resolve(USER_CONFIGURABLE_OPTIONS.app) :
+    new Soda({
+      appToken: CONFIG.data.appToken,
+      hostname: CONFIG.data.host,
+      useSecure: true
+    })
+      .dataset(CONFIG.data.appConfigDatasetId)
+      .limit(1)
+      .fetchData();
 
   // filter configurations
-  const filterConfigPromise = new Soda({
-    appToken: CONFIG.data.appToken,
-    hostname: CONFIG.data.host,
-    useSecure: true
-  })
-    .dataset(CONFIG.data.filterConfigDatasetId)
-    .order('sort')
-    .fetchData();
+  const filterConfigPromise = (!CONFIG.useConfigurationDatasets) ?
+    Promise.resolve(USER_CONFIGURABLE_OPTIONS.filter) :
+    new Soda({
+      appToken: CONFIG.data.appToken,
+      hostname: CONFIG.data.host,
+      useSecure: true
+    })
+      .dataset(CONFIG.data.filterConfigDatasetId)
+      .order('sort')
+      .fetchData();
+
+  // visualization configurations
+  const chartConfigPromise = (!CONFIG.useConfigurationDatasets) ?
+    Promise.resolve(USER_CONFIGURABLE_OPTIONS.chart) :
+    new Soda({
+      appToken: CONFIG.data.appToken,
+      hostname: CONFIG.data.host,
+      useSecure: true
+    })
+      .dataset(CONFIG.data.chartConfigDatasetId)
+      .where('published=true')
+      .order('sort')
+      .limit(3)
+      .fetchData();
+
+  // indicator data sources configurations
+  const dataSourcesPromise = (!CONFIG.useConfigurationDatasets) ?
+    Promise.resolve(USER_CONFIGURABLE_OPTIONS.indicators) :
+    new Soda({
+      appToken: CONFIG.data.appToken,
+      hostname: CONFIG.data.host,
+      useSecure: true
+    })
+      .dataset(CONFIG.data.indicatorsConfigDatasetId)
+      .fetchData();
 
   // actual filter values based on data
   const filterPromise = filterConfigPromise
@@ -299,27 +329,6 @@ export function fetchAppConfigurations() {
     })
     .select('year')
     .group('year')
-    .fetchData();
-
-  // visualization configurations
-  const chartConfigPromise = new Soda({
-    appToken: CONFIG.data.appToken,
-    hostname: CONFIG.data.host,
-    useSecure: true
-  })
-    .dataset(CONFIG.data.chartConfigDatasetId)
-    .where('published=true')
-    .order('sort')
-    .limit(3)
-    .fetchData();
-
-  // indicator data sources configurations
-  const dataSourcesPromise = new Soda({
-    appToken: CONFIG.data.appToken,
-    hostname: CONFIG.data.host,
-    useSecure: true
-  })
-    .dataset(CONFIG.data.indicatorsConfigDatasetId)
     .fetchData();
 
   return (dispatch) => {

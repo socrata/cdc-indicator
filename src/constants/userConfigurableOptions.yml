@@ -1,0 +1,53 @@
+app:
+  - data_points: 7
+    filter_intro: These filters affect all charts below.
+    footnote: Configurations were loaded from a local file.
+    intro:
+    title: Indicator Explorer
+filter:
+  - default_value: AL002
+    group_by: topic
+    label: Select an indicator
+    label_column: question
+    sort: '1'
+    value_column: questionid
+  - default_value: US
+    label: Select a state
+    label_column: locationdesc
+    sort: '2'
+    value_column: locationabbr
+  - default_value: GPOVER
+    label: Select a break out category
+    label_column: break_out_category
+    sort: '3'
+    value_column: breakoutcategoryid
+chart:
+  - data: trend
+    footnote:
+    published: true
+    sort: '1'
+    title: Trend
+    type: line
+  - data: latest
+    footnote:
+    published: true
+    sort: '2'
+    title: Latest
+    type: column
+  - footnote:
+    published: true
+    sort: '3'
+    title: Map
+    type: map
+indicators:
+  - data_label: HRQOL
+    data_link: https://chronicdata.cdc.gov/Health-Related-Quality-of-Life/Behavioral-Risk-Factor-Data-Health-Related-Quality/xuxn-8kju
+    questionid: AL002
+    source_label: BRFSS
+    source_link: http://www.cdc.gov/brfss/
+  - questionid: MHL002
+    source_label: CDC
+    source_link: http://www.cdc.gov/
+  - data_label: Configurable Data Link
+    data_link: http://www.socrata.com/
+    questionid: PHY001
