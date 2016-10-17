@@ -19,13 +19,8 @@
   margin-right: 2%;
 }
 
-.grid:last-child {
-  margin-right: 0;
-}
-
 .gridFull {
   composes: grid;
-
   width: 100%;
 }
 
@@ -37,4 +32,10 @@
 .gridThird {
   composes: grid;
   width: 32%;
+}
+
+.grid:last-child,
+.gridHalf:nth-child(2n),
+.gridThird:nth-child(3n) {
+  margin-right: 0;
 }

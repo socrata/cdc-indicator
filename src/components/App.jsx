@@ -19,7 +19,7 @@ export default class App extends Component {
   render() {
     const { config } = this.props;
 
-    // only render <DataProvider> if config is loaded
+    // only render <DataProvider> after config is loaded
     if (_.isEmpty(config)) {
       return (
         <div className={styles.spinner}>

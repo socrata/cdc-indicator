@@ -8,8 +8,6 @@ const combineLoaders = require('webpack-combine-loaders');
 const autoprefixer = require('autoprefixer');
 const merge = require('webpack-merge');
 
-let config;
-
 // common webpack configurations for both build and webpack-dev-server
 const common = {
   entry: [
@@ -93,11 +91,14 @@ const common = {
   }
 };
 
+let config;
+
 switch(process.env.npm_lifecycle_event) {
   case 'build':
-    // set node env to production while running build process to minimize react
     config = merge(common, {
       plugins: [
+        new webpack.NoErrorsPlugin(),
+        // set node env to production while running build process to minimize react
         new webpack.DefinePlugin({
           'process.env':{
             'NODE_ENV': JSON.stringify('production')
@@ -105,10 +106,8 @@ switch(process.env.npm_lifecycle_event) {
         })
       ]
     });
-    // add polyfills to build
+    // add polyfills using .unshift() so they are added prior to entry file
     config.entry.unshift('es6-promise', 'babel-polyfill', 'whatwg-fetch');
-    // add no errors plugin
-    config.plugins.unshift(new webpack.NoErrorsPlugin());
     break;
   default:
     config = merge(common, {});

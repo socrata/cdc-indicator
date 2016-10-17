@@ -15,11 +15,23 @@ function startsWithVowel(string) {
 
 export default class Map extends Component {
 
+  componentWillMount() {
+    const { loadData,
+            filter,
+            year } = this.props;
+
+    // load data only if filter and year is set, otherwise wait for componentWillReceiveProps
+    if (filter !== undefined && year !== undefined) {
+      loadData(filter, year);
+    }
+  }
+
   componentWillReceiveProps(nextProps) {
     const { loadData,
-            filter } = this.props;
+            filter,
+            year } = this.props;
 
-    // on initial load, year is not set; do not load data until year is set
+    // ensure year is set before trying to get new data
     if (!nextProps.year) {
       return;
     }
@@ -39,13 +51,8 @@ export default class Map extends Component {
       }
     }
 
-    if (!_.isEqual(nextProps.filter, filter)) {
-      // if breakout category is overall, don't pass breakoutid
-      if (nextProps.filter.breakoutcategoryid === 'GPOVER') {
-        loadData(_.omit(nextProps.filter, 'breakoutid'), nextProps.year);
-      } else {
-        loadData(nextProps.filter, nextProps.year);
-      }
+    if (!_.isEqual(nextProps.filter, filter) || !_.isEqual(nextProps.year, year)) {
+      loadData(nextProps.filter, nextProps.year);
     }
   }
 

@@ -36,27 +36,11 @@ export default class IndicatorExplorer extends Component {
 
       return element;
     };
-  }
 
-  // data is not loaded on componentWillMount()
-  // because filter props are not set on load
+    this.getChartElements = (chart, index) => {
+      const { config,
+              data } = this.props;
 
-  componentWillReceiveProps(nextProps) {
-    const { loadData,
-            filter } = this.props;
-
-    // load data when filter changed
-    if (!_.isEqual(nextProps.filter, filter)) {
-      loadData(nextProps.filter, nextProps.config.fromYear);
-    }
-  }
-
-  render() {
-    const { config,
-            data,
-            label } = this.props;
-
-    const charts = config.chartConfig.map((chart, i) => {
       let chartElement;
 
       switch (chart.type) {
@@ -110,6 +94,7 @@ export default class IndicatorExplorer extends Component {
       const title = (chart.data === 'latest') ?
         `${chart.title} (${config.latestYear} Data)` :
         chart.title;
+
       const chartTitle = (chart.title) ? (
         <h3 className={styles.chartTitle}>{title}</h3>
       ) : null;
@@ -121,13 +106,38 @@ export default class IndicatorExplorer extends Component {
       ) : null;
 
       return (
-        <div key={i}>
+        <div key={index}>
           {chartTitle}
           {chartElement}
           {chartFootnote}
         </div>
       );
-    });
+    };
+  }
+
+  // data is not loaded on componentWillMount()
+  // because filter props are not set on load
+
+  componentWillReceiveProps(nextProps) {
+    const { loadData,
+            filter } = this.props;
+
+    // load data when filter changed
+    if (!_.isEqual(nextProps.filter, filter)) {
+      loadData(nextProps.filter, nextProps.config.fromYear);
+    }
+  }
+
+  render() {
+    const { config,
+            filter,
+            label } = this.props;
+
+    const chartByIndicator = _.groupBy(config.chartConfig, 'questionid');
+    const chartConfig = (!filter.questionid) ? [] :
+      _.get(chartByIndicator, filter.questionid, chartByIndicator.default);
+
+    const charts = chartConfig.slice(0, 3).map(this.getChartElements);
 
     const intro = (config.intro) ? (
       <p className={styles.appIntro}>{config.intro}</p>

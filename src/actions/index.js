@@ -129,6 +129,13 @@ function updateMapData(data) {
 }
 
 export function fetchMapData(filter, year) {
+  let queryCondition = Object.assign({}, filter);
+
+  // make sure breakoutid is not included when category is set to Overall
+  if (filter.breakoutcategoryid === 'GPOVER') {
+    queryCondition = _.omit(filter, 'breakoutid');
+  }
+
   return (dispatch) => {
     new Soda({
       appToken: CONFIG.data.appToken,
@@ -136,7 +143,7 @@ export function fetchMapData(filter, year) {
       useSecure: true
     })
       .dataset(CONFIG.data.datasetId)
-      .where(Object.assign({}, filter, { year }))
+      .where(Object.assign({}, queryCondition, { year }))
       .fetchData()
         .then((response) => {
           dispatch(updateMapData(response));
