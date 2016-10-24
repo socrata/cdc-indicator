@@ -133,13 +133,26 @@ export default class ChoroplethMap extends Component {
         return null;
       }
 
-      const legends = Array(numberOfItems).fill(0).map((value, index) => {
-        const currentValue = min + (step * (numberOfItems - 1 - index));
-        const color = this.getColor(currentValue);
+      const values = Array(numberOfItems).fill(0).map((value, index) =>
+        _.round(min + (step * (numberOfItems - 1 - index)), 1)
+      );
+
+      // if all values are integers, do not display 0-pad values
+      const isAllIntegers = values.reduce((isInteger, value) => {
+        return isInteger && _.isInteger(value);
+      }, true);
+
+      const legends = values.map((value, index) => {
+        const color = this.getColor(value);
+        let displayValue = _.toString(value);
+        // append ".0" if it a whole number
+        if (!isAllIntegers && _.isInteger(value)) {
+          displayValue += '.0';
+        }
         return (
           <li key={index}>
             <i style={{ background: color }} />
-            {_.round(currentValue)}
+            {displayValue}
           </li>
         );
       });

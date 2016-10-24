@@ -9,6 +9,7 @@ app:
 filter:
   # There must be at least one filter with 'value_column' set to 'questionid'
   # as there are several key visualization configurations based on what indicator is selected.
+  # - default_value: ALC2_1
   - default_value: AL002
     group_by: topic
     label: Select an indicator
@@ -20,10 +21,13 @@ filter:
     label_column: locationdesc
     sort: '2'
     value_column: locationabbr
+  # - default_value: OVERALL
   - default_value: GPOVER
     label: Select a break out category
-    label_column: break_out_category
     sort: '3'
+    # label_column: stratificationcategory1
+    # value_column: stratificationcategoryid1
+    label_column: break_out_category
     value_column: breakoutcategoryid
 chart:
   - data: trend
