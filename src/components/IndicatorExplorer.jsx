@@ -37,7 +37,7 @@ export default class IndicatorExplorer extends Component {
         element = <p>{label} {(url) ? <a href={url}>{text}</a> : text}</p>;
       }
 
-      return element;
+      return <div styles={styles.dataSources}>{element}</div>;
     };
 
     this.zoomToState = (event) => {
