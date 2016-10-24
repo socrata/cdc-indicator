@@ -1,6 +1,7 @@
 import { connect } from 'react-redux';
 import { fetchMapData,
-         setFilter } from '../actions';
+         setFilter,
+         setMapElement } from '../actions';
 import Map from '../components/Map';
 import _ from 'lodash';
 
@@ -24,6 +25,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     loadData: (filter, year) => {
       dispatch(fetchMapData(filter, year));
+    },
+    setMapElement: (mapElement) => {
+      dispatch(setMapElement(mapElement));
     }
   };
 };

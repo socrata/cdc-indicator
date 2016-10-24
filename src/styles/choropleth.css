@@ -15,6 +15,14 @@
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
 }
 
+.infoBottomLeft {
+  margin-bottom: 40px !important;
+}
+
+.infoBottomLeft button {
+  font-size: 10px;
+}
+
 .legend li {
   margin: 0;
   padding: 0;

@@ -98,6 +98,13 @@ export default class ChoroplethMap extends Component {
       this.updateInfo();
     };
 
+    this.resetMapView = (e) => {
+      e.preventDefault();
+      this.mapElement.setView(CONFIG.map.defaults.center, CONFIG.map.defaults.zoom, {
+        animate: true
+      });
+    };
+
     this.selectState = (e) => {
       const boundArray = getLatLongBounds(e.target.feature.geometry, 0.5);
       if (boundArray) {
@@ -203,6 +210,10 @@ export default class ChoroplethMap extends Component {
     };
   }
 
+  componentDidUpdate() {
+    this.props.setMapElement(this.mapElement);
+  }
+
   render() {
     const { data } = this.props;
 
@@ -256,6 +267,16 @@ export default class ChoroplethMap extends Component {
         <MapControlUpdatable>
           {legend}
         </MapControlUpdatable>
+        <MapControlUpdatable
+          position="bottomleft"
+          styles={styles.infoBottomLeft}
+        >
+          <div>
+            <button onClick={this.resetMapView}>
+              Reset Map
+            </button>
+          </div>
+        </MapControlUpdatable>
       </Map>
     );
   }
@@ -264,5 +285,6 @@ export default class ChoroplethMap extends Component {
 ChoroplethMap.propTypes = {
   data: PropTypes.object.isRequired,
   year: PropTypes.number.isRequired,
-  onClick: PropTypes.func.isRequired
+  onClick: PropTypes.func.isRequired,
+  setMapElement: PropTypes.func.isRequired
 };

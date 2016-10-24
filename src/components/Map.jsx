@@ -62,7 +62,8 @@ export default class Map extends Component {
             rawData,
             filter,
             label,
-            onClick } = this.props;
+            onClick,
+            setMapElement } = this.props;
 
     let filters = [];
 
@@ -103,6 +104,7 @@ export default class Map extends Component {
           data={data}
           year={year}
           onClick={onClick}
+          setMapElement={setMapElement}
         />
       </div>
     );
@@ -116,5 +118,6 @@ Map.propTypes = {
   label: PropTypes.object.isRequired,
   year: PropTypes.number.isRequired,
   loadData: PropTypes.func.isRequired,
-  onClick: PropTypes.func.isRequired
+  onClick: PropTypes.func.isRequired,
+  setMapElement: PropTypes.func.isRequired
 };

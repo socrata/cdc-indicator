@@ -2,6 +2,7 @@ import { FETCH_DATA,
          FETCH_CONFIG,
          UPDATE_FILTER_VALUE,
          UPDATE_FILTER_LABEL,
+         SET_MAP_ELEMENT,
          FETCH_MAP_DATA,
          GEOJSON,
          USER_CONFIGURABLE_OPTIONS,
@@ -42,6 +43,13 @@ function updateData(data) {
   return {
     type: FETCH_DATA,
     data
+  };
+}
+
+export function setMapElement(mapElement) {
+  return {
+    type: SET_MAP_ELEMENT,
+    mapElement
   };
 }
 
@@ -121,7 +129,7 @@ function updateMapData(data) {
 
   return {
     type: FETCH_MAP_DATA,
-    data: {
+    mapData: {
       type: 'FeatureCollection',
       features
     }

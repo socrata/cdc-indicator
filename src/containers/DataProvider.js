@@ -11,7 +11,8 @@ const mapStateToProps = (state) => {
     config: state.config,
     data: state.data,
     filter: _.pick(state.filter, validFilters),
-    label: state.label
+    label: state.label,
+    mapElement: state.mapElement
   };
 };
 

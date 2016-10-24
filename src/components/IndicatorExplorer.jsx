@@ -5,12 +5,15 @@
 /** dependencies **/
 // vendors
 import React, { Component, PropTypes } from 'react';
+import L from 'leaflet';
 import _ from 'lodash';
 // custom
 import * as Charts from '../components/Charts';
 import Grid from '../components/Grid';
 import DataFilter from '../containers/DataFilter';
 import MapDataProvider from '../containers/MapDataProvider';
+import { getLatLongBounds } from '../lib/helpers';
+import { CONFIG, GEOJSON } from '../constants';
 // styles
 import styles from '../styles/app.css';
 
@@ -35,6 +38,32 @@ export default class IndicatorExplorer extends Component {
       }
 
       return element;
+    };
+
+    this.zoomToState = (event) => {
+      const { mapElement } = this.props;
+      let center = CONFIG.map.defaults.center;
+      let zoom = CONFIG.map.defaults.zoom;
+
+      if (!mapElement) {
+        return;
+      }
+
+      if (event.target.value !== 'US') {
+        const stateFeature = _.find(GEOJSON.features, {
+          properties: {
+            abbreviation: event.target.value
+          }
+        });
+
+        if (stateFeature) {
+          const bounds = L.latLngBounds(getLatLongBounds(stateFeature.geometry, 0.5));
+          center = bounds.getCenter();
+          zoom = mapElement.getBoundsZoom(bounds);
+        }
+      }
+
+      mapElement.setView(center, zoom, { animate: true });
     };
 
     this.getChartElements = (chart, index) => {
@@ -73,7 +102,13 @@ export default class IndicatorExplorer extends Component {
           break;
         case 'map':
           chartElement = (
-            <MapDataProvider />
+            <MapDataProvider
+              ref={(ref) => {
+                if (ref) {
+                  this.mapElement = ref.mapElement;
+                }
+              }}
+            />
           );
           break;
         case 'pie':
@@ -160,6 +195,7 @@ export default class IndicatorExplorer extends Component {
           filters={config.filterConfig}
           intro={config.filter_intro}
           customClass={styles.mainFilter}
+          onStateChange={this.zoomToState}
         />
         <h2 className={styles.sectionTitle}>{label.questionid || ''}</h2>
         <Grid customChildClass={styles.chartContainer}>
@@ -181,5 +217,6 @@ IndicatorExplorer.propTypes = {
   data: PropTypes.array.isRequired,
   filter: PropTypes.object.isRequired,
   label: PropTypes.object.isRequired,
-  loadData: PropTypes.func.isRequired
+  loadData: PropTypes.func.isRequired,
+  mapElement: PropTypes.object
 };

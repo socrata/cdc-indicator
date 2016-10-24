@@ -3,7 +3,7 @@ import { FETCH_MAP_DATA } from '../constants';
 const initialState = {};
 
 const actionsMap = {
-  [FETCH_MAP_DATA]: (state, action) => action.data
+  [FETCH_MAP_DATA]: (state, action) => action.mapData
 };
 
 export default function mapData(state = initialState, action) {

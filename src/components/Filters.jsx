@@ -9,32 +9,34 @@ import React, { PropTypes } from 'react';
 import Grid from '../components/Grid';
 import Filter from '../components/Filter';
 
-const Filters = ({ filters, onChange, onLoad, customClass, currentFilter, intro }) => {
-  if (filters.length === 0) {
-    return null;
-  }
+const Filters =
+  ({ filters, onChange, onLoad, customClass, currentFilter, intro, onStateChange }) => {
+    if (filters.length === 0) {
+      return null;
+    }
 
-  const introContent = (intro) ? (
-    <p>{intro}</p>
-  ) : null;
+    const introContent = (intro) ? (
+      <p>{intro}</p>
+    ) : null;
 
-  return (
-    <div className={customClass}>
-      {introContent}
-      <Grid>
-        {filters.map(filter =>
-          <Filter
-            key={filter.name}
-            onChange={onChange}
-            onLoad={onLoad}
-            currentValue={currentFilter[filter.name] || undefined}
-            {...filter}
-          />
-        )}
-      </Grid>
-    </div>
-  );
-};
+    return (
+      <div className={customClass}>
+        {introContent}
+        <Grid>
+          {filters.map(filter =>
+            <Filter
+              key={filter.name}
+              onChange={onChange}
+              onLoad={onLoad}
+              currentValue={currentFilter[filter.name] || undefined}
+              onStateChange={(filter.name === 'locationabbr') ? onStateChange : undefined}
+              {...filter}
+            />
+          )}
+        </Grid>
+      </div>
+    );
+  };
 
 Filters.propTypes = {
   filters: PropTypes.arrayOf(
@@ -54,7 +56,8 @@ Filters.propTypes = {
   onLoad: PropTypes.func.isRequired,
   customClass: PropTypes.string,
   currentFilter: PropTypes.object,
-  intro: PropTypes.string
+  intro: PropTypes.string,
+  onStateChange: PropTypes.func
 };
 
 export default Filters;

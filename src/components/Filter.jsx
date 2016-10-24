@@ -15,9 +15,19 @@ export default class Filter extends Component {
     const { name,
             defaultValue,
             defaultLabel,
-            onLoad } = this.props;
+            onLoad,
+            onChange,
+            onStateChange } = this.props;
 
     onLoad(name, defaultValue, defaultLabel);
+
+    this.changeFilter = (event) => {
+      if (onStateChange) {
+        onStateChange(event);
+      }
+
+      onChange(event);
+    };
   }
 
   componentWillReceiveProps(nextProps) {
@@ -48,8 +58,7 @@ export default class Filter extends Component {
             name,
             defaultValue,
             options,
-            optionGroups,
-            onChange } = this.props;
+            optionGroups } = this.props;
 
     let optionElements;
 
@@ -72,7 +81,7 @@ export default class Filter extends Component {
         <select
           name={name}
           defaultValue={defaultValue}
-          onChange={onChange}
+          onChange={this.changeFilter}
           ref={(ref) => {
             if (ref) {
               this.select = ref;
@@ -118,5 +127,6 @@ Filter.propTypes = {
     })
   ),
   onChange: PropTypes.func.isRequired,
-  onLoad: PropTypes.func.isRequired
+  onLoad: PropTypes.func.isRequired,
+  onStateChange: PropTypes.func
 };
