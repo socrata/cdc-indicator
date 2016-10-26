@@ -37,7 +37,7 @@ export default class IndicatorExplorer extends Component {
         element = <p>{label} {(url) ? <a href={url}>{text}</a> : text}</p>;
       }
 
-      return <div styles={styles.dataSources}>{element}</div>;
+      return <div className={styles.dataSources}>{element}</div>;
     };
 
     this.zoomToState = (event) => {
@@ -45,7 +45,7 @@ export default class IndicatorExplorer extends Component {
       let center = CONFIG.map.defaults.center;
       let zoom = CONFIG.map.defaults.zoom;
 
-      if (!mapElement) {
+      if (_.isEmpty(mapElement)) {
         return;
       }
 
@@ -168,11 +168,11 @@ export default class IndicatorExplorer extends Component {
             filter,
             label } = this.props;
 
-    const chartByIndicator = _.groupBy(config.chartConfig, 'questionid');
+    const chartByIndicator = _.groupBy(config.chartConfig, 'indicator');
     const chartConfig = (!filter.questionid) ? [] :
       _.get(chartByIndicator, filter.questionid, chartByIndicator.default);
 
-    const charts = chartConfig.slice(0, 3).map(this.getChartElements);
+    const charts = (chartConfig || []).slice(0, 3).map(this.getChartElements);
 
     const intro = (config.intro) ? (
       <p className={styles.appIntro}>{config.intro}</p>

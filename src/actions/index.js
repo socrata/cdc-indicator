@@ -250,7 +250,7 @@ function setConfigurations(responses) {
 
 export function fetchAppConfigurations() {
   // application configurations
-  const configPromise = (!CONFIG.useConfigurationDatasets) ?
+  const configPromise = (!CONFIG.data.useConfigurationDatasets) ?
     Promise.resolve(USER_CONFIGURABLE_OPTIONS.app) :
     new Soda({
       appToken: CONFIG.data.appToken,
@@ -262,7 +262,7 @@ export function fetchAppConfigurations() {
       .fetchData();
 
   // filter configurations
-  const filterConfigPromise = (!CONFIG.useConfigurationDatasets) ?
+  const filterConfigPromise = (!CONFIG.data.useConfigurationDatasets) ?
     Promise.resolve(USER_CONFIGURABLE_OPTIONS.filter) :
     new Soda({
       appToken: CONFIG.data.appToken,
@@ -274,7 +274,7 @@ export function fetchAppConfigurations() {
       .fetchData();
 
   // visualization configurations
-  const chartConfigPromise = (!CONFIG.useConfigurationDatasets) ?
+  const chartConfigPromise = (!CONFIG.data.useConfigurationDatasets) ?
     Promise.resolve(USER_CONFIGURABLE_OPTIONS.chart) :
     new Soda({
       appToken: CONFIG.data.appToken,
@@ -288,7 +288,7 @@ export function fetchAppConfigurations() {
       .fetchData();
 
   // indicator data sources configurations
-  const dataSourcesPromise = (!CONFIG.useConfigurationDatasets) ?
+  const dataSourcesPromise = (!CONFIG.data.useConfigurationDatasets) ?
     Promise.resolve(USER_CONFIGURABLE_OPTIONS.indicators) :
     new Soda({
       appToken: CONFIG.data.appToken,

@@ -33,46 +33,46 @@ chart:
   - data: trend
     footnote:
     published: true
-    questionid: default
+    indicator: default
     sort: '1'
     title: Trend
     type: line
   - data: latest
     footnote:
     published: true
-    questionid: default
+    indicator: default
     sort: '2'
     title: Latest
     type: column
   - footnote:
     published: true
-    questionid: default
+    indicator: default
     sort: '3'
     title: Map
     type: map
   - data: latest
     footnote:
     published: true
-    questionid: default
+    indicator: default
     sort: '4'
     title: This should not load
     type: line
   - footnote:
     published: true
-    questionid: PHY001
+    indicator: PHY001
     sort: '1'
     title: Pie
     type: pie
   - data: latest
     footnote:
     published: true
-    questionid: PHY001
+    indicator: PHY001
     sort: '2'
     title: Latest
     type: bar
   - footnote:
     published: true
-    questionid: MHL002
+    indicator: MHL002
     sort: '1'
     title: Map
     type: map
