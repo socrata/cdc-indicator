@@ -18,7 +18,7 @@ const LineChart = ({ data, dataSeries, year }) => {
   const chartConfig = new ChartData(data, dataSeries, year).chartConfig();
   chartConfig.data.type = 'line';
   chartConfig.line = {
-    connectNull: true
+    connectNull: false
   };
   chartConfig.axis.y.tick = {
     format: d3.format('.1f')
