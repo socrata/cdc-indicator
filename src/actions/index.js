@@ -284,7 +284,6 @@ export function fetchAppConfigurations() {
       .dataset(CONFIG.data.chartConfigDatasetId)
       .where('published=true')
       .order('sort')
-      .limit(3)
       .fetchData();
 
   // indicator data sources configurations

@@ -1,0 +1,6 @@
+/* unprocessed by CSS Modules */
+
+/* prevent background scroll when react-modal is open */
+body.ReactModal__Body--open {
+  overflow: hidden;
+}

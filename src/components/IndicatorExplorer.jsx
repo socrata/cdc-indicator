@@ -10,6 +10,7 @@ import _ from 'lodash';
 // custom
 import * as Charts from '../components/Charts';
 import Grid from '../components/Grid';
+import DataTable from '../components/DataTable';
 import DataFilter from '../containers/DataFilter';
 import MapDataProvider from '../containers/MapDataProvider';
 import { getLatLongBounds } from '../lib/helpers';
@@ -140,10 +141,21 @@ export default class IndicatorExplorer extends Component {
         </div>
       ) : null;
 
+      // include DataTable unless it's a map (then it's included in <Map>)
+      const dataTable = (chart.type !== 'map') ? (
+        <DataTable
+          data={data}
+          dataSeries={chart.data || 'trend'}
+          chartType={chart.type}
+          year={config.latestYear}
+        />
+      ) : null;
+
       return (
         <div key={index}>
           {chartTitle}
           {chartElement}
+          {dataTable}
           {chartFootnote}
         </div>
       );

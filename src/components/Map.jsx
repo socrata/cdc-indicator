@@ -4,6 +4,7 @@ import _ from 'lodash';
 // custom
 import Choropleth from '../components/Choropleth';
 import DataFilter from '../containers/DataFilter';
+import DataTable from '../components/DataTable';
 // styles
 import styles from '../styles/map.css';
 
@@ -105,6 +106,12 @@ export default class Map extends Component {
           year={year}
           onClick={onClick}
           setMapElement={setMapElement}
+        />
+        <DataTable
+          data={data}
+          dataSeries="map"
+          chartType="map"
+          year={year}
         />
       </div>
     );

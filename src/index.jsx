@@ -8,6 +8,9 @@ import thunk from 'redux-thunk';
 import AppConfigurationProvider from './containers/AppConfigurationProvider'; // renders App
 import * as reducers from './reducers';
 
+// import styles that bypasses CSS Modules
+import './index.css';
+
 const reducer = combineReducers(reducers);
 const finalCreateStore = applyMiddleware(thunk)(createStore);
 const store = finalCreateStore(reducer);
