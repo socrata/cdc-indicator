@@ -1,34 +1,18 @@
 'use strict';
 
-const path = require('path');
 const webpack = require('webpack');
+const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const combineLoaders = require('webpack-combine-loaders');
-const autoprefixer = require('autoprefixer');
-const merge = require('webpack-merge');
+const cssnano = require('cssnano');
+
+const __ENV__ = process.env.NODE_ENV || 'development';
+const __PROD__ = 'production' === __ENV__;
+
+console.log(`NODE_ENV set to ${__ENV__}`);
 
 // common webpack configurations for both build and webpack-dev-server
-const common = {
-  entry: [
-    './src/index.jsx'
-  ],
-  output: {
-    filename: 'app.js',
-    path: path.join(__dirname, 'build')
-  },
-  // Webpack will watch your files and when one of them changes,
-  // it will immediately rerun the build and recreate your output file.
-  watch: true,
-  plugins: [
-    new HtmlWebpackPlugin({
-      filename: 'index.html',
-      template: 'src/index.template.html',
-      inject: true
-    }),
-    // extract CSS modules to a separate file
-    new ExtractTextPlugin('app.css')
-  ],
+const webpackConfig = {
   module: {
     preLoaders: [
       {
@@ -38,10 +22,11 @@ const common = {
         loaders: ['eslint'],
       }
     ],
+    // add JavaScript/JSON/YAML loaders
     loaders: [
       {
         test: [/\.js$/, /\.jsx$/],
-        exclude: path.resolve('node_modules/'),
+        exclude: path.resolve('node_modules'),
         loader: 'babel-loader',
         query: {
           presets: ['react', 'es2015']
@@ -54,63 +39,151 @@ const common = {
       {
         test: [/\.yml$/, /\.yaml$/],
         loader: 'json!yaml'
-      },
-      // process custom css (in src/styles) as CSS modules
-      {
-        test: /\.css$/,
-        include: path.resolve('src/styles'),
-        loader: ExtractTextPlugin.extract(
-          'style',
-          combineLoaders([{
-            loader: 'css',
-            query: {
-              modules: true,
-              localIdentName: '[name]__[local]___[hash:base64:5]',
-              importLoaders: 1
-            }
-          }, {
-            loader: 'postcss'
-          }])
-        )
-      },
-      // process other css (like vendors) normally
-      {
-        test: /\.css$/,
-        exclude: path.resolve('src/styles'),
-        loader: ExtractTextPlugin.extract('style', 'css')
       }
     ]
   },
-  resolve: {
-    extensions: ['', '.js', '.jsx']
+  output: {
+    filename: '[name].js',
+    path: path.resolve('build')
   },
-  postcss() {
-    return [
-      autoprefixer({ browsers: ['last 2 versions'] })
-    ];
+  // Common plugins
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env': {
+        'NODE_ENV': JSON.stringify(__ENV__)
+      }
+    }),
+    new HtmlWebpackPlugin({
+      filename: 'index.html',
+      template: 'src/index.template.html',
+      inject: true
+    })
+  ],
+  resolve: {
+    extensions: ['', '.js', '.jsx'],
+    root: path.resolve('src')
   }
 };
 
-let config;
+// Customizations based on environment
 
-switch(process.env.npm_lifecycle_event) {
-  case 'build':
-    config = merge(common, {
-      plugins: [
-        new webpack.NoErrorsPlugin(),
-        // set node env to production while running build process to minimize react
-        new webpack.DefinePlugin({
-          'process.env':{
-            'NODE_ENV': JSON.stringify('production')
-          }
-        })
-      ]
-    });
-    // add polyfills using .unshift() so they are added prior to entry file
-    config.entry.unshift('es6-promise', 'babel-polyfill', 'whatwg-fetch');
-    break;
-  default:
-    config = merge(common, {});
+/**
+ * Entry Points
+ */
+const APP_ENTRY = './src/main.jsx';
+// add polyfills to production code
+webpackConfig.entry = {
+  app: (__PROD__) ?
+    ['es6-promise', 'babel-polyfill', 'whatwg-fetch', APP_ENTRY] :
+    [APP_ENTRY]
+};
+
+/**
+ * Plugins
+ */
+// add optimizations for production
+if (__PROD__) {
+  webpackConfig.plugins.push(
+    // extract CSS modules to a separate file
+    new ExtractTextPlugin('[name].css', {
+      allChunks: true
+    }),
+    // optimize output JS
+    new webpack.optimize.OccurrenceOrderPlugin(),
+    new webpack.optimize.DedupePlugin(),
+    new webpack.optimize.UglifyJsPlugin({
+      compress: {
+        unused    : true,
+        dead_code : true,
+        warnings  : false
+      }
+    })
+  );
+
+// add live development support plugins
+} else {
+  webpackConfig.plugins.push(
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NoErrorsPlugin()
+  );
 }
 
-module.exports = config;
+/**
+ * Style Loaders
+ */
+const BASE_CSS_LOADER = 'css?sourceMap&-minimize';
+const CSS_MODULE = '&modules&localIdentName=[name]__[local]___[hash:base64:5]&importLoaders=0';
+const styleLoaders = [
+  // process custom css (in src/styles) as CSS modules
+  {
+    test: /\.css$/,
+    include: path.resolve('src/styles'),
+    loaders: ['style', `${BASE_CSS_LOADER}${CSS_MODULE}`],
+    __cssModules: true
+  },
+  // process other css (like vendors) normally
+  {
+    test: /\.css$/,
+    exclude: path.resolve('src/styles'),
+    loaders: ['style', BASE_CSS_LOADER],
+  }
+];
+
+// Enable ExtractTextPlugin and postcss on production
+if (__PROD__) {
+  styleLoaders.forEach((styleLoader) => {
+    let [first, ...rest] = styleLoader.loaders;
+
+    // find css-loader so we can add right 'importLoaders' parameter for CSS Modules
+    if (styleLoader.__cssModules) {
+      rest = [].concat(rest).map((loader) => {
+        if (/^css/.test(loader.split('?')[0])) {
+          const [name, params] = loader.split('?', 2);
+          const newParams = params.split('&').map((param) => {
+            if ('importLoaders' === param.split('=')[0]) {
+              return `importLoaders=${rest.length}`;
+            }
+            return param;
+          });
+          return `${name}?${newParams.join('&')}`;
+        }
+        return loader;
+      });
+      delete styleLoader.__cssModules;
+    }
+
+    // add postcss loader (joined later)
+    rest.push('postcss');
+
+    // enable ExtractTextPlugin
+    styleLoader.loader = ExtractTextPlugin.extract(first, rest.join('!'));
+    delete styleLoader.loaders;
+  });
+
+  webpackConfig.postcss = [
+    cssnano({
+      autoprefixer : {
+        add      : true,
+        remove   : true,
+        browsers : ['last 2 versions']
+      },
+      discardComments : {
+        removeAll : true
+      },
+      discardUnused : false,
+      mergeIdents   : false,
+      reduceIdents  : false,
+      safe          : true,
+      sourcemap     : true
+    })
+  ];
+}
+
+webpackConfig.module.loaders.push(...styleLoaders);
+
+// Dev only - support hot reloading
+if (!__PROD__) {
+  webpackConfig.watch = true;
+}
+
+module.exports = webpackConfig;

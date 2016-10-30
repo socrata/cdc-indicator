@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react';
+import _ from 'lodash';
 import ChartData from '../lib/ChartData';
 import C3ChartUpdatable from './C3ChartUpdatable';
 import styles from '../styles/spinner.css';

@@ -78,7 +78,7 @@ chart:
     type: map
 indicators:
   - data_label: HRQOL
-    data_link: https://chronicdata.cdc.gov/Health-Related-Quality-of-Life/Behavioral-Risk-Factor-Data-Health-Related-Quality/xuxn-8kju
+    data_link: https://chronicdata.cdc.gov/d/xuxn-8kju
     questionid: AL002
     source_label: BRFSS
     source_link: http://www.cdc.gov/brfss/

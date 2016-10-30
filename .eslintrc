@@ -15,10 +15,5 @@
     "new-cap": [ 0 ],
   },
   "globals": {
-    "$": true,
-    "_": true,
-    "blist": true,
-    "jQuery": true,
-    "__ENV__": true
   }
 }

@@ -32,4 +32,5 @@ build
 npm-debug.log
 
 # Application specific
-src/constants/configurations.yml
+src/constants/configurations.production.yml
+src/constants/configurations.development.yml
