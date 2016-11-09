@@ -33,7 +33,8 @@ function is(type, obj) {
  * @return {Array} - flattened array
  */
 function flatten(array) {
-  return [].concat.apply([], array);
+  // return [].concat.apply([], array);
+  return [].concat(...array);
 }
 
 /**

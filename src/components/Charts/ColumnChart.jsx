@@ -1,11 +1,9 @@
 import React, { PropTypes } from 'react';
-import _ from 'lodash';
-import ChartData from '../lib/ChartData';
-import C3ChartUpdatable from './C3ChartUpdatable';
-import styles from '../styles/spinner.css';
-import 'c3/c3.css';
+import ChartData from 'lib/ChartData';
+import C3ChartUpdatable from 'components/C3ChartUpdatable';
+import styles from 'styles/spinner.css';
 
-const BarChart = ({ data, dataSeries, year }) => {
+const ColumnChart = ({ data, dataSeries, year }) => {
   // if data is empty, return loading icon div
   if (data.length === 0) {
     return (
@@ -17,29 +15,21 @@ const BarChart = ({ data, dataSeries, year }) => {
 
   const chartConfig = new ChartData(data, dataSeries, year).chartConfig();
   chartConfig.data.type = 'bar';
-  chartConfig.axis.rotated = true;
-
-  if (_.get(chartConfig, 'axis.x.label')) {
-    chartConfig.axis.x.label.position = 'outer-middle';
-  }
-
-  if (_.get(chartConfig, 'axis.y.label')) {
-    chartConfig.axis.y.label.position = 'outer-center';
-  }
+  chartConfig.padding = { bottom: 30 };
 
   return (
     <C3ChartUpdatable {...chartConfig} />
   );
 };
 
-BarChart.propTypes = {
+ColumnChart.propTypes = {
   data: PropTypes.array.isRequired,
   dataSeries: PropTypes.oneOf(['trend', 'latest']).isRequired,
   year: PropTypes.number.isRequired
 };
 
-BarChart.defaultProps = {
+ColumnChart.defaultProps = {
   dataSeries: 'trend'
 };
 
-export default BarChart;
+export default ColumnChart;

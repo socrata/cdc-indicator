@@ -1,9 +1,8 @@
 import React, { PropTypes } from 'react';
-import ChartData from '../lib/ChartData';
-import C3ChartUpdatable from './C3ChartUpdatable';
 import d3 from 'd3';
-import styles from '../styles/spinner.css';
-import 'c3/c3.css';
+import ChartData from 'lib/ChartData';
+import C3ChartUpdatable from 'components/C3ChartUpdatable';
+import styles from 'styles/spinner.css';
 
 const LineChart = ({ data, dataSeries, year }) => {
   // if data is empty, return loading icon div

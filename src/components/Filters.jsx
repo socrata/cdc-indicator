@@ -2,62 +2,97 @@
  * Wrapper for <Filter>
  */
 
-/** dependencies **/
-// vendors
-import React, { PropTypes } from 'react';
-// custom
-import Grid from '../components/Grid';
-import Filter from '../components/Filter';
+import React, { Component, PropTypes } from 'react';
+import _ from 'lodash';
+import Grid from 'components/Grid';
+import Filter from 'components/Filter';
+import styles from 'styles/spinner.css';
 
-const Filters =
-  ({ filters, onChange, onLoad, customClass, currentFilter, intro, onStateChange }) => {
-    if (filters.length === 0) {
-      return null;
+export default class Filters extends Component {
+  static propTypes = {
+    // from redux store
+    error: PropTypes.bool,
+    errorMessage: PropTypes.string,
+    fetching: PropTypes.bool,
+    filters: PropTypes.arrayOf(
+      PropTypes.shape({
+        label: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+        options: PropTypes.array,
+        optionGroups: PropTypes.array,
+        value: PropTypes.oneOfType([
+          PropTypes.string,
+          PropTypes.number
+        ]).isRequired
+      })
+    ).isRequired,
+    loadFilters: PropTypes.func,
+    onFilterChange: PropTypes.func,
+    selected: PropTypes.object,
+    // from parent
+    customClass: PropTypes.string,
+    intro: PropTypes.string
+  };
+
+  componentWillMount() {
+    this.props.loadFilters();
+  }
+
+  render() {
+    const { customClass,
+            error,
+            errorMessage,
+            fetching,
+            filters,
+            intro,
+            onFilterChange,
+            selected } = this.props;
+
+    // only render after config is loaded
+    if (fetching) {
+      return (
+        <div className={styles.shortSpinner}>
+          <p>
+            <i className="fa fa-spin fa-circle-o-notch"></i>
+          </p>
+          <p>
+            Loading Visualizations...
+          </p>
+        </div>
+      );
     }
 
-    const introContent = (intro) ? (
-      <p>{intro}</p>
-    ) : null;
+    // display error message if something went wrong
+    if (error) {
+      return (
+        <div className={styles.shortSpinner}>
+          <p>
+            <i className="fa fa-exclamation-circle"></i>
+          </p>
+          <p>
+            {errorMessage}
+          </p>
+        </div>
+      );
+    }
+
+    const introContent = (!intro) ? null :
+      <p>{intro}</p>;
 
     return (
       <div className={customClass}>
         {introContent}
         <Grid>
-          {filters.map(filter =>
+          {filters.map((filter, index) =>
             <Filter
-              key={filter.name}
-              onChange={onChange}
-              onLoad={onLoad}
-              currentValue={currentFilter[filter.name] || undefined}
-              onStateChange={(filter.name === 'locationabbr') ? onStateChange : undefined}
+              key={index}
+              onChange={onFilterChange}
+              value={_.get(selected, `[${filter.name}].id`)}
               {...filter}
             />
           )}
         </Grid>
       </div>
     );
-  };
-
-Filters.propTypes = {
-  filters: PropTypes.arrayOf(
-    PropTypes.shape({
-      label: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
-      defaultValue: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.number
-      ]).isRequired,
-      defaultLabel: PropTypes.string.isRequired,
-      options: PropTypes.array,
-      optionGroups: PropTypes.array
-    })
-  ).isRequired,
-  onChange: PropTypes.func.isRequired,
-  onLoad: PropTypes.func.isRequired,
-  customClass: PropTypes.string,
-  currentFilter: PropTypes.object,
-  intro: PropTypes.string,
-  onStateChange: PropTypes.func
-};
-
-export default Filters;
+  }
+}

@@ -1,4 +1,4 @@
-app:
+coreConfig:
   - data_points: 7
     filter_intro: These filters affect all charts below.
     footnote: Configurations were loaded from a local file.
@@ -6,11 +6,16 @@ app:
     source_data_label: Source Data
     source_system_label: Source System
     title: Indicator Explorer
-filter:
+    indicator_column_id: questionid
+    location_column_id: locationabbr
+    # breakout_column_id: breakoutcategoryid
+    breakout_column_id: stratificationcategoryid1
+filterConfig:
   # There must be at least one filter with 'value_column' set to 'questionid'
   # as there are several key visualization configurations based on what indicator is selected.
-  # - default_value: ALC2_1
-  - default_value: AL002
+  - default_value: ALC2_1
+  # - default_value: AL002
+    group_by_id: topicid
     group_by: topic
     label: Select an indicator
     label_column: question
@@ -21,15 +26,15 @@ filter:
     label_column: locationdesc
     sort: '2'
     value_column: locationabbr
-  # - default_value: OVERALL
-  - default_value: GPOVER
+  - default_value: OVERALL
+  # - default_value: GPOVER
     label: Select a break out category
     sort: '3'
-    # label_column: stratificationcategory1
-    # value_column: stratificationcategoryid1
-    label_column: break_out_category
-    value_column: breakoutcategoryid
-chart:
+    label_column: stratificationcategory1
+    value_column: stratificationcategoryid1
+    # label_column: break_out_category
+    # value_column: breakoutcategoryid
+chartConfig:
   - data: trend
     footnote:
     published: true
@@ -76,7 +81,7 @@ chart:
     sort: '1'
     title: Map
     type: map
-indicators:
+dataSourcesConfig:
   - data_label: HRQOL
     data_link: https://chronicdata.cdc.gov/d/xuxn-8kju
     questionid: AL002

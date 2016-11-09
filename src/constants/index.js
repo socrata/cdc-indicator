@@ -6,13 +6,14 @@ const SET_MAP_ELEMENT = 'SET_MAP_ELEMENT';
 const UPDATE_FILTER_VALUE = 'UPDATE_FILTER_VALUE';
 const UPDATE_FILTER_LABEL = 'UPDATE_FILTER_LABEL';
 
-import CONFIG_DEV from './configurations.development.yml';
-import CONFIG_PROD from './configurations.production.yml';
-
-const CONFIG = (process.env.NODE_ENV === 'production') ? CONFIG_PROD : CONFIG_DEV;
+const CONFIG = (__DEV__) ?
+  require('./configurations.development.yml') :
+  require('./configurations.production.yml');
 
 // load local visualizations configurations
-import USER_CONFIGURABLE_OPTIONS from './userConfigurableOptions.yml';
+const USER_CONFIGURABLE_OPTIONS = (__DEV__) ?
+  require('./userConfigurableOptions.yml') :
+  {};
 
 // load US States GeoJSON
 import GEOJSON from './us-states-geojson.js';

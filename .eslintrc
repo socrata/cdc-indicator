@@ -12,8 +12,10 @@
     "no-underscore-dangle": ["error", { "allowAfterThis": true }],
     "no-use-before-define": [2, "nofunc"],
     "arrow-body-style":[0, "as-needed"],
-    "new-cap": [ 0 ],
+    "new-cap": [0],
+    "import/no-unresolved": [0]
   },
   "globals": {
+    "__DEV__": false
   }
 }

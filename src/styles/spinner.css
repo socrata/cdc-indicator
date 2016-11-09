@@ -12,3 +12,8 @@
 .spinner p {
   margin-bottom: 1em;
 }
+
+.shortSpinner {
+  composes: spinner;
+  min-height: 0;
+}
