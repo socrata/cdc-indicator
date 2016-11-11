@@ -3,7 +3,7 @@
  */
 
 import React, { Component, PropTypes } from 'react';
-import BaseLayout from 'layout/BaseLayout';
+import BaseLayout from 'layouts/BaseLayout';
 import styles from 'styles/spinner.css';
 
 export default class App extends Component {
@@ -15,7 +15,8 @@ export default class App extends Component {
     error: PropTypes.bool,
     errorMessage: PropTypes.string,
     fetching: PropTypes.bool,
-    loadConfig: PropTypes.func
+    loadConfig: PropTypes.func,
+    selectedFilters: PropTypes.object
   };
 
   componentWillMount() {
@@ -28,7 +29,8 @@ export default class App extends Component {
             dataSourceConfig,
             error,
             errorMessage,
-            fetching } = this.props;
+            fetching,
+            selectedFilters } = this.props;
 
     // only render after config is loaded
     if (fetching) {
@@ -59,7 +61,13 @@ export default class App extends Component {
     }
 
     if (!fetching && !error) {
-      return <BaseLayout config={coreConfig} dataSources={dataSourceConfig} />;
+      return (
+        <BaseLayout
+          config={coreConfig}
+          dataSources={dataSourceConfig}
+          selectedFilters={selectedFilters}
+        />
+      );
     }
 
     return null;

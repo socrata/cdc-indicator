@@ -1,11 +1,8 @@
-// vendors
 import React, { Component, PropTypes } from 'react';
 import _ from 'lodash';
-// custom
-import Choropleth from '../components/Choropleth';
-import DataFilter from '../containers/DataFilter';
-import DataTable from '../components/DataTable';
-// styles
+import Choropleth from './Choropleth';
+import DataTable from 'components/DataTable';
+// import DataFilter from '../containers/DataFilter';
 import styles from '../styles/map.css';
 
 function startsWithVowel(string) {

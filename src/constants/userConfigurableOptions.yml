@@ -1,19 +1,21 @@
 coreConfig:
-  - data_points: 7
+  - data_points: 3
     filter_intro: These filters affect all charts below.
     footnote: Configurations were loaded from a local file.
     intro:
     source_data_label: Source Data
     source_system_label: Source System
     title: Indicator Explorer
-    indicator_column_id: questionid
-    location_column_id: locationabbr
-    # breakout_column_id: breakoutcategoryid
-    breakout_column_id: stratificationcategoryid1
+    indicator_id_column: questionid
+    location_id_column: locationabbr
+    # breakout_category_id_column: breakoutcategoryid
+    breakout_category_id_column: stratificationcategoryid1
+    breakout_id_column: stratificationid1
+    breakout_value_column: stratification1
 filterConfig:
   # There must be at least one filter with 'value_column' set to 'questionid'
   # as there are several key visualization configurations based on what indicator is selected.
-  - default_value: ALC2_1
+  - default_value: CVD1_5
   # - default_value: AL002
     group_by_id: topicid
     group_by: topic

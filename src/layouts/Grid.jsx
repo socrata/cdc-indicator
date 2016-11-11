@@ -2,12 +2,9 @@
  * Helper to wrap elements into a grid layout
  */
 
-/** dependencies **/
-// vendors
 import React, { PropTypes } from 'react';
 import _ from 'lodash';
-// styles
-import styles from '../styles/grid.css';
+import styles from 'styles/grid.css';
 
 function getGridStyle(length) {
   switch (length) {

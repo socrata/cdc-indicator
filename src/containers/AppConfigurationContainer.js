@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import { fetchConfig } from 'modules/appConfig';
-import App from '../components/App';
+import App from 'components/App';
 
 const mapStateToProps = (state) => {
   return {
@@ -8,7 +8,8 @@ const mapStateToProps = (state) => {
     dataSourceConfig: state.appConfig.config.dataSource,
     error: state.appConfig.error,
     errorMessage: state.appConfig.errorMessage,
-    fetching: state.appConfig.fetching
+    fetching: state.appConfig.fetching,
+    selectedFilters: state.filters.selected
   };
 };
 

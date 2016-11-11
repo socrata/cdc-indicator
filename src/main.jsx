@@ -27,9 +27,32 @@ if (__DEV__) {
 
 const store = createStore(reducer, middleware);
 
-render(
-  <Provider store={store}>
-    <AppConfigurationContainer />
-  </Provider>,
-  document.getElementById('main')
-);
+const MOUNT_ELEMENT = document.getElementById('main');
+
+let renderFn = () => {
+  render(
+    <Provider store={store}>
+      <AppConfigurationContainer />
+    </Provider>,
+    MOUNT_ELEMENT
+  );
+};
+
+if (__DEV__ && module.hot) {
+  // use RedBox to display runtime error
+  const renderApp = renderFn;
+  const renderError = (error) => {
+    const RedBox = require('redbox-react').default; // eslint-disable-line global-require
+
+    render(<RedBox error={error} />, MOUNT_ELEMENT);
+  };
+  renderFn = () => {
+    try {
+      renderApp();
+    } catch (error) {
+      renderError(error);
+    }
+  };
+}
+
+renderFn();

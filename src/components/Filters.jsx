@@ -4,8 +4,8 @@
 
 import React, { Component, PropTypes } from 'react';
 import _ from 'lodash';
-import Grid from 'components/Grid';
 import Filter from 'components/Filter';
+import Grid from 'layouts/Grid';
 import styles from 'styles/spinner.css';
 
 export default class Filters extends Component {
@@ -16,16 +16,16 @@ export default class Filters extends Component {
     fetching: PropTypes.bool,
     filters: PropTypes.arrayOf(
       PropTypes.shape({
-        label: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired,
+        label: PropTypes.string,
+        name: PropTypes.string,
         options: PropTypes.array,
         optionGroups: PropTypes.array,
         value: PropTypes.oneOfType([
           PropTypes.string,
           PropTypes.number
-        ]).isRequired
+        ])
       })
-    ).isRequired,
+    ),
     loadFilters: PropTypes.func,
     onFilterChange: PropTypes.func,
     selected: PropTypes.object,

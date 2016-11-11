@@ -34,8 +34,12 @@
   text-align: right;
 }
 
-.openTable {
+.linkContainer {
   margin: 0.5em 0;
+  text-align: right;
+}
+
+.openTable {
   font-size: 0.8em;
 }
 

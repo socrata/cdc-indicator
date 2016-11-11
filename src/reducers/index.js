@@ -1,6 +1,4 @@
 export { default as appConfig } from 'modules/appConfig';
 export { default as filters } from 'modules/filters';
-
-export { default as data } from './data';
-export { default as mapData } from './mapData';
-export { default as mapElement } from './mapElement';
+export { default as indicatorData } from 'modules/indicatorData';
+export { default as map } from 'modules/map';

@@ -11,10 +11,10 @@ import _ from 'lodash';
 // custom
 import GeoJsonUpdatable from './GeoJsonUpdatable';
 import MapControlUpdatable from './MapControlUpdatable';
-import { getLatLongBounds } from '../lib/helpers';
-import { CONFIG } from '../constants';
+import { getLatLongBounds } from 'lib/helpers';
+import { CONFIG } from 'constants';
 // styles
-import styles from '../styles/choropleth.css';
+import styles from 'styles/choropleth.css';
 
 export default class ChoroplethMap extends Component {
   constructor(props) {

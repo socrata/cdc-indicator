@@ -9,7 +9,7 @@ import { CONFIG } from '../constants';
 
 // find data from year specified
 function getDataForYear(array, key, year) {
-  const dataForYear = _.find(array, { year: _.toString(year) });
+  const dataForYear = _.find(array, { year });
   const value = _.chain(dataForYear)
     .get(key)
     .round(1)
@@ -22,11 +22,11 @@ function getDataForYear(array, key, year) {
 
 /** main class **/
 export default class ChartData {
-
-  constructor(data, dataSeries, latestYear) {
-    this.data = data;
-    this.dataSeries = dataSeries;
-    this.latestYear = latestYear;
+  constructor(options) {
+    this.breakoutColumn = options.breakoutColumn;
+    this.data = options.data;
+    this.dataSeries = options.dataSeries;
+    this.latestYear = options.latestYear;
   }
 
   chartConfig() {
@@ -53,7 +53,7 @@ export default class ChartData {
     // group data
     const groupedData = _.chain(this.data)
       .groupBy((row) =>
-        `${row.locationdesc} - ${row.break_out}`
+        `${row.locationdesc} - ${row[this.breakoutColumn]}`
       )
       .reduce((acc, array, key) => {
         return Object.assign({}, acc, {
@@ -133,7 +133,7 @@ export default class ChartData {
       .reduce((groupByLocation, valuesByLocation, location) => {
         return Object.assign({}, groupByLocation, {
           [location]: _.chain(valuesByLocation)
-            .groupBy('break_out')
+            .groupBy(this.breakoutColumn)
             .reduce((groupByBreakout, valuesByBreakout, breakout) => {
               return Object.assign({}, groupByBreakout, {
                 [breakout]: {
@@ -156,7 +156,7 @@ export default class ChartData {
 
     // generate x axis values
     const categories = _.chain(this.data)
-      .groupBy('break_out')
+      .groupBy(this.breakoutColumn)
       .keys()
       .sortBy()
       .value();
@@ -229,7 +229,7 @@ export default class ChartData {
         return Object.assign({}, groupedByBreakout, {
           [breakout]: {
             value: getDataForYear(valuesByBreakout, 'data_value', this.latestYear),
-            label: valuesByBreakout[0].break_out
+            label: valuesByBreakout[0][this.breakoutColumn]
           }
         });
       }, {})

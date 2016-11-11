@@ -130,7 +130,8 @@ export default class DataTable extends Component {
   }
 
   render() {
-    const { data,
+    const { breakoutColumn,
+            data,
             dataSeries,
             chartType,
             year } = this.props;
@@ -143,11 +144,21 @@ export default class DataTable extends Component {
         tableData = this.formatMapData(data);
         break;
       case 'pie':
-        chartConfig = new ChartData(data, 'pie', year).chartConfig();
+        chartConfig = new ChartData({
+          breakoutColumn,
+          data,
+          dataSeries: 'pie',
+          year
+        }).chartConfig();
         tableData = this.formatPieData(chartConfig);
         break;
       default:
-        chartConfig = new ChartData(data, dataSeries, year).chartConfig();
+        chartConfig = new ChartData({
+          breakoutColumn,
+          data,
+          dataSeries,
+          year
+        }).chartConfig();
         switch (dataSeries) {
           case 'trend':
             tableData = this.formatTrendData(chartConfig);
@@ -195,7 +206,7 @@ export default class DataTable extends Component {
     }
 
     return (
-      <div>
+      <div className={styles.linkContainer}>
         <a
           href="#"
           className={styles.openTable}
@@ -216,6 +227,7 @@ export default class DataTable extends Component {
 }
 
 DataTable.propTypes = {
+  breakoutColumn: PropTypes.string.isRequired,
   data: PropTypes.oneOfType([PropTypes.array, PropTypes.object]).isRequired,
   dataSeries: PropTypes.oneOf(['trend', 'latest', 'map']),
   chartType: PropTypes.string,

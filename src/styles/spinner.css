@@ -7,6 +7,7 @@
   min-height: 320px;
   color: #1f77b4;
   font-size: 24px;
+  z-index: 1000;
 }
 
 .spinner p {
@@ -16,4 +17,19 @@
 .shortSpinner {
   composes: spinner;
   min-height: 0;
+}
+
+.spinnerOverlay {
+  composes: spinner;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.spinnerContainer {
+  position: relative;
+  min-height: 320px;
 }
