@@ -4,7 +4,7 @@
  */
 
 import React, { PropTypes } from 'react';
-import styles from '../styles/filter.css';
+import styles from 'styles/filter.css';
 
 function createOption(data, index) {
   const { text,

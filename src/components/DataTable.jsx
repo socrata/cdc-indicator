@@ -1,8 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import Modal from 'react-modal';
 import _ from 'lodash';
-import ChartData from '../lib/ChartData';
-import styles from '../styles/dataTable.css';
+import ChartData from 'lib/ChartData';
+import styles from 'styles/dataTable.css';
 
 const modalStyles = {
   overlay: {

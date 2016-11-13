@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import _ from 'lodash';
 import Chart from 'components/Chart';
+import MapContainer from 'containers/MapContainer';
 import Grid from 'layouts/Grid';
 import styles from 'styles/spinner.css';
 
@@ -100,9 +101,11 @@ export default class ChartArea extends Component {
     const charts = chartConfiguration.map((config, index) => {
       if (config.type === 'map') {
         return (
-          <div key={index}>
-            map
-          </div>
+          <MapContainer
+            key={index}
+            config={config}
+            latestYear={latestYear}
+          />
         );
       }
 

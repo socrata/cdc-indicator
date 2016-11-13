@@ -1,5 +1,5 @@
 coreConfig:
-  - data_points: 3
+  - data_points: 5
     filter_intro: These filters affect all charts below.
     footnote: Configurations were loaded from a local file.
     intro:
@@ -11,7 +11,7 @@ coreConfig:
     # breakout_category_id_column: breakoutcategoryid
     breakout_category_id_column: stratificationcategoryid1
     breakout_id_column: stratificationid1
-    breakout_value_column: stratification1
+    breakout_label_column: stratification1
 filterConfig:
   # There must be at least one filter with 'value_column' set to 'questionid'
   # as there are several key visualization configurations based on what indicator is selected.

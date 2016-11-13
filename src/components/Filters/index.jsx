@@ -4,9 +4,9 @@
 
 import React, { Component, PropTypes } from 'react';
 import _ from 'lodash';
-import Filter from 'components/Filter';
 import Grid from 'layouts/Grid';
 import styles from 'styles/spinner.css';
+import Filter from './Filter';
 
 export default class Filters extends Component {
   static propTypes = {
@@ -35,7 +35,9 @@ export default class Filters extends Component {
   };
 
   componentWillMount() {
-    this.props.loadFilters();
+    if (this.props.loadFilters) {
+      this.props.loadFilters();
+    }
   }
 
   render() {

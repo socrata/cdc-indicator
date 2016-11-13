@@ -1,4 +1,16 @@
 .mapFilter {
-  composes: mainFilter from './app.css';
+  composes: mainFilter from './BaseLayout.css';
   padding: 1em;
+}
+
+.chartTitle {
+  composes: chartTitle from './BaseLayout.css';
+}
+
+.chartFootnote {
+  composes: chartFootnote from './BaseLayout.css';
+}
+
+.spinner {
+  composes: spinner from './spinner.css';
 }

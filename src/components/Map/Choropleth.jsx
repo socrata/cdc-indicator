@@ -8,15 +8,20 @@ import { Map, TileLayer } from 'react-leaflet';
 import L from 'leaflet';
 import d3 from 'd3';
 import _ from 'lodash';
-// custom
-import GeoJsonUpdatable from './GeoJsonUpdatable';
-import MapControlUpdatable from './MapControlUpdatable';
 import { getLatLongBounds } from 'lib/helpers';
 import { CONFIG } from 'constants';
-// styles
 import styles from 'styles/choropleth.css';
+import GeoJsonUpdatable from './GeoJsonUpdatable';
+import MapControlUpdatable from './MapControlUpdatable';
 
 export default class ChoroplethMap extends Component {
+  static propTypes = {
+    data: PropTypes.object.isRequired,
+    onClick: PropTypes.func.isRequired,
+    // setMapElement: PropTypes.func.isRequired
+    year: PropTypes.number.isRequired
+  };
+
   constructor(props) {
     super(props);
 
@@ -210,9 +215,9 @@ export default class ChoroplethMap extends Component {
     };
   }
 
-  componentDidUpdate() {
-    this.props.setMapElement(this.mapElement);
-  }
+  // componentDidUpdate() {
+  //   this.props.setMapElement(this.mapElement);
+  // }
 
   render() {
     const { data } = this.props;
@@ -281,10 +286,3 @@ export default class ChoroplethMap extends Component {
     );
   }
 }
-
-ChoroplethMap.propTypes = {
-  data: PropTypes.object.isRequired,
-  year: PropTypes.number.isRequired,
-  onClick: PropTypes.func.isRequired,
-  setMapElement: PropTypes.func.isRequired
-};
