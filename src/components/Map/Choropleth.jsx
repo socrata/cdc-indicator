@@ -18,8 +18,10 @@ export default class ChoroplethMap extends Component {
   static propTypes = {
     data: PropTypes.object.isRequired,
     onClick: PropTypes.func.isRequired,
-    setMapElement: PropTypes.func.isRequired,
-    year: PropTypes.number.isRequired
+    selectedState: PropTypes.string,
+    setMapElement: PropTypes.func,
+    year: PropTypes.number.isRequired,
+    zoomToState: PropTypes.func
   };
 
   constructor(props) {
@@ -217,6 +219,10 @@ export default class ChoroplethMap extends Component {
 
   componentDidMount() {
     this.props.setMapElement(this.mapElement);
+
+    if (this.props.selectedState && this.props.selectedState !== 'US') {
+      this.props.zoomToState(this.props.selectedState);
+    }
   }
 
   componentWillUnmount() {

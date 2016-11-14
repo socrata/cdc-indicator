@@ -3,12 +3,14 @@ import _ from 'lodash';
 import { initMapContainer,
          setMapFilterAndFetchData,
          setMapElement,
-         setStateFilter } from 'modules/map';
+         setStateFilter,
+         zoomToState } from 'modules/map';
 import Map from 'components/Map';
 
 const mapStateToProps = (state) => {
   const breakoutColumn = _.get(state, 'appConfig.config.core.breakout_category_id_column');
   const locationColumn = _.get(state, 'appConfig.config.core.location_id_column');
+  const selectedState = _.get(state, `filters.selected.${locationColumn}.id`);
 
   return {
     breakoutColumn,
@@ -18,7 +20,8 @@ const mapStateToProps = (state) => {
     filters: state.map.filterData,
     mapData: state.map.data,
     selected: state.map.filterSelected,
-    selectedParentFilters: _.omit(state.filters.selected, locationColumn)
+    selectedParentFilters: _.omit(state.filters.selected, locationColumn),
+    selectedState
   };
 };
 
@@ -43,6 +46,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     setMapElement: (element) => {
       dispatch(setMapElement(element));
+    },
+    zoomToState: (state) => {
+      dispatch(zoomToState(state));
     }
   };
 };
