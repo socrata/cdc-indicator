@@ -1,8 +1,7 @@
 import _ from 'lodash';
 import L from 'leaflet';
-import rowFormatter from 'lib/rowFormatter';
+import { getLatLongBounds, rowFormatter } from 'lib/helpers';
 import Soda from 'lib/Soda';
-import { getLatLongBounds } from 'lib/helpers';
 import { setFilter } from 'modules/filters';
 import { CONFIG, GEOJSON } from 'constants';
 

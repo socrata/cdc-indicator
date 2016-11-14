@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import rowFormatter from 'lib/rowFormatter';
+import { rowFormatter } from 'lib/helpers';
 import Soda from 'lib/Soda';
 import { CONFIG } from 'constants';
 

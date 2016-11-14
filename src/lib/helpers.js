@@ -48,3 +48,29 @@ export function getLatLongBounds(geometry, padding = 0) {
     ]
   ];
 }
+
+export function convertToNumber(str) {
+  if (isNaN(parseFloat(str))) {
+    return undefined;
+  }
+
+  return _.toNumber(str);
+}
+
+export function rowFormatter(row) {
+  const convertToNumberColumns = [
+    'data_value',
+    'data_value_alt',
+    'high_confidence_limit',
+    'low_confidence_limit',
+    'year'
+  ];
+
+  const newValues = convertToNumberColumns.reduce((acc, key) => {
+    return Object.assign({}, acc, {
+      [key]: convertToNumber(row[key] || undefined)
+    });
+  }, {});
+
+  return Object.assign({}, row, newValues);
+}
