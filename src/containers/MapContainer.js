@@ -6,14 +6,12 @@ import { initMapContainer,
          setStateFilter,
          zoomToState } from 'modules/map';
 import Map from 'components/Map';
+import { CONFIG } from 'constants';
 
 const mapStateToProps = (state) => {
-  const breakoutColumn = _.get(state, 'appConfig.config.core.breakout_category_id_column');
-  const locationColumn = _.get(state, 'appConfig.config.core.location_id_column');
-  const selectedState = _.get(state, `filters.selected.${locationColumn}.id`);
+  const selectedState = _.get(state, `filters.selected.${CONFIG.locationId}.id`);
 
   return {
-    breakoutColumn,
     error: state.map.error,
     errorMessage: state.map.errorMessage,
     fetching: state.map.fetching,
@@ -21,7 +19,7 @@ const mapStateToProps = (state) => {
     isDataReady: !state.indicatorData.fetching && !state.indicatorData.error,
     mapData: state.map.data,
     selected: state.map.filterSelected,
-    selectedParentFilters: _.omit(state.filters.selected, locationColumn),
+    selectedParentFilters: _.omit(state.filters.selected, CONFIG.locationId),
     selectedState
   };
 };

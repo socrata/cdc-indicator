@@ -8,7 +8,6 @@ import Choropleth from './Choropleth';
 export default class Map extends Component {
   static propTypes = {
     // from redux store
-    breakoutColumn: PropTypes.string,
     error: PropTypes.bool,
     errorMessage: PropTypes.string,
     fetching: PropTypes.bool,
@@ -58,8 +57,7 @@ export default class Map extends Component {
   }
 
   render() {
-    const { breakoutColumn,
-            config,
+    const { config,
             error,
             errorMessage,
             fetching,
@@ -131,7 +129,6 @@ export default class Map extends Component {
         {chartTitle}
         {filterElement}
         <DataTable
-          breakoutColumn={breakoutColumn}
           data={[]}
           dataSeries="map"
           chartType="map"

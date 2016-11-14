@@ -85,9 +85,9 @@ function formatConfig(responses) {
 
     // ensure that we have at minimum indicator, location and breakout category filters in config
     const filterColumns = filter.map(row => row.value_column);
-    if (filterColumns.indexOf(core.indicator_id_column) < 0 ||
-        filterColumns.indexOf(core.location_id_column) < 0 ||
-        filterColumns.indexOf(core.breakout_category_id_column) < 0) {
+    if (filterColumns.indexOf(CONFIG.indicatorId) < 0 ||
+        filterColumns.indexOf(CONFIG.locationId) < 0 ||
+        filterColumns.indexOf(CONFIG.breakoutCategoryId) < 0) {
       dispatch(setError(
         true,
         'Configuration error - filter configuration does not contain required columns.'
@@ -99,7 +99,7 @@ function formatConfig(responses) {
     const chart = _.groupBy(chartConfig, 'indicator');
 
     // set data source object
-    const dataSource = _.groupBy(dataSourceConfig, core.indicator_id_column);
+    const dataSource = _.groupBy(dataSourceConfig, CONFIG.indicatorId);
 
     // save config object
     dispatch(setConfig({ core, filter, chart, dataSource }));

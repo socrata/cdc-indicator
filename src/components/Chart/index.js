@@ -8,29 +8,13 @@ import ColumnChart from './ColumnChart';
 import LineChart from './LineChart';
 import PieChart from './PieChart';
 
-const Chart = ({
-  breakoutColumn,
-  breakoutLabelColumn,
-  config,
-  data,
-  latestYear,
-  locationColumn,
-  locationLabelColumn
-}) => {
+const Chart = ({ config, data, latestYear }) => {
   let dataSeries = config.data || 'trend';
   if (config.type === 'pie') {
     dataSeries = 'pie';
   }
 
-  const chartData = new ChartData({
-    breakoutColumn,
-    breakoutLabelColumn,
-    data,
-    dataSeries,
-    latestYear,
-    locationColumn,
-    locationLabelColumn
-  });
+  const chartData = new ChartData({ data, dataSeries, latestYear });
 
   let chartElement;
   switch (config.type) {
@@ -66,7 +50,6 @@ const Chart = ({
     <div>
       {chartTitle}
       <DataTable
-        breakoutColumn={breakoutColumn}
         data={data}
         dataSeries={config.data || 'trend'}
         chartType={config.type}
@@ -79,13 +62,9 @@ const Chart = ({
 };
 
 Chart.propTypes = {
-  breakoutColumn: PropTypes.string,
-  breakoutLabelColumn: PropTypes.string,
   config: PropTypes.object,
   data: PropTypes.array,
-  latestYear: PropTypes.number,
-  locationColumn: PropTypes.string,
-  locationLabelColumn: PropTypes.string
+  latestYear: PropTypes.number
 };
 
 export default Chart;

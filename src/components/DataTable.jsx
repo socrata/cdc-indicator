@@ -21,6 +21,17 @@ const modalStyles = {
 };
 
 export default class DataTable extends Component {
+  static propTypes = {
+    data: PropTypes.oneOfType([PropTypes.array, PropTypes.object]).isRequired,
+    dataSeries: PropTypes.oneOf(['trend', 'latest', 'map']),
+    chartType: PropTypes.string,
+    year: PropTypes.number
+  };
+
+  static defaultProps = {
+    dataSeries: 'trend'
+  };
+
   constructor(props) {
     super(props);
 
@@ -130,8 +141,7 @@ export default class DataTable extends Component {
   }
 
   render() {
-    const { breakoutColumn,
-            data,
+    const { data,
             dataSeries,
             chartType,
             year } = this.props;
@@ -145,7 +155,6 @@ export default class DataTable extends Component {
         break;
       case 'pie':
         chartConfig = new ChartData({
-          breakoutColumn,
           data,
           dataSeries: 'pie',
           year
@@ -154,7 +163,6 @@ export default class DataTable extends Component {
         break;
       default:
         chartConfig = new ChartData({
-          breakoutColumn,
           data,
           dataSeries,
           year
@@ -225,15 +233,3 @@ export default class DataTable extends Component {
     );
   }
 }
-
-DataTable.propTypes = {
-  breakoutColumn: PropTypes.string.isRequired,
-  data: PropTypes.oneOfType([PropTypes.array, PropTypes.object]).isRequired,
-  dataSeries: PropTypes.oneOf(['trend', 'latest', 'map']),
-  chartType: PropTypes.string,
-  year: PropTypes.number
-};
-
-DataTable.defaultProps = {
-  dataSeries: 'trend'
-};

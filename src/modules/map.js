@@ -97,22 +97,13 @@ export function zoomToState(state) {
 }
 
 export function setStateFilter(abbreviation, state) {
-  return (dispatch, getState) => {
-    const locationColumn = _.get(getState(), 'appConfig.config.core.location_id_column');
-
-    if (!locationColumn) {
-      dispatch(setError(
-        true,
-        'There was an error in configuration.'
-      ));
-    } else {
-      dispatch(setFilter({
-        [locationColumn]: {
-          id: abbreviation,
-          label: state
-        }
-      }));
-    }
+  return (dispatch) => {
+    dispatch(setFilter({
+      [CONFIG.locationId]: {
+        id: abbreviation,
+        label: state
+      }
+    }));
   };
 }
 
@@ -124,43 +115,35 @@ export function setMapFilterAndFetchData(filter = {}) {
 }
 
 function formatMapData(response) {
-  return (dispatch, getState) => {
+  return (dispatch) => {
     // typecast data in specific columns (since everything is string in the received JSON)
     const data = response.map(rowFormatter);
 
     // inject into GeoJSON
-    const locationColumn = _.get(getState(), 'appConfig.config.core.location_id_column');
-    const dataByState = _.groupBy(data, locationColumn);
+    const dataByState = _.groupBy(data, CONFIG.locationId);
 
-    if (!locationColumn) {
-      dispatch(setError(
-        true,
-        'There was an error in configuration.'
-      ));
-    } else {
-      const features = GEOJSON.features.map((feature) => {
-        const state = feature.properties.abbreviation;
+    const features = GEOJSON.features.map((feature) => {
+      const state = feature.properties.abbreviation;
 
-        if (!dataByState.hasOwnProperty(state)) {
-          return feature;
-        }
+      if (!dataByState.hasOwnProperty(state)) {
+        return feature;
+      }
 
-        const properties = Object.assign({}, feature.properties, {
-          value: dataByState[state][0].data_value,
-          unit: dataByState[state][0].data_value_unit,
-          highConfidence: dataByState[state][0].high_confidence_limit,
-          lowConfidence: dataByState[state][0].low_confidence_limit
-        });
-
-        return Object.assign({}, feature, { properties });
+      const properties = Object.assign({}, feature.properties, {
+        value: dataByState[state][0].data_value,
+        unit: dataByState[state][0].data_value_unit,
+        highConfidence: dataByState[state][0].high_confidence_limit,
+        lowConfidence: dataByState[state][0].low_confidence_limit
       });
 
-      dispatch(setMapData({
-        type: 'FeatureCollection',
-        features
-      }));
-      dispatch(setRequestStatus(false));
-    }
+      return Object.assign({}, feature, { properties });
+    });
+
+    dispatch(setMapData({
+      type: 'FeatureCollection',
+      features
+    }));
+    dispatch(setRequestStatus(false));
   };
 }
 
@@ -168,10 +151,9 @@ function fetchData() {
   return (dispatch, getState) => {
     const parentFilters = _.get(getState(), 'filters.selected', {});
     const mapFilters = _.get(getState(), 'map.filterSelected', {});
-    const locationColumn = _.get(getState(), 'appConfig.config.core.location_id_column');
     const latestYear = _.get(getState(), 'indicatorData.latestYear');
 
-    if (!locationColumn || !latestYear) {
+    if (!latestYear) {
       dispatch(setError(
         true,
         'There was an error in configuration.'
@@ -179,7 +161,7 @@ function fetchData() {
     } else {
       // use all parent filters (minus location) plus map-specific filter
       const parentFilterCondition = Object.keys(parentFilters)
-        .filter(column => column !== locationColumn)
+        .filter(column => column !== CONFIG.locationId)
         .map(column => ({
           column,
           operator: '=',
@@ -220,7 +202,7 @@ function fetchData() {
   };
 }
 
-function transformFilterData(data, breakoutIdColumn, breakoutLabelColumn) {
+function transformFilterData(data) {
   return (dispatch, getState) => {
     // if there is only one (or no) value in breakout values, apply no filter
     if (data.length < 2) {
@@ -229,12 +211,12 @@ function transformFilterData(data, breakoutIdColumn, breakoutLabelColumn) {
       dispatch(fetchData());
     } else {
       const options = _.chain(data)
-        .groupBy(breakoutIdColumn)
+        .groupBy(CONFIG.breakoutId)
         .map((dataById) => {
           // use the first element to set label
           return {
-            text: dataById[0][breakoutLabelColumn],
-            value: dataById[0][breakoutIdColumn]
+            text: dataById[0][CONFIG.breakoutLabel],
+            value: dataById[0][CONFIG.breakoutId]
           };
         })
         .sortBy('text')
@@ -242,19 +224,15 @@ function transformFilterData(data, breakoutIdColumn, breakoutLabelColumn) {
 
       // select first element by default
       dispatch(setMapFilter({
-        [breakoutIdColumn]: {
+        [CONFIG.breakoutId]: {
           id: options[0].value,
           label: options[0].text
         }
       }));
 
-      const categoryColumn = _.get(
-        getState(),
-        'appConfig.config.core.breakout_category_id_column'
-      );
       const categoryLabel = _.get(
         getState(),
-        `filters.selected.${categoryColumn}.label`,
+        `filters.selected.${CONFIG.breakoutCategoryId}.label`,
         'breakout value'
       ).toLowerCase();
 
@@ -262,7 +240,7 @@ function transformFilterData(data, breakoutIdColumn, breakoutLabelColumn) {
 
       const filter = [{
         label: `Select ${article} ${categoryLabel}`,
-        name: breakoutIdColumn,
+        name: CONFIG.breakoutId,
         options
       }];
 
@@ -276,22 +254,16 @@ function fetchBreakoutValues() {
   return (dispatch, getState) => {
     const coreConfig = _.get(getState(), 'appConfig.config.core');
     const filters = _.get(getState(), 'filters.selected', {});
-    const locationColumn = _.get(coreConfig, 'location_id_column');
-    const breakoutIdColumn = _.get(coreConfig, 'breakout_id_column');
-    const breakoutLabelColumn = _.get(coreConfig, 'breakout_label_column');
 
     // get all breakout values for selected breakout category
-    if (!coreConfig ||
-        !locationColumn ||
-        !breakoutIdColumn ||
-        !breakoutLabelColumn) {
+    if (!coreConfig) {
       dispatch(setError(
         true,
         'There was an error in configuration.'
       ));
     } else {
       // don't filter by location column
-      const filterCondition = Object.keys(filters).filter(column => column !== locationColumn)
+      const filterCondition = Object.keys(filters).filter(column => column !== CONFIG.locationId)
         .map((column) => {
           return {
             column,
@@ -302,13 +274,13 @@ function fetchBreakoutValues() {
 
       new Soda(CONFIG.soda)
         .dataset(CONFIG.data.datasetId)
-        .select(breakoutIdColumn, breakoutLabelColumn)
+        .select(CONFIG.breakoutId, CONFIG.breakoutLabel)
         .where(filterCondition)
-        .group(breakoutIdColumn, breakoutLabelColumn)
-        .order(breakoutLabelColumn)
+        .group(CONFIG.breakoutId, CONFIG.breakoutLabel)
+        .order(CONFIG.breakoutLabel)
         .fetchData()
         .then((response) => {
-          dispatch(transformFilterData(response, breakoutIdColumn, breakoutLabelColumn));
+          dispatch(transformFilterData(response));
         })
         .catch(() => {
           dispatch(setError(

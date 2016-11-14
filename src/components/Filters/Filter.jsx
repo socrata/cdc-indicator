@@ -4,6 +4,7 @@
  */
 
 import React, { Component, PropTypes } from 'react';
+import { CONFIG } from 'constants';
 import styles from 'styles/filter.css';
 
 function createOption(data, index) {
@@ -40,7 +41,6 @@ export default class Filter extends Component {
       })
     ),
     onChange: PropTypes.func,
-    locationColumn: PropTypes.string,
     zoomToState: PropTypes.func,
     value: PropTypes.oneOfType([
       PropTypes.string,
@@ -54,7 +54,7 @@ export default class Filter extends Component {
     this.handleChange = (event) => {
       this.props.onChange(event);
 
-      if (this.props.name === this.props.locationColumn) {
+      if (this.props.name === CONFIG.locationId) {
         this.props.zoomToState(event.target.value);
       }
     };

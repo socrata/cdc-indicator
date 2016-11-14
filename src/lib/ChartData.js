@@ -20,13 +20,9 @@ function getDataForYear(array, key, year) {
 /** main class **/
 export default class ChartData {
   constructor(options) {
-    this.breakoutColumn = options.breakoutColumn;
-    this.breakoutLabelColumn = options.breakoutLabelColumn;
     this.data = options.data;
     this.dataSeries = options.dataSeries;
     this.latestYear = options.latestYear;
-    this.locationColumn = options.locationColumn;
-    this.locationLabelColumn = options.locationLabelColumn;
   }
 
   chartConfig() {
@@ -54,11 +50,11 @@ export default class ChartData {
     const groupedData = _.chain(this.data)
       // group by location and breakout IDs
       .groupBy((row) =>
-        `${row[this.locationColumn]} - ${row[this.breakoutColumn]}`
+        `${row[CONFIG.locationId]}:${row[CONFIG.breakoutId]}`
       )
       .reduce((acc, array) => {
         // use label columns for display
-        const key = `${array[0][this.locationLabelColumn]} - ${array[0][this.breakoutLabelColumn]}`;
+        const key = `${array[0][CONFIG.locationLabel]} - ${array[0][CONFIG.breakoutLabel]}`;
         return Object.assign({}, acc, {
           // keyBy ensures we get just one result (last occurrence)
           [key]: _.keyBy(array, 'year')
@@ -138,15 +134,15 @@ export default class ChartData {
     // group data by state (main data series),
     // then by breakout, and get values from the latest year
     const groupedData = _.chain(this.data)
-      .groupBy(this.locationColumn)
+      .groupBy(CONFIG.locationId)
       .reduce((groupByLocation, valuesByLocation) => {
-        const location = valuesByLocation[0][this.locationLabelColumn];
+        const location = valuesByLocation[0][CONFIG.locationLabel];
 
         return Object.assign({}, groupByLocation, {
           [location]: _.chain(valuesByLocation)
-            .groupBy(this.breakoutColumn)
+            .groupBy(CONFIG.breakoutId)
             .reduce((groupByBreakout, valuesByBreakout) => {
-              const breakout = valuesByBreakout[0][this.breakoutLabelColumn];
+              const breakout = valuesByBreakout[0][CONFIG.breakoutLabel];
 
               return Object.assign({}, groupByBreakout, {
                 [breakout]: {
@@ -169,8 +165,8 @@ export default class ChartData {
 
     // generate x axis values
     const categories = _.chain(this.data)
-      .keyBy(this.breakoutColumn)
-      .map(value => value[this.breakoutLabelColumn])
+      .keyBy(CONFIG.breakoutId)
+      .map(value => value[CONFIG.breakoutLabel])
       .sortBy()
       .value();
 
@@ -223,7 +219,7 @@ export default class ChartData {
   // get C3 config for a pie chart, where data array is a breakout category
   _getConfigForPieChart() {
     // group data by state (data series) to see if we are displaying state or national data
-    const groupedByLocation = _.groupBy(this.data, 'locationabbr');
+    const groupedByLocation = _.groupBy(this.data, CONFIG.locationId);
 
     // use National data by default
     let groupedData = groupedByLocation.US;
@@ -238,7 +234,7 @@ export default class ChartData {
     let unit;
 
     const transformedData = _.chain(groupedData)
-      .groupBy('breakoutid')
+      .groupBy(CONFIG.breakoutId)
       .reduce((groupedByBreakout, valuesByBreakout, breakout) => {
         // side effect
         unit = valuesByBreakout[0].data_value_unit || '';
@@ -246,7 +242,7 @@ export default class ChartData {
         return Object.assign({}, groupedByBreakout, {
           [breakout]: {
             value: getDataForYear(valuesByBreakout, 'data_value', this.latestYear),
-            label: valuesByBreakout[0][this.breakoutColumn]
+            label: valuesByBreakout[0][CONFIG.breakoutLabel]
           }
         });
       }, {})
@@ -254,7 +250,7 @@ export default class ChartData {
 
     // generate data array based on categories (order is important)
     const columns = _.chain(groupedData)
-      .groupBy('breakoutid')
+      .groupBy(CONFIG.breakoutId)
       .keys()
       .sortBy()
       .value()

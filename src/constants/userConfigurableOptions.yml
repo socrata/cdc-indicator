@@ -6,13 +6,6 @@ coreConfig:
     source_data_label: Source Data
     source_system_label: Source System
     title: Indicator Explorer
-    indicator_id_column: questionid
-    location_id_column: locationabbr
-    location_label_column: locationdesc
-    breakout_category_id_column: stratificationcategoryid1
-    breakout_category_label_column: stratificationcategory1
-    breakout_id_column: stratificationid1
-    breakout_label_column: stratification1
 filterConfig:
   # There must be at least one filter with 'value_column' set to 'questionid'
   # as there are several key visualization configurations based on what indicator is selected.
@@ -67,14 +60,14 @@ chartConfig:
     type: line
   - footnote:
     published: true
-    indicator: PHY001
+    indicator: CVD1_3
     sort: '1'
     title: Pie
     type: pie
   - data: latest
     footnote:
     published: true
-    indicator: PHY001
+    indicator: CVD1_3
     sort: '2'
     title: Latest
     type: bar

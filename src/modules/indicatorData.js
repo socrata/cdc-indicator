@@ -69,11 +69,10 @@ function formatIndicatorData(response) {
 function fetchIndicatorData() {
   return (dispatch, getState) => {
     const filters = _.get(getState(), 'filters.selected', {});
-    const locationColumn = _.get(getState(), 'appConfig.config.core.location_id_column');
 
     // if a state other than "US" is selected, also get "US" data
     const filterCondition = Object.keys(filters).map(key => {
-      if (key === locationColumn && filters[key].id !== 'US') {
+      if (key === CONFIG.locationId && filters[key].id !== 'US') {
         return {
           operator: 'OR',
           condition: [

@@ -10,8 +10,6 @@ export default class ChartArea extends Component {
     // from props
     customChildClass: PropTypes.string,
     // from redux store
-    breakoutColumn: PropTypes.string,
-    breakoutLabelColumn: PropTypes.string,
     chartConfiguration: PropTypes.array,
     error: PropTypes.bool,
     errorMessage: PropTypes.string,
@@ -19,8 +17,6 @@ export default class ChartArea extends Component {
     isFilterReady: PropTypes.bool,
     latestYear: PropTypes.number,
     loadData: PropTypes.func,
-    locationColumn: PropTypes.string,
-    locationLabelColumn: PropTypes.string,
     rawData: PropTypes.array,
     selectedFilters: PropTypes.object
   };
@@ -46,17 +42,13 @@ export default class ChartArea extends Component {
   }
 
   render() {
-    const { breakoutColumn,
-            breakoutLabelColumn,
-            chartConfiguration,
+    const { chartConfiguration,
             customChildClass,
             error,
             errorMessage,
             fetching,
             isFilterReady,
             latestYear,
-            locationColumn,
-            locationLabelColumn,
             rawData } = this.props;
 
     // only render after filters are ready
@@ -118,13 +110,9 @@ export default class ChartArea extends Component {
       return (
         <Chart
           key={index}
-          breakoutColumn={breakoutColumn}
-          breakoutLabelColumn={breakoutLabelColumn}
           config={config}
           data={rawData}
           latestYear={latestYear}
-          locationColumn={locationColumn}
-          locationLabelColumn={locationLabelColumn}
         />
       );
     });

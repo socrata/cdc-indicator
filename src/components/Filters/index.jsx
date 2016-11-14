@@ -27,7 +27,6 @@ export default class Filters extends Component {
       })
     ),
     loadFilters: PropTypes.func,
-    locationColumn: PropTypes.string,
     onFilterChange: PropTypes.func,
     selected: PropTypes.object,
     zoomToState: PropTypes.func,
@@ -49,7 +48,6 @@ export default class Filters extends Component {
             fetching,
             filters,
             intro,
-            locationColumn,
             onFilterChange,
             selected,
             zoomToState } = this.props;
@@ -92,7 +90,6 @@ export default class Filters extends Component {
           {filters.map((filter, index) =>
             <Filter
               key={index}
-              locationColumn={locationColumn}
               onChange={onFilterChange}
               zoomToState={zoomToState}
               value={_.get(selected, `[${filter.name}].id`)}
