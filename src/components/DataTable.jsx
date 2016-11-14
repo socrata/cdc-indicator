@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import Modal from 'react-modal';
 import _ from 'lodash';
-import ChartData from 'lib/ChartData';
 import styles from 'styles/dataTable.css';
 
 const modalStyles = {
@@ -22,14 +21,9 @@ const modalStyles = {
 
 export default class DataTable extends Component {
   static propTypes = {
-    data: PropTypes.oneOfType([PropTypes.array, PropTypes.object]).isRequired,
-    dataSeries: PropTypes.oneOf(['trend', 'latest', 'map']),
+    chartData: PropTypes.object,
     chartType: PropTypes.string,
-    year: PropTypes.number
-  };
-
-  static defaultProps = {
-    dataSeries: 'trend'
+    data: PropTypes.object
   };
 
   constructor(props) {
@@ -79,14 +73,17 @@ export default class DataTable extends Component {
       return {};
     }
 
-    const caption = 'Data by Location';
+    const unit = data.features[0].properties.unit;
+    const caption = (unit.length <= 1) ? 'Data by Location' :
+      `Data by Location (${unit})`;
+
     const headers = ['Location', 'Value'];
     const rows = _.chain(data.features)
       .map(feature =>
         [
           feature.properties.name,
           (feature.properties.value) ?
-            `${feature.properties.value}${feature.properties.unit || ''}` :
+            `${feature.properties.value}${(unit.length === 1) ? unit : ''}` :
             'N/A'
         ]
       )
@@ -142,11 +139,10 @@ export default class DataTable extends Component {
 
   render() {
     const { data,
-            dataSeries,
-            chartType,
-            year } = this.props;
+            chartData,
+            chartType } = this.props;
 
-    let chartConfig;
+    const chartConfig = (chartData) ? chartData.chartConfig() : null;
     let tableData = {};
 
     switch (chartType) {
@@ -154,28 +150,15 @@ export default class DataTable extends Component {
         tableData = this.formatMapData(data);
         break;
       case 'pie':
-        chartConfig = new ChartData({
-          data,
-          dataSeries: 'pie',
-          year
-        }).chartConfig();
         tableData = this.formatPieData(chartConfig);
         break;
+      case 'trend':
+        tableData = this.formatTrendData(chartConfig);
+        break;
+      case 'latest':
+        tableData = this.formatLatestData(chartConfig);
+        break;
       default:
-        chartConfig = new ChartData({
-          data,
-          dataSeries,
-          year
-        }).chartConfig();
-        switch (dataSeries) {
-          case 'trend':
-            tableData = this.formatTrendData(chartConfig);
-            break;
-          case 'latest':
-            tableData = this.formatLatestData(chartConfig);
-            break;
-          default:
-        }
     }
 
     let table = null;

@@ -129,10 +129,8 @@ export default class Map extends Component {
         {chartTitle}
         {filterElement}
         <DataTable
-          data={[]}
-          dataSeries="map"
+          data={mapData}
           chartType="map"
-          year={latestYear}
         />
         <Choropleth
           data={mapData}
