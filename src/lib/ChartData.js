@@ -10,23 +10,23 @@ import { CONFIG } from '../constants';
 // find data from year specified
 function getDataForYear(array, key, year) {
   const dataForYear = _.find(array, { year });
-  const value = _.chain(dataForYear)
-    .get(key)
-    .round(1)
-    .value();
+  const value = _.get(dataForYear, key);
 
   // return null if value is invalid
   // isNaN(undefined) returns true (whereas _.isNaN would've returned false)
-  return isNaN(value) ? null : value;
+  return isNaN(value) ? 'N/A' : value;
 }
 
 /** main class **/
 export default class ChartData {
   constructor(options) {
     this.breakoutColumn = options.breakoutColumn;
+    this.breakoutLabelColumn = options.breakoutLabelColumn;
     this.data = options.data;
     this.dataSeries = options.dataSeries;
     this.latestYear = options.latestYear;
+    this.locationColumn = options.locationColumn;
+    this.locationLabelColumn = options.locationLabelColumn;
   }
 
   chartConfig() {
@@ -52,11 +52,15 @@ export default class ChartData {
   _getConfigByYear() {
     // group data
     const groupedData = _.chain(this.data)
+      // group by location and breakout IDs
       .groupBy((row) =>
-        `${row.locationdesc} - ${row[this.breakoutColumn]}`
+        `${row[this.locationColumn]} - ${row[this.breakoutColumn]}`
       )
-      .reduce((acc, array, key) => {
+      .reduce((acc, array) => {
+        // use label columns for display
+        const key = `${array[0][this.locationLabelColumn]} - ${array[0][this.breakoutLabelColumn]}`;
         return Object.assign({}, acc, {
+          // keyBy ensures we get just one result (last occurrence)
           [key]: _.keyBy(array, 'year')
         });
       }, {})
@@ -76,7 +80,8 @@ export default class ChartData {
           if (!values[year] || !values[year].data_value) {
             return null;
           }
-          return _.round(+values[year].data_value, 1);
+          // return _.round(+values[year].data_value, 1);
+          return values[year].data_value;
         }));
       })
     );
@@ -87,12 +92,16 @@ export default class ChartData {
           const hc = _.get(values, `[${year}].high_confidence_limit`);
           const lc = _.get(values, `[${year}].low_confidence_limit`);
           return {
-            high: isNaN(+hc) ? null : _.round(+hc, 1),
-            low: isNaN(+lc) ? null : _.round(+lc, 1)
+            high: isNaN(hc) ? 'N/A' : hc,
+            low: isNaN(lc) ? 'N/A' : lc
           };
         })
       });
     }, {});
+
+    const yLabel = ((this.data[0].data_value_unit || '').length > 1) ?
+      `${this.data[0].data_value_type || ''} (${this.data[0].data_value_unit})` :
+      (this.data[0].data_value_type || '');
 
     return {
       size: {
@@ -112,7 +121,7 @@ export default class ChartData {
         },
         y: {
           label: {
-            text: this.data[0].data_value_type || '',
+            text: yLabel,
             position: 'outer-middle'
           }
         }
@@ -129,12 +138,16 @@ export default class ChartData {
     // group data by state (main data series),
     // then by breakout, and get values from the latest year
     const groupedData = _.chain(this.data)
-      .groupBy('locationdesc')
-      .reduce((groupByLocation, valuesByLocation, location) => {
+      .groupBy(this.locationColumn)
+      .reduce((groupByLocation, valuesByLocation) => {
+        const location = valuesByLocation[0][this.locationLabelColumn];
+
         return Object.assign({}, groupByLocation, {
           [location]: _.chain(valuesByLocation)
             .groupBy(this.breakoutColumn)
-            .reduce((groupByBreakout, valuesByBreakout, breakout) => {
+            .reduce((groupByBreakout, valuesByBreakout) => {
+              const breakout = valuesByBreakout[0][this.breakoutLabelColumn];
+
               return Object.assign({}, groupByBreakout, {
                 [breakout]: {
                   value: getDataForYear(valuesByBreakout, 'data_value', this.latestYear),
@@ -156,8 +169,8 @@ export default class ChartData {
 
     // generate x axis values
     const categories = _.chain(this.data)
-      .groupBy(this.breakoutColumn)
-      .keys()
+      .keyBy(this.breakoutColumn)
+      .map(value => value[this.breakoutLabelColumn])
       .sortBy()
       .value();
 
@@ -177,6 +190,10 @@ export default class ChartData {
       });
     }, {});
 
+    const yLabel = ((this.data[0].data_value_unit || '').length > 1) ?
+      `${this.data[0].data_value_type || ''} (${this.data[0].data_value_unit})` :
+      (this.data[0].data_value_type || '');
+
     return {
       size: {
         height: CONFIG.map.defaults.height || 320
@@ -191,7 +208,7 @@ export default class ChartData {
         },
         y: {
           label: {
-            text: `${this.data[0].data_value_type || ''} (in year ${this.latestYear})`,
+            text: yLabel,
             position: 'outer-middle'
           }
         }

@@ -1,10 +1,9 @@
 import React, { PropTypes } from 'react';
 import d3 from 'd3';
-import ChartData from 'lib/ChartData';
 import C3ChartUpdatable from './C3ChartUpdatable';
 
-const LineChart = ({ breakoutColumn, data, dataSeries, year }) => {
-  const chartConfig = new ChartData({ breakoutColumn, data, dataSeries, year }).chartConfig();
+const LineChart = ({ chartData }) => {
+  const chartConfig = chartData.chartConfig();
   chartConfig.data.type = 'line';
   chartConfig.line = {
     connectNull: false
@@ -19,14 +18,7 @@ const LineChart = ({ breakoutColumn, data, dataSeries, year }) => {
 };
 
 LineChart.propTypes = {
-  breakoutColumn: PropTypes.string.isRequired,
-  data: PropTypes.array.isRequired,
-  dataSeries: PropTypes.oneOf(['trend', 'latest']).isRequired,
-  year: PropTypes.number.isRequired
-};
-
-LineChart.defaultProps = {
-  dataSeries: 'trend'
+  chartData: PropTypes.object
 };
 
 export default LineChart;

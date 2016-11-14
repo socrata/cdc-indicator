@@ -1,10 +1,9 @@
 import React, { PropTypes } from 'react';
 import _ from 'lodash';
-import ChartData from 'lib/ChartData';
 import C3ChartUpdatable from './C3ChartUpdatable';
 
-const BarChart = ({ breakoutColumn, data, dataSeries, year }) => {
-  const chartConfig = new ChartData({ breakoutColumn, data, dataSeries, year }).chartConfig();
+const BarChart = ({ chartData }) => {
+  const chartConfig = chartData.chartConfig();
   chartConfig.data.type = 'bar';
   chartConfig.axis.rotated = true;
 
@@ -22,14 +21,7 @@ const BarChart = ({ breakoutColumn, data, dataSeries, year }) => {
 };
 
 BarChart.propTypes = {
-  breakoutColumn: PropTypes.string.isRequired,
-  data: PropTypes.array.isRequired,
-  dataSeries: PropTypes.oneOf(['trend', 'latest']).isRequired,
-  year: PropTypes.number.isRequired
-};
-
-BarChart.defaultProps = {
-  dataSeries: 'trend'
+  chartData: PropTypes.object
 };
 
 export default BarChart;

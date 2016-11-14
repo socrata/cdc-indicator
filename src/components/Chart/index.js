@@ -1,53 +1,50 @@
 import React, { PropTypes } from 'react';
 import DataTable from 'components/DataTable';
+import ChartData from 'lib/ChartData';
+import styles from 'styles/BaseLayout.css';
+import 'c3/c3.css';
 import BarChart from './BarChart';
 import ColumnChart from './ColumnChart';
 import LineChart from './LineChart';
 import PieChart from './PieChart';
-import styles from 'styles/BaseLayout.css';
-import 'c3/c3.css';
 
-const Chart = ({ breakoutColumn, config, latestYear, rawData }) => {
+const Chart = ({
+  breakoutColumn,
+  breakoutLabelColumn,
+  config,
+  data,
+  latestYear,
+  locationColumn,
+  locationLabelColumn
+}) => {
+  let dataSeries = config.data || 'trend';
+  if (config.type === 'pie') {
+    dataSeries = 'pie';
+  }
+
+  const chartData = new ChartData({
+    breakoutColumn,
+    breakoutLabelColumn,
+    data,
+    dataSeries,
+    latestYear,
+    locationColumn,
+    locationLabelColumn
+  });
+
   let chartElement;
   switch (config.type) {
     case 'bar':
-      chartElement = (
-        <BarChart
-          breakoutColumn={breakoutColumn}
-          data={rawData}
-          year={latestYear}
-          dataSeries={config.data || 'trend'}
-        />
-      );
+      chartElement = <BarChart chartData={chartData} />;
       break;
     case 'column':
-      chartElement = (
-        <ColumnChart
-          breakoutColumn={breakoutColumn}
-          data={rawData}
-          year={latestYear}
-          dataSeries={config.data || 'trend'}
-        />
-      );
+      chartElement = <ColumnChart chartData={chartData} />;
       break;
     case 'line':
-      chartElement = (
-        <LineChart
-          breakoutColumn={breakoutColumn}
-          data={rawData}
-          year={latestYear}
-          dataSeries={config.data || 'trend'}
-        />
-      );
+      chartElement = <LineChart chartData={chartData} />;
       break;
     case 'pie':
-      chartElement = (
-        <PieChart
-          breakoutColumn={breakoutColumn}
-          data={rawData}
-          year={latestYear}
-        />
-      );
+      chartElement = <PieChart chartData={chartData} />;
       break;
     default:
       chartElement = <div>{config.type}</div>;
@@ -70,7 +67,7 @@ const Chart = ({ breakoutColumn, config, latestYear, rawData }) => {
       {chartTitle}
       <DataTable
         breakoutColumn={breakoutColumn}
-        data={rawData}
+        data={data}
         dataSeries={config.data || 'trend'}
         chartType={config.type}
         year={latestYear}
@@ -83,9 +80,12 @@ const Chart = ({ breakoutColumn, config, latestYear, rawData }) => {
 
 Chart.propTypes = {
   breakoutColumn: PropTypes.string,
+  breakoutLabelColumn: PropTypes.string,
   config: PropTypes.object,
+  data: PropTypes.array,
   latestYear: PropTypes.number,
-  rawData: PropTypes.array
+  locationColumn: PropTypes.string,
+  locationLabelColumn: PropTypes.string
 };
 
 export default Chart;

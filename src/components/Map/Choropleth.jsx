@@ -184,18 +184,14 @@ export default class ChoroplethMap extends Component {
         return <div>Hover over a state</div>;
       }
 
-      const hc = _.chain(properties)
-        .get('highConfidence')
-        .round(1)
-        .value();
+      const hc = _.get(properties, 'highConfidence');
+      const lc = _.get(properties, 'lowConfidence');
 
-      const lc = _.chain(properties)
-        .get('lowConfidence')
-        .round(1)
-        .value();
-
-      const unit = _.get(properties, 'unit', '');
+      const unitValue = _.get(properties, 'unit', '');
+      const unit = (unitValue.length > 1) ? '' : unitValue;
       const value = (properties.value) ? `${properties.value}${unit}` : 'N/A';
+
+      const unitInfo = (unitValue.length > 1) ? `(${unitValue})` : '';
 
       // if both low and high limits are N/A, display a single 'N/A'
       const cl = (isNaN(lc) && isNaN(hc)) ? 'N/A' :
@@ -211,6 +207,9 @@ export default class ChoroplethMap extends Component {
           </div>
           <div>
             {`Confidence Limits: ${cl}`}
+          </div>
+          <div>
+            {unitInfo}
           </div>
         </div>
       );

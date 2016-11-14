@@ -8,8 +8,9 @@ coreConfig:
     title: Indicator Explorer
     indicator_id_column: questionid
     location_id_column: locationabbr
-    # breakout_category_id_column: breakoutcategoryid
+    location_label_column: locationdesc
     breakout_category_id_column: stratificationcategoryid1
+    breakout_category_label_column: stratificationcategory1
     breakout_id_column: stratificationid1
     breakout_label_column: stratification1
 filterConfig:

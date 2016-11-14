@@ -20,7 +20,9 @@ export default class C3ChartUpdatable extends C3Chart {
     super(props);
 
     // helper to grab updated custom params
-    this.getUnit = () => this.props.custom.unit || '';
+    this.getUnit = () => {
+      return ((this.props.custom.unit || '') === '%') ? '%' : '';
+    };
     this.getHC = (id, index) => {
       return _.get(this.props, `custom.limits[${id}][${index}].high`, 'N/A');
     };
@@ -64,7 +66,8 @@ export default class C3ChartUpdatable extends C3Chart {
             value: (value, ratio, id, index) => {
               const lc = `${this.getLC(id, index)}${this.getUnit()}`;
               const hc = `${this.getHC(id, index)}${this.getUnit()}`;
-              return `${value}${this.getUnit()} (${lc}–${hc})`;
+              const cl = (lc === 'N/A' && hc === 'N/A') ? 'N/A' : `${lc}–${hc}`;
+              return `${value}${this.getUnit()} (${cl})`;
             }
           },
           contents: customTooltip
