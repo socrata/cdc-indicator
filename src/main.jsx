@@ -15,7 +15,7 @@ const reducer = combineReducers(reducers);
 let middleware = applyMiddleware(thunk);
 
 // Use DevTools chrome extension in development
-if (__DEV__) {
+if (__DEV__ && __REDUX_DEV__) {
   /* eslint-disable no-underscore-dangle */
   const devToolsExtension = window.__REDUX_DEVTOOLS_EXTENSION__;
   /* eslint-enable no-underscore-dangle */

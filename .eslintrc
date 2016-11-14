@@ -16,6 +16,7 @@
     "import/no-unresolved": [0]
   },
   "globals": {
-    "__DEV__": false
+    "__DEV__": false,
+    "__REDUX_DEV__": false
   }
 }
