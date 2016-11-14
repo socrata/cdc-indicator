@@ -19,6 +19,7 @@ export default class Map extends Component {
     onStateClick: PropTypes.func,
     selected: PropTypes.object,
     selectedParentFilters: PropTypes.object,
+    setMapElement: PropTypes.func,
     // from props
     config: PropTypes.object,
     latestYear: PropTypes.number
@@ -45,7 +46,8 @@ export default class Map extends Component {
             mapData,
             onFilterChange,
             onStateClick,
-            selected } = this.props;
+            selected,
+            setMapElement } = this.props;
 
     // only render after config is loaded
     if (fetching) {
@@ -115,7 +117,7 @@ export default class Map extends Component {
           data={mapData}
           year={latestYear}
           onClick={onStateClick}
-          // setMapElement={setMapElement}
+          setMapElement={setMapElement}
         />
         {chartFootnote}
       </div>

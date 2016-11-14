@@ -1,13 +1,18 @@
 import { connect } from 'react-redux';
+import _ from 'lodash';
 import { fetchFilters, setFilter } from 'modules/filters';
+import { zoomToState } from 'modules/map';
 import Filters from 'components/Filters';
 
 const mapStateToProps = (state) => {
+  const locationColumn = _.get(state, 'appConfig.config.core.location_id_column', '');
+
   return {
     error: state.filters.error,
     errorMessage: state.filters.errorMessage,
     fetching: state.filters.fetching,
     filters: state.filters.data,
+    locationColumn,
     selected: state.filters.selected
   };
 };
@@ -27,6 +32,9 @@ const mapDispatchToProps = (dispatch) => {
           }
         })
       );
+    },
+    zoomToState: (state) => {
+      dispatch(zoomToState(state));
     }
   };
 };

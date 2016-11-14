@@ -3,7 +3,7 @@
  * Pass an array of options, or key:value pairs of option groups
  */
 
-import React, { PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 import styles from 'styles/filter.css';
 
 function createOption(data, index) {
@@ -12,69 +12,86 @@ function createOption(data, index) {
   return <option key={index} value={value}>{text || value}</option>;
 }
 
-const Filter = ({
-  label, name, onChange, options, optionGroups, value
-}) => {
-  let optionElements;
+export default class Filter extends Component {
+  static propTypes = {
+    label: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    options: PropTypes.arrayOf(
+      PropTypes.shape({
+        text: PropTypes.string,
+        value: PropTypes.oneOfType([
+          PropTypes.string,
+          PropTypes.number
+        ]).isRequired
+      })
+    ),
+    optionGroups: PropTypes.arrayOf(
+      PropTypes.shape({
+        text: PropTypes.string.isRequired,
+        options: PropTypes.arrayOf(
+          PropTypes.shape({
+            text: PropTypes.string,
+            value: PropTypes.oneOfType([
+              PropTypes.string,
+              PropTypes.number
+            ]).isRequired
+          })
+        )
+      })
+    ),
+    onChange: PropTypes.func,
+    locationColumn: PropTypes.string,
+    zoomToState: PropTypes.func,
+    value: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number
+    ]).isRequired
+  };
 
-  if (optionGroups) {
-    optionElements = optionGroups.map((group, index) => {
-      const innerOptions = group.options.map(createOption);
-      return (
-        <optgroup key={index} label={group.text}>
-          {innerOptions}
-        </optgroup>
-      );
-    });
-  } else {
-    optionElements = options.map(createOption);
+  constructor(props) {
+    super(props);
+
+    this.handleChange = (event) => {
+      this.props.onChange(event);
+
+      if (this.props.name === this.props.locationColumn) {
+        this.props.zoomToState(event.target.value);
+      }
+    };
   }
 
-  return (
-    <div className={styles.filter}>
-      <label>{`${label}:`}</label>
-      <select
-        name={name}
-        value={value}
-        onChange={onChange}
-      >
-        {optionElements}
-      </select>
-    </div>
-  );
-};
+  render() {
+    const { label,
+            name,
+            options,
+            optionGroups,
+            value } = this.props;
+    let optionElements;
 
-Filter.propTypes = {
-  label: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  options: PropTypes.arrayOf(
-    PropTypes.shape({
-      text: PropTypes.string,
-      value: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.number
-      ]).isRequired
-    })
-  ),
-  optionGroups: PropTypes.arrayOf(
-    PropTypes.shape({
-      text: PropTypes.string.isRequired,
-      options: PropTypes.arrayOf(
-        PropTypes.shape({
-          text: PropTypes.string,
-          value: PropTypes.oneOfType([
-            PropTypes.string,
-            PropTypes.number
-          ]).isRequired
-        })
-      )
-    })
-  ),
-  onChange: PropTypes.func.isRequired,
-  value: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number
-  ]).isRequired
-};
+    if (optionGroups) {
+      optionElements = optionGroups.map((group, index) => {
+        const innerOptions = group.options.map(createOption);
+        return (
+          <optgroup key={index} label={group.text}>
+            {innerOptions}
+          </optgroup>
+        );
+      });
+    } else {
+      optionElements = options.map(createOption);
+    }
 
-export default Filter;
+    return (
+      <div className={styles.filter}>
+        <label>{`${label}:`}</label>
+        <select
+          name={name}
+          value={value}
+          onChange={this.handleChange}
+        >
+          {optionElements}
+        </select>
+      </div>
+    );
+  }
+}

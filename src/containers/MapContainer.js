@@ -1,6 +1,9 @@
 import { connect } from 'react-redux';
 import _ from 'lodash';
-import { initMapContainer, setMapFilterAndFetchData, setStateFilter } from 'modules/map';
+import { initMapContainer,
+         setMapFilterAndFetchData,
+         setMapElement,
+         setStateFilter } from 'modules/map';
 import Map from 'components/Map';
 
 const mapStateToProps = (state) => {
@@ -37,6 +40,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     onStateClick: (abbreviation, state) => {
       dispatch(setStateFilter(abbreviation, state));
+    },
+    setMapElement: (element) => {
+      dispatch(setMapElement(element));
     }
   };
 };

@@ -1,6 +1,8 @@
 import _ from 'lodash';
+import L from 'leaflet';
 import rowFormatter from 'lib/rowFormatter';
 import Soda from 'lib/Soda';
+import { getLatLongBounds } from 'lib/helpers';
 import { setFilter } from 'modules/filters';
 import { CONFIG, GEOJSON } from 'constants';
 
@@ -9,6 +11,7 @@ import { CONFIG, GEOJSON } from 'constants';
 // --------------------------------------------------
 
 export const SET_MAP_DATA = 'SET_MAP_DATA';
+export const SET_MAP_ELEMENT = 'SET_MAP_ELEMENT';
 export const SET_MAP_FILTER = 'SET_MAP_FILTER';
 export const SET_MAP_FILTER_DATA = 'SET_MAP_FILTER_DATA';
 export const SET_MAP_ERROR = 'SET_MAP_ERROR';
@@ -28,6 +31,13 @@ function setMapData(data = {}) {
   return {
     type: SET_MAP_DATA,
     data
+  };
+}
+
+export function setMapElement(element = null) {
+  return {
+    type: SET_MAP_ELEMENT,
+    element
   };
 }
 
@@ -57,6 +67,33 @@ function setRequestStatus(status) {
   return {
     type: SET_MAP_REQUEST_STATUS,
     status
+  };
+}
+
+export function zoomToState(state) {
+  return (dispatch, getState) => {
+    const mapElement = _.get(getState(), 'map.element');
+
+    if (mapElement) {
+      let center = CONFIG.map.defaults.center;
+      let zoom = CONFIG.map.defaults.zoom;
+
+      if (state !== 'US') {
+        const stateFeature = _.find(GEOJSON.features, {
+          properties: {
+            abbreviation: state
+          }
+        });
+
+        if (stateFeature) {
+          const bounds = L.latLngBounds(getLatLongBounds(stateFeature.geometry, 0.5));
+          center = bounds.getCenter();
+          zoom = mapElement.getBoundsZoom(bounds);
+        }
+      }
+
+      mapElement.setView(center, zoom, { animate: true });
+    }
   };
 }
 
@@ -301,6 +338,12 @@ const actionsMap = {
       data: action.data
     }
   ),
+  [SET_MAP_ELEMENT]: (state, action) => (
+    {
+      ...state,
+      element: action.element
+    }
+  ),
   [SET_MAP_FILTER]: (state, action) => (
     {
       ...state,
@@ -335,6 +378,7 @@ const actionsMap = {
 // --------------------------------------------------
 const initialState = {
   data: {},
+  element: null,
   error: false,
   errorMessage: '',
   fetching: true,

@@ -18,7 +18,7 @@ export default class ChoroplethMap extends Component {
   static propTypes = {
     data: PropTypes.object.isRequired,
     onClick: PropTypes.func.isRequired,
-    // setMapElement: PropTypes.func.isRequired
+    setMapElement: PropTypes.func.isRequired,
     year: PropTypes.number.isRequired
   };
 
@@ -215,9 +215,13 @@ export default class ChoroplethMap extends Component {
     };
   }
 
-  // componentDidUpdate() {
-  //   this.props.setMapElement(this.mapElement);
-  // }
+  componentDidMount() {
+    this.props.setMapElement(this.mapElement);
+  }
+
+  componentWillUnmount() {
+    this.props.setMapElement();
+  }
 
   render() {
     const { data } = this.props;

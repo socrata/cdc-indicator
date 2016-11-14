@@ -27,8 +27,10 @@ export default class Filters extends Component {
       })
     ),
     loadFilters: PropTypes.func,
+    locationColumn: PropTypes.string,
     onFilterChange: PropTypes.func,
     selected: PropTypes.object,
+    zoomToState: PropTypes.func,
     // from parent
     customClass: PropTypes.string,
     intro: PropTypes.string
@@ -47,8 +49,10 @@ export default class Filters extends Component {
             fetching,
             filters,
             intro,
+            locationColumn,
             onFilterChange,
-            selected } = this.props;
+            selected,
+            zoomToState } = this.props;
 
     // only render after config is loaded
     if (fetching) {
@@ -88,7 +92,9 @@ export default class Filters extends Component {
           {filters.map((filter, index) =>
             <Filter
               key={index}
+              locationColumn={locationColumn}
               onChange={onFilterChange}
+              zoomToState={zoomToState}
               value={_.get(selected, `[${filter.name}].id`)}
               {...filter}
             />
