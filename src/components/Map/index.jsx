@@ -14,6 +14,7 @@ export default class Map extends Component {
     fetching: PropTypes.bool,
     filters: PropTypes.array,
     initMap: PropTypes.func,
+    isDataReady: PropTypes.bool,
     mapData: PropTypes.object,
     onFilterChange: PropTypes.func,
     onStateClick: PropTypes.func,
@@ -27,13 +28,32 @@ export default class Map extends Component {
     latestYear: PropTypes.number
   };
 
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      didFilterChange: false
+    };
+  }
+
   componentDidMount() {
     this.props.initMap();
   }
 
   componentWillReceiveProps(nextProps) {
+    // if filter (other than location) changed, get ready to re-init map
     if (!_.isEqual(nextProps.selectedParentFilters, this.props.selectedParentFilters)) {
+      this.setState({
+        didFilterChange: true
+      });
+    }
+
+    // reinitialize map when data is ready (new 'latestYear' is ready)
+    if (!this.props.isDataReady && nextProps.isDataReady && this.state.didFilterChange) {
       this.props.initMap();
+      this.setState({
+        didFilterChange: false
+      });
     }
   }
 
