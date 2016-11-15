@@ -30,14 +30,21 @@ export default class DataTable extends Component {
     super(props);
 
     this.state = {
-      isModalOpen: false
+      isModalOpen: false,
+      originalLink: null
     };
 
     this.onClick = (event) => {
       event.preventDefault();
       this.setState({
-        isModalOpen: !this.state.isModalOpen
+        isModalOpen: !this.state.isModalOpen,
+        originalLink: event.target
       });
+    };
+
+    // when Modal is closed, put focus back on the original link that was used
+    this.onRequestClose = () => {
+      this.state.originalLink.focus();
     };
   }
 
@@ -207,6 +214,7 @@ export default class DataTable extends Component {
         </a>
         <Modal
           isOpen={this.state.isModalOpen}
+          onRequestClose={this.onRequestClose}
           style={modalStyles}
         >
           {table}
