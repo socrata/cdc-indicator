@@ -132,14 +132,15 @@ export default class ChartData {
           [location]: _.chain(valuesByLocation)
             .groupBy(CONFIG.breakoutId)
             .reduce((groupByBreakout, valuesByBreakout) => {
-              const breakout = valuesByBreakout[0][CONFIG.breakoutLabel];
+              const value = valuesByBreakout[0];
+              const breakout = value[CONFIG.breakoutLabel];
 
               return Object.assign({}, groupByBreakout, {
                 [breakout]: {
-                  value: valuesByBreakout[0].data_value,
+                  value: value.data_value,
                   limits: {
-                    high: valuesByBreakout[0].high_confidence_limit,
-                    low: valuesByBreakout[0].low_confidence_limit
+                    high: value.high_confidence_limit,
+                    low: value.low_confidence_limit
                   }
                 }
               });
@@ -225,13 +226,14 @@ export default class ChartData {
     const transformedData = _.chain(groupedData)
       .groupBy(CONFIG.breakoutId)
       .reduce((groupedByBreakout, valuesByBreakout, breakout) => {
+        const value = valuesByBreakout[0];
         // side effect
-        unit = valuesByBreakout[0].data_value_unit || '';
+        unit = value.data_value_unit || '';
 
         return Object.assign({}, groupedByBreakout, {
           [breakout]: {
-            value: valuesByBreakout[0].data_value,
-            label: valuesByBreakout[0][CONFIG.breakoutLabel]
+            value: value.data_value,
+            label: value[CONFIG.breakoutLabel]
           }
         });
       }, {})
