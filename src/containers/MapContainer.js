@@ -18,6 +18,7 @@ const mapStateToProps = (state) => {
     filters: state.map.filterData,
     isDataReady: !state.indicatorData.fetching && !state.indicatorData.error,
     mapData: state.map.data,
+    rawData: state.map.rawData,
     selected: state.map.filterSelected,
     selectedParentFilters: _.omit(state.filters.selected, CONFIG.locationId),
     selectedState

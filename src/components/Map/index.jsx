@@ -17,6 +17,7 @@ export default class Map extends Component {
     mapData: PropTypes.object,
     onFilterChange: PropTypes.func,
     onStateClick: PropTypes.func,
+    rawData: PropTypes.array,
     selected: PropTypes.object,
     selectedParentFilters: PropTypes.object,
     selectedState: PropTypes.string,
@@ -66,6 +67,7 @@ export default class Map extends Component {
             mapData,
             onFilterChange,
             onStateClick,
+            rawData,
             selected,
             selectedState,
             setMapElement,
@@ -128,10 +130,7 @@ export default class Map extends Component {
       <div>
         {chartTitle}
         {filterElement}
-        <DataTable
-          data={mapData}
-          chartType="map"
-        />
+        <DataTable rawData={rawData} />
         <Choropleth
           data={mapData}
           year={latestYear}

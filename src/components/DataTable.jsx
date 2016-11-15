@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import Modal from 'react-modal';
-import _ from 'lodash';
+// import _ from 'lodash';
 import styles from 'styles/dataTable.css';
 
 const modalStyles = {
@@ -19,11 +19,48 @@ const modalStyles = {
   }
 };
 
+const captionColumns = [
+  'topic',
+  'question',
+  'data_value_type'
+];
+
+const columnsToRender = {
+  year: {
+    header: 'Year'
+  },
+  locationdesc: {
+    header: 'Location'
+  },
+  stratification1: {
+    header: 'Breakout'
+  },
+  data_value: {
+    header: 'Value',
+    align: 'right'
+  },
+  low_confidence_limit: {
+    header: 'Low Confidence Limit',
+    align: 'right'
+  },
+  high_confidence_limit: {
+    header: 'High Confidence Limit',
+    align: 'right'
+  },
+  data_value_unit: {
+    header: 'Unit'
+  }
+};
+
 export default class DataTable extends Component {
   static propTypes = {
-    chartData: PropTypes.object,
-    chartType: PropTypes.string,
-    data: PropTypes.object
+    latestYear: PropTypes.number,
+    rawData: PropTypes.array,
+    showOnlyLatest: PropTypes.bool
+  };
+
+  static defaultProps = {
+    showOnlyLatest: false
   };
 
   constructor(props) {
@@ -48,158 +85,67 @@ export default class DataTable extends Component {
     };
   }
 
-  formatLatestData(chartConfig) {
-    const caption = _.get(chartConfig, 'axis.y.label.text', '');
-    const headers = _.chain(chartConfig)
-      .get('data.columns', [])
-      .map(row => _.get(row, '[0]', ''))
-      .value();
-    headers.unshift('Breakout');
-    const rows = _.chain(chartConfig)
-      .get('axis.x.categories', [])
-      .map((category, index) => {
-        const dataRow = _.chain(chartConfig)
-          .get('data.columns', [])
-          .map(row => _.get(row, `[${index + 1}]`) || 'N/A')
-          .value();
-        dataRow.unshift(category);
-        return dataRow;
-      })
-      .value();
-
-    return {
-      caption,
-      headers,
-      rows,
-      hasData: headers.length > 0 && rows.length > 0
-    };
-  }
-
-  formatMapData(data) {
-    if (!data.hasOwnProperty('features')) {
-      return {};
-    }
-
-    const unit = data.features[0].properties.unit;
-    const caption = (unit.length <= 1) ? 'Data by Location' :
-      `Data by Location (${unit})`;
-
-    const headers = ['Location', 'Value'];
-    const rows = _.chain(data.features)
-      .map(feature =>
-        [
-          feature.properties.name,
-          (feature.properties.value) ?
-            `${feature.properties.value}${(unit.length === 1) ? unit : ''}` :
-            'N/A'
-        ]
-      )
-      .sortBy(row => row[0])
-      .value();
-
-    return {
-      caption,
-      headers,
-      rows,
-      hasData: headers.length > 0 && rows.length > 0
-    };
-  }
-
-  formatPieData(chartConfig) {
-    const caption = 'Data by Breakout';
-    const labels = _.get(chartConfig, 'data.columns', []).map(x => x[0]);
-    const values = _.get(chartConfig, 'data.columns', []).map(x => x[1]);
-    const sum = _.sum(values);
-    const ratios = values.map(x => _.round((x / sum * 100), 1));
-    const headers = ['Breakout', 'Value', 'Ratio'];
-    const rows = labels.map((label, index) => [label, values[index], `${ratios[index]}%`]);
-
-    return {
-      caption,
-      headers,
-      rows,
-      hasData: headers.length > 0 && rows.length > 0
-    };
-  }
-
-  formatTrendData(chartConfig) {
-    const caption = _.get(chartConfig, 'axis.y.label.text', '');
-    const headers = _.chain(chartConfig)
-      .get('data.columns', [])
-      .find(x => x[0] === 'year')
-      .slice(1)
-      .value();
-    headers.unshift('Location - Breakout');
-    const rows = _.chain(chartConfig)
-      .get('data.columns', [])
-      .filter(x => x[0] !== 'year')
-      .map(row => row.map(cell => cell || 'N/A'))
-      .value();
-
-    return {
-      caption,
-      headers,
-      rows,
-      hasData: headers.length > 0 && rows.length > 0
-    };
-  }
-
   render() {
-    const { data,
-            chartData,
-            chartType } = this.props;
+    const { latestYear,
+            rawData,
+            showOnlyLatest } = this.props;
 
-    const chartConfig = (chartData) ? chartData.chartConfig() : null;
-    let tableData = {};
+    let table;
+    let displayData = rawData;
 
-    switch (chartType) {
-      case 'map':
-        tableData = this.formatMapData(data);
-        break;
-      case 'pie':
-        tableData = this.formatPieData(chartConfig);
-        break;
-      case 'trend':
-        tableData = this.formatTrendData(chartConfig);
-        break;
-      case 'latest':
-        tableData = this.formatLatestData(chartConfig);
-        break;
-      default:
+    if (showOnlyLatest) {
+      displayData = rawData.filter(row => row.year === latestYear);
     }
 
-    let table = null;
+    if (rawData.length > 0) {
+      const caption = captionColumns.map((column, index) => (
+        <div key={index}>
+          {rawData[0][column]}
+        </div>
+      ));
 
-    if (tableData.hasData) {
+      const header = Object.keys(columnsToRender).map((column, index) => (
+        <th key={index} scope="col">
+          {columnsToRender[column].header}
+        </th>
+      ));
+
+      const rows = displayData.map((row, index) => (
+        <tr key={index}>
+          {
+            Object.keys(columnsToRender).map((column, i) => {
+              let style;
+              if (columnsToRender[column].align) {
+                style = styles[columnsToRender[column].align];
+              }
+
+              return (
+                <td key={i} className={style}>{row[column] || 'N/A'}</td>
+              );
+            })
+          }
+        </tr>
+      ));
+
       table = (
         <table className={styles.dataTable}>
-          <caption>{tableData.caption}</caption>
+          <caption>{caption}</caption>
           <thead>
-            <tr>
-              {
-                tableData.headers.map((header, index) =>
-                  <th key={index} scope="col">{header}</th>
-                )
-              }
-            </tr>
+            <tr>{header}</tr>
           </thead>
           <tbody>
-            {
-              tableData.rows.map((row, index) =>
-                <tr key={index}>
-                  {
-                    row.map((cell, i) => {
-                      if (i === 0) {
-                        return <th key={i} scope="row">{cell}</th>;
-                      }
-                      return <td key={i}>{cell}</td>;
-                    })
-                  }
-                </tr>
-              )
-            }
+            {rows}
           </tbody>
         </table>
+      );
+    }
+
+    let hiddenTable;
+    if (!this.state.isModalOpen) {
+      hiddenTable = (
+        <div className="visually-hidden">
+         {table}
+        </div>
       );
     }
 
@@ -209,9 +155,11 @@ export default class DataTable extends Component {
           href="#"
           className={styles.openTable}
           onClick={this.onClick}
+          aria-hidden="true"
         >
           View data as a table
         </a>
+        {hiddenTable}
         <Modal
           isOpen={this.state.isModalOpen}
           onRequestClose={this.onRequestClose}

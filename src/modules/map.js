@@ -10,6 +10,7 @@ import { CONFIG, GEOJSON } from 'constants';
 // --------------------------------------------------
 
 export const SET_MAP_DATA = 'SET_MAP_DATA';
+export const SET_MAP_RAW_DATA = 'SET_MAP_RAW_DATA';
 export const SET_MAP_ELEMENT = 'SET_MAP_ELEMENT';
 export const SET_MAP_FILTER = 'SET_MAP_FILTER';
 export const SET_MAP_FILTER_DATA = 'SET_MAP_FILTER_DATA';
@@ -29,6 +30,13 @@ function startsWithVowel(string) {
 function setMapData(data = {}) {
   return {
     type: SET_MAP_DATA,
+    data
+  };
+}
+
+function setMapRawData(data = []) {
+  return {
+    type: SET_MAP_RAW_DATA,
     data
   };
 }
@@ -118,6 +126,8 @@ function formatMapData(response) {
   return (dispatch) => {
     // typecast data in specific columns (since everything is string in the received JSON)
     const data = response.map(rowFormatter);
+
+    dispatch(setMapRawData(data));
 
     // inject into GeoJSON
     const dataByState = _.groupBy(data, CONFIG.locationId);
@@ -309,6 +319,12 @@ const actionsMap = {
       data: action.data
     }
   ),
+  [SET_MAP_RAW_DATA]: (state, action) => (
+    {
+      ...state,
+      rawData: action.data
+    }
+  ),
   [SET_MAP_ELEMENT]: (state, action) => (
     {
       ...state,
@@ -354,7 +370,8 @@ const initialState = {
   errorMessage: '',
   fetching: true,
   filterData: [],
-  filterSelected: {}
+  filterSelected: {},
+  rawData: []
 };
 
 export default function mapReducer(state = initialState, action) {

@@ -50,8 +50,9 @@ const Chart = ({ config, data, latestYear }) => {
     <div>
       {chartTitle}
       <DataTable
-        chartData={chartData}
-        chartType={(config.type === 'pie') ? 'pie' : config.data}
+        rawData={data}
+        showOnlyLatest={config.data !== 'trend'}
+        latestYear={latestYear}
       />
       {chartElement}
       {chartFootnote}
