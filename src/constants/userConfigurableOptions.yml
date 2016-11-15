@@ -67,7 +67,7 @@ chartConfig:
   - data: latest
     footnote:
     published: true
-    indicator: CVD1_3
+    indicator: CVD1_3-x
     sort: '2'
     title: Latest
     type: bar

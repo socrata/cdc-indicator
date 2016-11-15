@@ -7,6 +7,7 @@ import { CONFIG } from 'constants';
 // Constants
 // --------------------------------------------------
 
+export const SET_COMPARE_FLAG = 'SET_COMPARE_FLAG';
 export const SET_INDICATOR_DATA = 'SET_INDICATOR_DATA';
 export const SET_INDICATOR_ERROR = 'SET_INDICATOR_ERROR';
 export const SET_INDICATOR_LATEST_YEAR = 'SET_INDICATOR_LATEST_YEAR';
@@ -45,6 +46,13 @@ function setRequestStatus(status) {
   };
 }
 
+export function setCompareFlag(status) {
+  return {
+    type: SET_COMPARE_FLAG,
+    status
+  };
+}
+
 function formatIndicatorData(response) {
   return (dispatch, getState) => {
     // typecast data in specific columns (since everything is string in the received JSON)
@@ -69,10 +77,11 @@ function formatIndicatorData(response) {
 function fetchIndicatorData() {
   return (dispatch, getState) => {
     const filters = _.get(getState(), 'filters.selected', {});
+    const compareToNational = _.get(getState(), 'indicatorData.compareToNational', true);
 
     // if a state other than "US" is selected, also get "US" data
     const filterCondition = Object.keys(filters).map(key => {
-      if (key === CONFIG.locationId && filters[key].id !== 'US') {
+      if (key === CONFIG.locationId && filters[key].id !== 'US' && compareToNational) {
         return {
           operator: 'OR',
           condition: [
@@ -131,6 +140,12 @@ export function fetchData() {
 // Action Handlers
 // --------------------------------------------------
 const actionsMap = {
+  [SET_COMPARE_FLAG]: (state, action) => (
+    {
+      ...state,
+      compareToNational: action.status
+    }
+  ),
   [SET_INDICATOR_DATA]: (state, action) => (
     {
       ...state,
@@ -161,6 +176,7 @@ const actionsMap = {
 // Reducers
 // --------------------------------------------------
 const initialState = {
+  compareToNational: true,
   data: [],
   error: false,
   errorMessage: '',

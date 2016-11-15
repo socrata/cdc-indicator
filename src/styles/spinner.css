@@ -33,3 +33,16 @@
   position: relative;
   min-height: 320px;
 }
+
+.compareCheckbox {
+  display: inline-block;
+  margin-bottom: 1em;
+}
+
+.compareCheckbox input {
+  margin-right: 0.5em;
+}
+
+.compareCheckbox input:focus {
+  box-shadow: 0 0 2px rgba(102, 175, 233, 0.9), 0 0 6px rgba(102, 175, 233, 0.6);
+}

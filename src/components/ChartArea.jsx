@@ -3,6 +3,7 @@ import _ from 'lodash';
 import Chart from 'components/Chart';
 import MapContainer from 'containers/MapContainer';
 import Grid from 'layouts/Grid';
+import { CONFIG } from 'constants';
 import styles from 'styles/spinner.css';
 
 export default class ChartArea extends Component {
@@ -11,6 +12,7 @@ export default class ChartArea extends Component {
     customChildClass: PropTypes.string,
     // from redux store
     chartConfiguration: PropTypes.array,
+    compareToNational: PropTypes.bool,
     error: PropTypes.bool,
     errorMessage: PropTypes.string,
     fetching: PropTypes.bool,
@@ -18,8 +20,18 @@ export default class ChartArea extends Component {
     latestYear: PropTypes.number,
     loadData: PropTypes.func,
     rawData: PropTypes.array,
-    selectedFilters: PropTypes.object
+    selectedFilters: PropTypes.object,
+    setCompareFlag: PropTypes.func
   };
+
+  constructor(props) {
+    super(props);
+
+    this.onChange = (event) => {
+      this.props.setCompareFlag(event.target.checked);
+      this.props.loadData();
+    };
+  }
 
   componentWillMount() {
     // when component will be mounted and filters are already loaded, load data
@@ -43,13 +55,15 @@ export default class ChartArea extends Component {
 
   render() {
     const { chartConfiguration,
+            compareToNational,
             customChildClass,
             error,
             errorMessage,
             fetching,
             isFilterReady,
             latestYear,
-            rawData } = this.props;
+            rawData,
+            selectedFilters } = this.props;
 
     // only render after filters are ready
     if (!isFilterReady) {
@@ -96,6 +110,26 @@ export default class ChartArea extends Component {
       );
     }
 
+    // display checkbox to indicate whether to include national-level data in charts
+    const doesIncludeComparisonChart = chartConfiguration.reduce((acc, config) => {
+      return acc || config.type === 'bar' || config.type === 'column' || config.type === 'line';
+    }, false);
+
+    let compareElement;
+    if (doesIncludeComparisonChart &&
+        _.get(selectedFilters, `[${CONFIG.locationId}].id`, 'US') !== 'US') {
+      compareElement = (
+        <label className={styles.compareCheckbox}>
+          <input
+            type="checkbox"
+            checked={compareToNational}
+            onChange={this.onChange}
+          />
+          Compare to U.S. nationwide data if available.
+        </label>
+      );
+    }
+
     const charts = chartConfiguration.map((config, index) => {
       if (config.type === 'map') {
         return (
@@ -120,6 +154,7 @@ export default class ChartArea extends Component {
     return (
       <div className={styles.spinnerContainer}>
         {nowLoadingElement}
+        {compareElement}
         <Grid customChildClass={customChildClass}>
           {charts}
         </Grid>

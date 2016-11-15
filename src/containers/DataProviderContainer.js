@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import _ from 'lodash';
-import { fetchData } from 'modules/indicatorData';
+import { fetchData, setCompareFlag } from 'modules/indicatorData';
 import ChartArea from 'components/ChartArea';
 import { CONFIG } from 'constants';
 
@@ -21,6 +21,7 @@ const mapStateToProps = (state) => {
 
   return {
     chartConfiguration,
+    compareToNational: state.indicatorData.compareToNational,
     error: state.indicatorData.error,
     errorMessage: state.indicatorData.errorMessage,
     fetching: state.indicatorData.fetching,
@@ -35,6 +36,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     loadData: () => {
       dispatch(fetchData());
+    },
+    setCompareFlag: (status) => {
+      dispatch(setCompareFlag(status));
     }
   };
 };
