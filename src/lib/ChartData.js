@@ -5,19 +5,6 @@
 import _ from 'lodash';
 import { CONFIG } from '../constants';
 
-/** Helper functions **/
-
-// find data from year specified
-function getDataForYear(array, key, year) {
-  const dataForYear = _.find(array, { year });
-  const value = _.get(dataForYear, key);
-
-  // return null if value is invalid
-  // isNaN(undefined) returns true (whereas _.isNaN would've returned false)
-  return isNaN(value) ? 'N/A' : value;
-}
-
-/** main class **/
 export default class ChartData {
   constructor(options) {
     this.data = options.data;
@@ -131,9 +118,12 @@ export default class ChartData {
 
   // generate C3 configuration object, when major axis is breakout categories
   _getConfigByBreakout() {
+    // work with latest year's data
+    const data = this.data.filter(row => row.year === this.latestYear);
+
     // group data by state (main data series),
     // then by breakout, and get values from the latest year
-    const groupedData = _.chain(this.data)
+    const groupedData = _.chain(data)
       .groupBy(CONFIG.locationId)
       .reduce((groupByLocation, valuesByLocation) => {
         const location = valuesByLocation[0][CONFIG.locationLabel];
@@ -146,14 +136,10 @@ export default class ChartData {
 
               return Object.assign({}, groupByBreakout, {
                 [breakout]: {
-                  value: getDataForYear(valuesByBreakout, 'data_value', this.latestYear),
+                  value: valuesByBreakout[0].data_value,
                   limits: {
-                    high: getDataForYear(
-                      valuesByBreakout,
-                      'high_confidence_limit',
-                      this.latestYear
-                    ),
-                    low: getDataForYear(valuesByBreakout, 'low_confidence_limit', this.latestYear)
+                    high: valuesByBreakout[0].high_confidence_limit,
+                    low: valuesByBreakout[0].low_confidence_limit
                   }
                 }
               });
@@ -164,7 +150,7 @@ export default class ChartData {
       .value();
 
     // generate x axis values
-    const categories = _.chain(this.data)
+    const categories = _.chain(data)
       .keyBy(CONFIG.breakoutId)
       .map(value => value[CONFIG.breakoutLabel])
       .sortBy()
@@ -218,8 +204,11 @@ export default class ChartData {
 
   // get C3 config for a pie chart, where data array is a breakout category
   _getConfigForPieChart() {
+    // work with latest year's data
+    const data = this.data.filter(row => row.year === this.latestYear);
+
     // group data by state (data series) to see if we are displaying state or national data
-    const groupedByLocation = _.groupBy(this.data, CONFIG.locationId);
+    const groupedByLocation = _.groupBy(data, CONFIG.locationId);
 
     // use National data by default
     let groupedData = groupedByLocation.US || [];
@@ -241,7 +230,7 @@ export default class ChartData {
 
         return Object.assign({}, groupedByBreakout, {
           [breakout]: {
-            value: getDataForYear(valuesByBreakout, 'data_value', this.latestYear),
+            value: valuesByBreakout[0].data_value,
             label: valuesByBreakout[0][CONFIG.breakoutLabel]
           }
         });

@@ -112,6 +112,12 @@ function fetchIndicatorData() {
       operator: 'IS NOT NULL'
     });
 
+    // only get rows where data is available
+    filterCondition.push({
+      column: 'data_value',
+      operator: 'IS NOT NULL'
+    });
+
     new Soda(CONFIG.soda)
       .dataset(CONFIG.data.datasetId)
       .where(filterCondition)
