@@ -34,8 +34,8 @@ export default class C3ChartUpdatable extends C3Chart {
   componentWillReceiveProps(nextProps) {
     if (!_.isEqual(nextProps.data.columns, this.props.data.columns)) {
       const oldKeys = this.props.data.columns.map((row) => row[0]);
-      const newKeys = nextProps.data.columns.map((row) => row[0]);
-      _.pullAll(oldKeys, newKeys); // old keys to unload
+      // const newKeys = nextProps.data.columns.map((row) => row[0]);
+      // _.pullAll(oldKeys, newKeys); // old keys to unload
 
       const newConfig = {
         unload: oldKeys
@@ -52,6 +52,8 @@ export default class C3ChartUpdatable extends C3Chart {
       }
 
       this.chart.load(Object.assign({}, nextProps.data, newConfig));
+      // this.chart.resize({ width: 273 });
+      this.chart.flush();
     }
   }
 

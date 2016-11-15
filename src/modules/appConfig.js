@@ -99,7 +99,7 @@ function formatConfig(responses) {
     const chart = _.groupBy(chartConfig, 'indicator');
 
     // set data source object
-    const dataSource = _.groupBy(dataSourceConfig, CONFIG.indicatorId);
+    const dataSource = _.keyBy(dataSourceConfig, CONFIG.indicatorId);
 
     // save config object
     dispatch(setConfig({ core, filter, chart, dataSource }));

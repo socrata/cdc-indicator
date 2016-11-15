@@ -3,11 +3,12 @@ import _ from 'lodash';
 import DataSources from 'components/DataSources';
 import DataProviderContainer from 'containers/DataProviderContainer';
 import MainFilterContainer from 'containers/MainFilterContainer';
+import { CONFIG } from 'constants';
 
 import styles from 'styles/BaseLayout.css';
 
 const BaseLayout = ({ config = {}, dataSources = {}, selectedFilters = {} }) => {
-  const selectedIndicator = _.get(selectedFilters, config.indicator_id_column, { label: '' });
+  const selectedIndicator = _.get(selectedFilters, CONFIG.indicatorId, { label: '' });
 
   const intro = (!config.intro) ? null :
     <p className={styles.appIntro}>{config.intro}</p>;

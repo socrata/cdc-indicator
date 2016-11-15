@@ -12,7 +12,11 @@ function createElement(label, url, text, style) {
       {' '}
       {
         (!url) ? textElement :
-          <a href={url}>{textElement}</a>
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+          >{textElement}</a>
       }
     </p>
   );

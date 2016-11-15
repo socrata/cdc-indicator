@@ -222,11 +222,11 @@ export default class ChartData {
     const groupedByLocation = _.groupBy(this.data, CONFIG.locationId);
 
     // use National data by default
-    let groupedData = groupedByLocation.US;
+    let groupedData = groupedByLocation.US || [];
+    const state = _.without(Object.keys(groupedByLocation), 'US').shift();
 
     // .. but if there are two locations, use state's
-    if (_.size(groupedByLocation) === 2) {
-      const state = _.without(Object.keys(groupedByLocation), 'US').shift();
+    if (state) {
       groupedData = groupedByLocation[state];
     }
 
