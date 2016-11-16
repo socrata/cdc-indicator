@@ -29,67 +29,53 @@ export default class C3ChartUpdatable extends C3Chart {
     this.getLC = (id, index) => {
       return _.get(this.props, `custom.limits[${id}][${index}].low`, 'N/A');
     };
+
+    this.formatTooltips = (originalProps) => {
+      let newProps;
+
+      // override tooltip format
+      if (_.get(originalProps, 'data.type') !== 'pie') {
+        newProps = Object.assign({}, originalProps, {
+          tooltip: {
+            format: {
+              value: (value, ratio, id, index) => {
+                const lc = `${this.getLC(id, index)}${this.getUnit()}`;
+                const hc = `${this.getHC(id, index)}${this.getUnit()}`;
+                const cl = (lc === 'N/A' && hc === 'N/A') ? 'N/A' : `${lc}–${hc}`;
+                return `${value}${this.getUnit()} (${cl})`;
+              }
+            },
+            contents: customTooltip
+          }
+        });
+      } else {
+        newProps = Object.assign({}, originalProps, {
+          tooltip: {
+            format: {
+              value: (value, ratio) => {
+                return `
+                  ${value}${this.getUnit()}
+                  (${d3.format('.1%')(ratio)} of total)
+                `;
+              }
+            }
+          }
+        });
+      }
+
+      return newProps;
+    };
   }
 
   componentWillReceiveProps(nextProps) {
     if (!_.isEqual(nextProps.data.columns, this.props.data.columns)) {
-      const oldKeys = this.props.data.columns.map((row) => row[0]);
-      // const newKeys = nextProps.data.columns.map((row) => row[0]);
-      // _.pullAll(oldKeys, newKeys); // old keys to unload
-
-      const newConfig = {
-        unload: oldKeys
-      };
-
-      if (nextProps.axis && nextProps.axis.y) {
-        this.chart.axis.labels({
-          y: nextProps.axis.y.label.text
-        });
-      }
-
-      if (nextProps.axis && nextProps.axis.x && nextProps.axis.x.categories) {
-        newConfig.categories = nextProps.axis.x.categories;
-      }
-
-      this.chart.load(Object.assign({}, nextProps.data, newConfig));
-      // this.chart.resize({ width: 273 });
-      this.chart.flush();
+      const props = this.formatTooltips(nextProps);
+      this.updateChart(props);
     }
   }
 
   componentDidMount() {
-    let props = this.props;
-
-    // override tooltip format
-    if (_.get(this.props, 'data.type') !== 'pie') {
-      props = Object.assign({}, this.props, {
-        tooltip: {
-          format: {
-            value: (value, ratio, id, index) => {
-              const lc = `${this.getLC(id, index)}${this.getUnit()}`;
-              const hc = `${this.getHC(id, index)}${this.getUnit()}`;
-              const cl = (lc === 'N/A' && hc === 'N/A') ? 'N/A' : `${lc}–${hc}`;
-              return `${value}${this.getUnit()} (${cl})`;
-            }
-          },
-          contents: customTooltip
-        }
-      });
-    } else {
-      props = Object.assign({}, this.props, {
-        tooltip: {
-          format: {
-            value: (value, ratio) => {
-              return `
-                ${props.year || ''} Data: ${value}${this.getUnit()}
-                (${d3.format('.1%')(ratio)} of total)
-              `;
-            }
-          }
-        }
-      });
-    }
-
+    const props = this.formatTooltips(this.props);
     this.updateChart(props);
   }
 }
