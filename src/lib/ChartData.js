@@ -90,6 +90,9 @@ export default class ChartData {
       size: {
         height: CONFIG.map.defaults.height || 320
       },
+      padding: {
+        right: 10
+      },
       data: {
         columns,
         x: 'year',
