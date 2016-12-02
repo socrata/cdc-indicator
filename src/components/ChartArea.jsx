@@ -49,19 +49,6 @@ export default class ChartArea extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    // when filter gets loaded (goes from true to false), load data
-    if (!this.props.isFilterReady && nextProps.isFilterReady) {
-      nextProps.loadData();
-    }
-
-    // when new filter is selected, reload data (filter must have been ready before this check)
-    if (this.props.isFilterReady &&
-        !_.isEqual(nextProps.selectedFilters, this.props.selectedFilters)) {
-      nextProps.loadData();
-    }
-  }
-
-  shouldComponentUpdate(nextProps) {
     // save old chart configurations
     if (this.props.fetching === nextProps.fetching && nextProps.chartConfiguration.length > 0) {
       this.setState({
@@ -69,7 +56,21 @@ export default class ChartArea extends Component {
       });
     }
 
-    return this.props.fetching !== nextProps.fetching;
+    // when filter gets loaded (goes from true to false), load data
+    if (!this.props.isFilterReady && nextProps.isFilterReady) {
+      nextProps.loadData();
+    }
+
+    // when new filter is selected, reload data (filter must have been ready before this check)
+    if (nextProps.isFilterReady &&
+        !_.isEqual(nextProps.selectedFilters, this.props.selectedFilters)) {
+      nextProps.loadData();
+    }
+  }
+
+  shouldComponentUpdate(nextProps) {
+    return this.props.fetching !== nextProps.fetching ||
+      this.props.isFilterReady !== nextProps.isFilterReady;
   }
 
   render() {

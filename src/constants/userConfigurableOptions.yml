@@ -82,12 +82,12 @@ chartConfig:
     published: true
     indicator: CVD1_3
     sort: '1'
-    title: Map
-    type: map
+    title: Trend
+    type: line
   - data: latest
     footnote:
     published: true
-    indicator: CVD1_3-x
+    indicator: CVD1_3
     sort: '2'
     title: Latest
     type: bar
