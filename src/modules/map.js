@@ -2,7 +2,7 @@ import _ from 'lodash';
 import L from 'leaflet';
 import { getLatLongBounds, rowFormatter } from 'lib/helpers';
 import Soda from 'lib/Soda';
-import { setFilter } from 'modules/filters';
+import { setLocationFilter } from 'modules/filters';
 import { CONFIG, GEOJSON } from 'constants';
 
 // --------------------------------------------------
@@ -106,11 +106,9 @@ export function zoomToState(state) {
 
 export function setStateFilter(abbreviation, state) {
   return (dispatch) => {
-    dispatch(setFilter({
-      [CONFIG.locationId]: {
-        id: abbreviation,
-        label: state
-      }
+    dispatch(setLocationFilter({
+      id: abbreviation,
+      label: state
     }));
   };
 }
@@ -142,6 +140,7 @@ function formatMapData(response) {
       const properties = Object.assign({}, feature.properties, {
         value: dataByState[state][0].data_value,
         unit: dataByState[state][0].data_value_unit,
+        dataValueType: dataByState[state][0].data_value_type,
         highConfidence: dataByState[state][0].high_confidence_limit,
         lowConfidence: dataByState[state][0].low_confidence_limit
       });

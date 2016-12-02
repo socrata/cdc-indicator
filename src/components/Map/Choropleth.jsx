@@ -110,6 +110,8 @@ export default class ChoroplethMap extends Component {
       this.mapElement.setView(CONFIG.map.defaults.center, CONFIG.map.defaults.zoom, {
         animate: true
       });
+
+      this.props.onClick('US', 'United States');
     };
 
     this.selectState = (e) => {
@@ -184,6 +186,7 @@ export default class ChoroplethMap extends Component {
         return <div>Hover over a state</div>;
       }
 
+      const valueType = _.get(properties, 'dataValueType');
       const hc = _.get(properties, 'highConfidence');
       const lc = _.get(properties, 'lowConfidence');
 
@@ -203,7 +206,7 @@ export default class ChoroplethMap extends Component {
             <strong>{properties.name}</strong>
           </div>
           <div>
-            {`${this.props.year} Data: ${value}`}
+            {`${this.props.year} ${valueType}: ${value}`}
           </div>
           <div>
             {`Confidence Limits: ${cl}`}
