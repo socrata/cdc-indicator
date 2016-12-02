@@ -8,9 +8,16 @@ import { CONFIG } from 'constants';
 import styles from 'styles/filter.css';
 
 function createOption(data, index) {
-  const { text,
+  const { isDisabled,
+          text,
           value } = data;
-  return <option key={index} value={value}>{text || value}</option>;
+
+  const disabled = (isDisabled) ? '(No data is available, select another state.)' : '';
+  return (
+    <option key={index} value={value} disabled={isDisabled || false}>
+      {text || value} {disabled}
+    </option>
+  );
 }
 
 export default class Filter extends Component {
@@ -23,7 +30,8 @@ export default class Filter extends Component {
         value: PropTypes.oneOfType([
           PropTypes.string,
           PropTypes.number
-        ]).isRequired
+        ]).isRequired,
+        isDisabled: PropTypes.bool
       })
     ),
     optionGroups: PropTypes.arrayOf(

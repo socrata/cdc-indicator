@@ -82,8 +82,8 @@ chartConfig:
     published: true
     indicator: CVD1_3
     sort: '1'
-    title: Pie
-    type: pie
+    title: Map
+    type: map
   - data: latest
     footnote:
     published: true
@@ -93,7 +93,7 @@ chartConfig:
     type: bar
   - footnote:
     published: true
-    indicator: MHL002
+    indicator: CAN4_2
     sort: '1'
     title: Map
     type: map

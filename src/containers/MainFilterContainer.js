@@ -1,14 +1,21 @@
 import { connect } from 'react-redux';
-import { fetchFilters, setFilter } from 'modules/filters';
+import { fetchFilters,
+         setFilter,
+         setIndicatorFilter,
+         setLocationFilter } from 'modules/filters';
 import { zoomToState } from 'modules/map';
 import Filters from 'components/Filters';
+import { CONFIG } from 'constants';
 
 const mapStateToProps = (state) => {
   return {
     error: state.filters.error,
     errorMessage: state.filters.errorMessage,
     fetching: state.filters.fetching,
-    filters: state.filters.data,
+    // filters: state.filters.data,
+    filters: state.appConfig.config.filter.map((row) => {
+      return state.filters.data[row.value_column];
+    }),
     selected: state.filters.selected
   };
 };
@@ -20,14 +27,28 @@ const mapDispatchToProps = (dispatch) => {
     },
     onFilterChange: (event) => {
       const index = event.nativeEvent.target.selectedIndex;
-      dispatch(
-        setFilter({
-          [event.target.name]: {
+
+      switch (event.target.name) {
+        case CONFIG.indicatorId:
+          dispatch(setIndicatorFilter({
             id: event.target.value,
             label: event.nativeEvent.target[index].text
-          }
-        })
-      );
+          }));
+          break;
+        case CONFIG.locationId:
+          dispatch(setLocationFilter({
+            id: event.target.value,
+            label: event.nativeEvent.target[index].text
+          }));
+          break;
+        default:
+          dispatch(setFilter({
+            [event.target.name]: {
+              id: event.target.value,
+              label: event.nativeEvent.target[index].text
+            }
+          }));
+      }
     },
     zoomToState: (state) => {
       dispatch(zoomToState(state));
