@@ -121,7 +121,7 @@ function fetchIndicatorData() {
     new Soda(CONFIG.soda)
       .dataset(CONFIG.data.datasetId)
       .where(filterCondition)
-      .order('year')
+      .order(CONFIG.breakoutId)
       .fetchData()
       .then((response) => {
         dispatch(formatIndicatorData(response));

@@ -209,10 +209,10 @@ export default class ChartData {
   // get C3 config for a pie chart, where data array is a breakout category
   _getConfigForPieChart() {
     // work with latest year's data
-    const data = this.data.filter(row => row.year === this.latestYear);
+    // const data = this.data.filter(row => row.year === this.latestYear);
 
     // group data by state (data series) to see if we are displaying state or national data
-    const groupedByLocation = _.groupBy(data, CONFIG.locationId);
+    const groupedByLocation = _.groupBy(this.data, CONFIG.locationId);
 
     // use National data by default
     let groupedData = groupedByLocation.US || [];
@@ -229,15 +229,21 @@ export default class ChartData {
     const transformedData = _.chain(groupedData)
       .groupBy(CONFIG.breakoutId)
       .reduce((groupedByBreakout, valuesByBreakout, breakout) => {
-        const value = valuesByBreakout[0];
-        // side effect
-        unit = value.data_value_unit || '';
+        const label = valuesByBreakout[0][CONFIG.breakoutLabel];
+        const data = _.find(valuesByBreakout, { year: this.latestYear });
+        let value = 0;
+
+        if (data) {
+          // side effect
+          if (unit === undefined || unit === '') {
+            unit = data.data_value_unit || '';
+          }
+
+          value = data.data_value;
+        }
 
         return Object.assign({}, groupedByBreakout, {
-          [breakout]: {
-            value: value.data_value,
-            label: value[CONFIG.breakoutLabel]
-          }
+          [breakout]: { value, label }
         });
       }, {})
       .value();

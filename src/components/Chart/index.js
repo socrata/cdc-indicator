@@ -9,6 +9,10 @@ import LineChart from './LineChart';
 import PieChart from './PieChart';
 
 const Chart = ({ config, data, latestYear }) => {
+  if (latestYear === -1) {
+    return null;
+  }
+
   let dataSeries = config.data || 'trend';
   if (config.type === 'pie') {
     dataSeries = 'pie';
