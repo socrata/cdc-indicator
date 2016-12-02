@@ -81,7 +81,7 @@ export default class Map extends Component {
             <i className="fa fa-spin fa-circle-o-notch"></i>
           </p>
           <p>
-            Loading Visualizations...
+            Loading Map...
           </p>
         </div>
       );

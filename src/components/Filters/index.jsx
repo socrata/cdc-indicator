@@ -35,6 +35,10 @@ export default class Filters extends Component {
     intro: PropTypes.string
   };
 
+  static defaultProps = {
+    filters: []
+  };
+
   componentWillMount() {
     if (this.props.loadFilters) {
       this.props.loadFilters();
@@ -52,15 +56,16 @@ export default class Filters extends Component {
             selected,
             zoomToState } = this.props;
 
+    let loadingElement;
     // only render after config is loaded
     if (fetching) {
-      return (
-        <div className={styles.shortSpinner}>
+      loadingElement = (
+        <div className={styles.shortSpinnerOverlay}>
           <p>
             <i className="fa fa-spin fa-circle-o-notch"></i>
           </p>
           <p>
-            Loading Visualizations...
+            Updating Filters...
           </p>
         </div>
       );
@@ -83,19 +88,31 @@ export default class Filters extends Component {
     const introContent = (!intro) ? null :
       <p>{intro}</p>;
 
-    return (
-      <div className={customClass}>
-        {introContent}
-        <Grid>
-          {filters.map((filter, index) =>
+    const filterElements = filters.map((filter, index) => {
+      if (filter) {
+        const selectedValue = _.get(selected, `[${filter.name}].id`);
+        if (selectedValue) {
+          return (
             <Filter
               key={index}
               onChange={onFilterChange}
               zoomToState={zoomToState}
-              value={_.get(selected, `[${filter.name}].id`)}
+              value={selectedValue}
               {...filter}
             />
-          )}
+          );
+        }
+      }
+
+      return undefined;
+    }).filter(row => row !== undefined);
+
+    return (
+      <div className={customClass}>
+        {loadingElement}
+        {introContent}
+        <Grid>
+          {filterElements}
         </Grid>
       </div>
     );

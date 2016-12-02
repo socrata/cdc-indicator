@@ -24,8 +24,16 @@ export default class ChartArea extends Component {
     setCompareFlag: PropTypes.func
   };
 
+  static defaultProps = {
+    chartConfiguration: []
+  };
+
   constructor(props) {
     super(props);
+
+    this.state = {
+      oldChartConfiguration: props.chartConfiguration
+    };
 
     this.onChange = (event) => {
       this.props.setCompareFlag(event.target.checked);
@@ -53,6 +61,17 @@ export default class ChartArea extends Component {
     }
   }
 
+  shouldComponentUpdate(nextProps) {
+    // save old chart configurations
+    if (this.props.fetching === nextProps.fetching && nextProps.chartConfiguration.length > 0) {
+      this.setState({
+        oldChartConfiguration: nextProps.chartConfiguration
+      });
+    }
+
+    return this.props.fetching !== nextProps.fetching;
+  }
+
   render() {
     const { chartConfiguration,
             compareToNational,
@@ -66,9 +85,9 @@ export default class ChartArea extends Component {
             selectedFilters } = this.props;
 
     // only render after filters are ready
-    if (!isFilterReady) {
-      return <div></div>;
-    }
+    // if (!isFilterReady) {
+    //   return <div></div>;
+    // }
 
     // display error message if something went wrong
     if (error) {
@@ -84,9 +103,12 @@ export default class ChartArea extends Component {
       );
     }
 
+    let renderChartConfiguration = chartConfiguration;
+
     // render "now loading" message while fetching
     let nowLoadingElement;
-    if (fetching) {
+    if (fetching || !isFilterReady) {
+      renderChartConfiguration = this.state.oldChartConfiguration;
       nowLoadingElement = (
         <div className={styles.spinnerOverlay}>
           <p>
@@ -97,9 +119,7 @@ export default class ChartArea extends Component {
           </p>
         </div>
       );
-    }
-
-    if (rawData.length === 0) {
+    } else if (rawData.length === 0) {
       return (
         <div className={styles.spinnerContainer}>
           <div className={styles.spinnerOverlay}>
@@ -119,7 +139,7 @@ export default class ChartArea extends Component {
       .join(' – ');
 
     // display checkbox to indicate whether to include national-level data in charts
-    const doesIncludeComparisonChart = chartConfiguration.reduce((acc, config) => {
+    const doesIncludeComparisonChart = renderChartConfiguration.reduce((acc, config) => {
       return acc || config.type === 'bar' || config.type === 'column' || config.type === 'line';
     }, false);
 
@@ -138,7 +158,7 @@ export default class ChartArea extends Component {
       );
     }
 
-    const charts = chartConfiguration.map((config, index) => {
+    const charts = renderChartConfiguration.map((config, index) => {
       if (config.type === 'map') {
         return (
           <MapContainer

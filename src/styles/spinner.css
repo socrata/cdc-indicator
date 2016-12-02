@@ -19,6 +19,10 @@
   min-height: 0;
 }
 
+.shortSpinner p {
+  margin-bottom: 0;
+}
+
 .spinnerOverlay {
   composes: spinner;
   position: absolute;
@@ -27,6 +31,11 @@
   left: 0;
   right: 0;
   background: rgba(255, 255, 255, 0.8);
+}
+
+.shortSpinnerOverlay {
+  composes: spinnerOverlay;
+  min-height: 0;
 }
 
 .spinnerContainer {
