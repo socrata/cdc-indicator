@@ -8,7 +8,7 @@ import { CONFIG } from 'constants';
 import styles from 'styles/BaseLayout.css';
 
 const BaseLayout = ({ config = {}, dataSources = {}, selectedFilters = {} }) => {
-  const selectedIndicator = _.get(selectedFilters, CONFIG.indicatorId, { label: '' });
+  const selectedIndicator = _.get(selectedFilters, `${CONFIG.indicatorId}.id`);
 
   const intro = (!config.intro) ? null :
     <p className={styles.appIntro}>{config.intro}</p>;
@@ -26,16 +26,13 @@ const BaseLayout = ({ config = {}, dataSources = {}, selectedFilters = {} }) => 
         customClass={styles.mainFilter}
         intro={config.filter_intro}
       />
-      <h2 className={styles.sectionTitle}>
-        {selectedIndicator.label || ''}
-      </h2>
       <DataProviderContainer customChildClass={styles.chartContainer} />
       <div className={styles.footnote}>
         {footnote}
         <DataSources
           childClassName={styles.dataSources}
           dataLabel={config.source_data_label || 'Data:'}
-          dataSource={dataSources[selectedIndicator.id] || {}}
+          dataSource={dataSources[selectedIndicator] || {}}
           sourceLabel={config.source_system_label || 'Source:'}
         />
       </div>

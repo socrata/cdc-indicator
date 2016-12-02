@@ -35,6 +35,11 @@
   /*border-radius: 5px;*/
 }
 
+.chartContainer h2 {
+  margin: 1em 0;
+  font-size: 1.6em;
+}
+
 .chartTitle {
   margin-bottom: 0.5em;
   font-size: 1.4em;

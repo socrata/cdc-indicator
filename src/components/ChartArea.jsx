@@ -110,6 +110,14 @@ export default class ChartArea extends Component {
       );
     }
 
+    const selectedIndicator = _.get(selectedFilters, `${CONFIG.indicatorId}.label`);
+    const selectedLocation = _.get(selectedFilters, `${CONFIG.locationId}.label`);
+    const selectedDataType = _.get(rawData, '[0].data_value_type');
+
+    const sectionTitle = [selectedIndicator, selectedLocation, selectedDataType]
+      .filter(row => row !== undefined && row !== '')
+      .join(' – ');
+
     // display checkbox to indicate whether to include national-level data in charts
     const doesIncludeComparisonChart = chartConfiguration.reduce((acc, config) => {
       return acc || config.type === 'bar' || config.type === 'column' || config.type === 'line';
@@ -152,12 +160,17 @@ export default class ChartArea extends Component {
     });
 
     return (
-      <div className={styles.spinnerContainer}>
-        {nowLoadingElement}
-        {compareElement}
-        <Grid customChildClass={customChildClass}>
-          {charts}
-        </Grid>
+      <div>
+        <h2>
+          {sectionTitle}
+        </h2>
+        <div className={styles.spinnerContainer}>
+          {nowLoadingElement}
+          {compareElement}
+          <Grid customChildClass={customChildClass}>
+            {charts}
+          </Grid>
+        </div>
       </div>
     );
   }
