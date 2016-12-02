@@ -60,6 +60,14 @@ function getAvailableBreakoutCategory() {
           operator: 'IS NOT NULL'
         },
         {
+          column: 'year',
+          operator: 'IS NOT NULL'
+        },
+        {
+          column: 'data_value',
+          operator: 'IS NOT NULL'
+        },
+        {
           column: CONFIG.indicatorId,
           operator: '=',
           value: indicator
@@ -91,6 +99,14 @@ function getAvailableLocations() {
       .where([
         {
           column: CONFIG.locationId,
+          operator: 'IS NOT NULL'
+        },
+        {
+          column: 'year',
+          operator: 'IS NOT NULL'
+        },
+        {
+          column: 'data_value',
           operator: 'IS NOT NULL'
         },
         {
