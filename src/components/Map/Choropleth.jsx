@@ -72,7 +72,7 @@ export default class ChoroplethMap extends Component {
         weight: 1,
         opacity: 1,
         color: 'white',
-        dashArray: '3',
+        // dashArray: '3',
         fillOpacity: 0.7
       };
     };
@@ -88,7 +88,7 @@ export default class ChoroplethMap extends Component {
 
       layer.setStyle({
         weight: 2,
-        color: 'white',
+        color: '#6ff',
         dashArray: '',
         fillOpacity: 0.7
       });
