@@ -50,7 +50,7 @@ chartConfig:
     indicator: default
     sort: '3'
     title: Map
-    type: pie
+    type: map
   - data: trend
     footnote:
     published: true

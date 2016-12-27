@@ -129,8 +129,8 @@ export default class Map extends Component {
     return (
       <div>
         {chartTitle}
-        {filterElement}
         <DataTable rawData={rawData} />
+        {filterElement}
         <Choropleth
           data={mapData}
           year={latestYear}
