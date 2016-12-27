@@ -142,7 +142,8 @@ export default class ChoroplethMap extends Component {
     // populate legend items
     this.getLegend = (numberOfItems) => {
       const [min, max] = this.getDataRange();
-      const step = (max - min) / (numberOfItems - 1);
+      // const step = (max - min) / (numberOfItems - 1);
+      const step = (max - min) / (numberOfItems);
 
       // invalid data (max is Infinity and min is 0, resulting in Infinity)
       if (step === Infinity) {
@@ -153,22 +154,33 @@ export default class ChoroplethMap extends Component {
         _.round(min + (step * (numberOfItems - 1 - index)), 1)
       );
 
+      const endValues = values.map((value, index) => {
+        if (index === 0) {
+          return _.round(max, 1);
+        }
+        return _.round(values[index - 1] - 0.1, 1);
+      });
+
       // if all values are integers, do not display 0-pad values
-      const isAllIntegers = values.reduce((isInteger, value) => {
-        return isInteger && _.isInteger(value);
-      }, true);
+      // const isAllIntegers = values.reduce((isInteger, value) => {
+      //   return isInteger && _.isInteger(value);
+      // }, true);
 
       const legends = values.map((value, index) => {
         const color = this.getColor(value);
         let displayValue = _.toString(value);
+        let endValue = _.toString(endValues[index]);
         // append ".0" if it a whole number
-        if (!isAllIntegers && _.isInteger(value)) {
+        if (_.isInteger(value)) {
           displayValue += '.0';
+        }
+        if (_.isInteger(endValues[index])) {
+          endValue += '.0';
         }
         return (
           <li key={index}>
             <i style={{ background: color }} />
-            {displayValue}
+            {displayValue}–{endValue}
           </li>
         );
       });
