@@ -12,7 +12,7 @@ function createOption(data, index) {
           text,
           value } = data;
 
-  const disabled = (isDisabled) ? '(No data is available, select another state.)' : '';
+  const disabled = (isDisabled) ? '(No data available)' : '';
   return (
     <option key={index} value={value} disabled={isDisabled || false}>
       {text || value} {disabled}
