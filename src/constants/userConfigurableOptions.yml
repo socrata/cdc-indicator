@@ -2,7 +2,7 @@ coreConfig:
   - data_points: 5
     filter_intro: These filters affect all charts below.
     footnote: Configurations were loaded from a local file.
-    intro:
+    intro: Intro paragraph
     source_data_label: Source Data
     source_system_label: Source System
     title: Indicator Explorer

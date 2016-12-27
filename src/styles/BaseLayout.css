@@ -1,10 +1,10 @@
 .appTitle {
-  margin: 1em 0;
+  margin: 1em 0 0.3em;
   font-size: 2em;
 }
 
 .appIntro {
-  margin-bottom: 1.67em;
+  margin-bottom: 1em;
   font-size: 1.2em;
   line-height: 1.5;
 }
@@ -16,7 +16,7 @@
 
 .mainFilter {
   position: relative;
-  margin: 1em 0 2em;
+  margin: 1em 0;
   padding: 2em 3em;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -24,7 +24,7 @@
 }
 
 .mainFilter p {
-  margin-bottom: 2em;
+  margin-bottom: 1em;
   font-size: 1em;
   line-height: 1.5;
 }
