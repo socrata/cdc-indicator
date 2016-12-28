@@ -68,8 +68,8 @@ function formatIndicatorData(response) {
     const dataPoints = _.get(getState(), 'appConfig.config.core.data_points');
     const filteredData = data.filter(row => row.year > (latestYear - dataPoints));
 
-    dispatch(setRawData(filteredData));
     dispatch(setLatestYear(latestYear));
+    dispatch(setRawData(filteredData));
     dispatch(setRequestStatus(false));
   };
 }

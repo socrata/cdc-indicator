@@ -27,6 +27,7 @@
   margin: 0;
   padding: 0;
   text-align: right;
+  white-space: nowrap;
 }
 
 .legend i {

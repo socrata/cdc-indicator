@@ -32,12 +32,14 @@ export default class Map extends Component {
     super(props);
 
     this.state = {
-      didFilterChange: false
+      didFilterChange: true
     };
   }
 
   componentDidMount() {
-    this.props.initMap();
+    if (this.props.isDataReady) {
+      this.props.initMap();
+    }
   }
 
   componentWillReceiveProps(nextProps) {
