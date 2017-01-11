@@ -105,11 +105,16 @@ export function zoomToState(state) {
 }
 
 export function setStateFilter(abbreviation, state) {
-  return (dispatch) => {
-    dispatch(setLocationFilter({
-      id: abbreviation,
-      label: state
-    }));
+  return (dispatch, getState) => {
+    const states = _.get(getState(), `filters.data.${CONFIG.locationId}.options`, []);
+    const selectedState = _.find(states, { value: abbreviation });
+
+    if (selectedState && !selectedState.isDisabled) {
+      dispatch(setLocationFilter({
+        id: abbreviation,
+        label: state
+      }));
+    }
   };
 }
 
