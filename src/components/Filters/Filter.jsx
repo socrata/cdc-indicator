@@ -91,14 +91,18 @@ export default class Filter extends Component {
 
     return (
       <div className={styles.filter}>
-        <label>{`${label}:`}</label>
-        <select
-          name={name}
-          value={value}
-          onChange={this.handleChange}
-        >
-          {optionElements}
-        </select>
+        <label>
+          <span>
+            {`${label}:`}
+          </span>
+          <select
+            name={name}
+            value={value}
+            onChange={this.handleChange}
+          >
+            {optionElements}
+          </select>
+        </label>
       </div>
     );
   }
