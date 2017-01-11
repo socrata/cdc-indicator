@@ -20,9 +20,19 @@ export default class C3ChartUpdatable extends C3Chart {
     super(props);
 
     // helper to grab updated custom params
-    this.getUnit = () => {
-      return ((this.props.custom.unit || '') === '%') ? '%' : '';
+    // this.getUnit = () => {
+    //   return ((this.props.custom.unit || '') === '%') ? '%' : '';
+    // };
+
+    this.processValue = (value) => {
+      if (!value || value === 'N/A') {
+        return 'N/A';
+      }
+
+      const unit = ((this.props.custom.unit || '') === '%') ? '%' : '';
+      return `${value}${unit}`;
     };
+
     this.getHC = (id, index) => {
       return _.get(this.props, `custom.limits[${id}][${index}].high`, 'N/A');
     };
@@ -39,10 +49,10 @@ export default class C3ChartUpdatable extends C3Chart {
           tooltip: {
             format: {
               value: (value, ratio, id, index) => {
-                const lc = `${this.getLC(id, index)}${this.getUnit()}`;
-                const hc = `${this.getHC(id, index)}${this.getUnit()}`;
+                const lc = this.processValue(this.getLC(id, index));
+                const hc = this.processValue(this.getHC(id, index));
                 const cl = (lc === 'N/A' && hc === 'N/A') ? 'N/A' : `${lc}–${hc}`;
-                return `${value}${this.getUnit()} (${cl})`;
+                return `${this.processValue(value)} (${cl})`;
               }
             },
             contents: customTooltip

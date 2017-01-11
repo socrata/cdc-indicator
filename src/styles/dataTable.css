@@ -44,6 +44,9 @@
 }
 
 .openTable {
+  background: transparent;
+  border: 0;
+  font-family: inherit;
   font-size: 0.8em;
 }
 

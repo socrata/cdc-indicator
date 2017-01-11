@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import Modal from 'react-modal';
-// import _ from 'lodash';
+import _ from 'lodash';
 import styles from 'styles/dataTable.css';
 
 const modalStyles = {
@@ -25,33 +25,6 @@ const captionColumns = [
   'data_value_type'
 ];
 
-const columnsToRender = {
-  year: {
-    header: 'Year'
-  },
-  locationdesc: {
-    header: 'Location'
-  },
-  stratification1: {
-    header: 'Breakout'
-  },
-  data_value: {
-    header: 'Value',
-    align: 'right'
-  },
-  low_confidence_limit: {
-    header: 'Low Confidence Limit',
-    align: 'right'
-  },
-  high_confidence_limit: {
-    header: 'High Confidence Limit',
-    align: 'right'
-  },
-  data_value_unit: {
-    header: 'Unit'
-  }
-};
-
 export default class DataTable extends Component {
   static propTypes = {
     latestYear: PropTypes.number,
@@ -70,20 +43,20 @@ export default class DataTable extends Component {
       isModalOpen: false,
       originalLink: null
     };
-
-    this.onClick = (event) => {
-      event.preventDefault();
-      this.setState({
-        isModalOpen: !this.state.isModalOpen,
-        originalLink: event.target
-      });
-    };
-
-    // when Modal is closed, put focus back on the original link that was used
-    this.onRequestClose = () => {
-      this.state.originalLink.focus();
-    };
   }
+
+  onClick = (event) => {
+    event.preventDefault();
+    this.setState({
+      isModalOpen: !this.state.isModalOpen,
+      originalLink: event.target
+    });
+  };
+
+  // when Modal is closed, put focus back on the original link that was used
+  onRequestClose = () => {
+    this.state.originalLink.focus();
+  };
 
   render() {
     const { latestYear,
@@ -98,6 +71,32 @@ export default class DataTable extends Component {
     }
 
     if (rawData.length > 0) {
+      const unit = _.get(displayData, '[0].data_value_unit');
+
+      const columnsToRender = {
+        year: {
+          header: 'Year'
+        },
+        locationdesc: {
+          header: 'Location'
+        },
+        stratification1: {
+          header: 'Breakout'
+        },
+        data_value: {
+          header: (unit) ? `Value (${unit})` : 'Value',
+          align: 'right'
+        },
+        low_confidence_limit: {
+          header: (unit) ? `Low Confidence Limit (${unit})` : 'Low Confidence Limit',
+          align: 'right'
+        },
+        high_confidence_limit: {
+          header: (unit) ? `High Confidence Limit (${unit})` : 'High Confidence Limit',
+          align: 'right'
+        }
+      };
+
       const caption = captionColumns.map((column, index) => (
         <div key={index}>
           {rawData[0][column]}
@@ -151,14 +150,14 @@ export default class DataTable extends Component {
 
     return (
       <div className={styles.linkContainer}>
-        <a
+        <button
           href="#"
           className={styles.openTable}
           onClick={this.onClick}
           aria-hidden="true"
         >
           View data as a table
-        </a>
+        </button>
         {hiddenTable}
         <Modal
           isOpen={this.state.isModalOpen}
