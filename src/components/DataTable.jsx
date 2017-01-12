@@ -75,13 +75,16 @@ export default class DataTable extends Component {
 
       const columnsToRender = {
         year: {
-          header: 'Year'
+          header: 'Year',
+          th: true
         },
         locationdesc: {
-          header: 'Location'
+          header: 'Location',
+          th: true
         },
         stratification1: {
-          header: 'Breakout'
+          header: 'Breakout',
+          th: true
         },
         data_value: {
           header: (unit) ? `Value (${unit})` : 'Value',
@@ -118,6 +121,12 @@ export default class DataTable extends Component {
                 style = styles[columnsToRender[column].align];
               }
 
+              if (columnsToRender[column].th) {
+                return (
+                  <th key={i} scope="row" className={style}>{row[column] || 'N/A'}</th>
+                );
+              }
+
               return (
                 <td key={i} className={style}>{row[column] || 'N/A'}</td>
               );
@@ -126,8 +135,16 @@ export default class DataTable extends Component {
         </tr>
       ));
 
+      const tableContent = captionColumns.map(column => rawData[0][column]).join(' ');
+
+      const summary = [
+        `This table displays ${tableContent}.`,
+        'The columns in the header row show labels of data values shown in the table.',
+        'The table contains rows of data values for year, location and breakout categories.'
+      ].join(' ');
+
       table = (
-        <table className={styles.dataTable}>
+        <table className={styles.dataTable} summary={summary}>
           <caption>{caption}</caption>
           <thead>
             <tr>{header}</tr>
