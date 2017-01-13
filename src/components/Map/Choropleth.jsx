@@ -111,7 +111,7 @@ export default class ChoroplethMap extends Component {
         animate: true
       });
 
-      this.props.onClick('US', 'United States');
+      // this.props.onClick('US', 'United States');
     };
 
     this.selectState = (e) => {
