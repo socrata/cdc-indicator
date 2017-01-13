@@ -202,6 +202,11 @@ function fetchData() {
       new Soda(CONFIG.soda)
         .dataset(CONFIG.data.datasetId)
         .where(filterCondition)
+        .order([
+          'year',
+          CONFIG.locationLabel,
+          CONFIG.breakoutId
+        ])
         .fetchData()
         .then((response) => {
           dispatch(formatMapData(response));
