@@ -45,17 +45,19 @@ export default class DataTable extends Component {
     };
   }
 
-  onClick = (event) => {
-    event.preventDefault();
+  // when Modal is closed, put focus back on the original link that was used
+  closeModal = () => {
     this.setState({
-      isModalOpen: !this.state.isModalOpen,
-      originalLink: event.target
+      isModalOpen: false
     });
+    this.state.originalLink.focus();
   };
 
-  // when Modal is closed, put focus back on the original link that was used
-  onRequestClose = () => {
-    this.state.originalLink.focus();
+  openModal = (event) => {
+    this.setState({
+      isModalOpen: true,
+      originalLink: event.target
+    });
   };
 
   render() {
@@ -170,7 +172,7 @@ export default class DataTable extends Component {
         <button
           href="#"
           className={styles.openTable}
-          onClick={this.onClick}
+          onClick={this.openModal}
           aria-hidden="true"
         >
           View data as a table
@@ -178,11 +180,11 @@ export default class DataTable extends Component {
         {hiddenTable}
         <Modal
           isOpen={this.state.isModalOpen}
-          onRequestClose={this.onRequestClose}
+          onRequestClose={this.closeModal}
           style={modalStyles}
         >
           {table}
-          <button className={styles.closeTable} onClick={this.onClick}>Close</button>
+          <button className={styles.closeTable} onClick={this.closeModal}>Close</button>
         </Modal>
       </div>
     );
