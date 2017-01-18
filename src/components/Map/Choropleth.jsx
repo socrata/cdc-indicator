@@ -17,9 +17,11 @@ import MapControlUpdatable from './MapControlUpdatable';
 export default class ChoroplethMap extends Component {
   static propTypes = {
     data: PropTypes.object.isRequired,
+    desc: PropTypes.string,
     onClick: PropTypes.func.isRequired,
     selectedState: PropTypes.string,
     setMapElement: PropTypes.func,
+    title: PropTypes.string,
     year: PropTypes.number.isRequired,
     zoomToState: PropTypes.func
   };
@@ -233,6 +235,15 @@ export default class ChoroplethMap extends Component {
 
   componentDidMount() {
     this.props.setMapElement(this.mapElement);
+
+    setTimeout(() => {
+      d3.select(this.mapElement.getPanes().overlayPane).select('svg')
+        .insert('desc', ':first-child')
+        .text(`This map displays ${this.props.desc} values by states.`);
+      d3.select(this.mapElement.getPanes().overlayPane).select('svg')
+        .insert('title', ':first-child')
+        .text(this.props.title);
+    }, 0);
 
     if (this.props.selectedState && this.props.selectedState !== 'US') {
       this.props.zoomToState(this.props.selectedState);

@@ -25,6 +25,7 @@ export default class Map extends Component {
     zoomToState: PropTypes.func,
     // from props
     config: PropTypes.object,
+    desc: PropTypes.string,
     latestYear: PropTypes.number
   };
 
@@ -61,6 +62,7 @@ export default class Map extends Component {
 
   render() {
     const { config,
+            desc,
             error,
             errorMessage,
             fetching,
@@ -140,6 +142,8 @@ export default class Map extends Component {
           selectedState={selectedState}
           setMapElement={setMapElement}
           zoomToState={zoomToState}
+          desc={desc}
+          title={title}
         />
         {chartFootnote}
       </div>

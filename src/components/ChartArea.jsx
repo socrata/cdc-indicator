@@ -165,6 +165,7 @@ export default class ChartArea extends Component {
           <MapContainer
             key={index}
             config={config}
+            desc={sectionTitle}
             latestYear={latestYear}
           />
         );
@@ -175,6 +176,7 @@ export default class ChartArea extends Component {
           key={index}
           config={config}
           data={rawData}
+          desc={sectionTitle}
           latestYear={latestYear}
         />
       );

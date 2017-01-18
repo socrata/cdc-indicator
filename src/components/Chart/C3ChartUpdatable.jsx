@@ -16,65 +16,70 @@ function customTooltip(data, defaultTitleFormat, defaultValueFormat, color) {
 }
 
 export default class C3ChartUpdatable extends C3Chart {
-  constructor(props) {
-    super(props);
+  formatTooltips = (originalProps) => {
+    let newProps;
 
-    // helper to grab updated custom params
-    // this.getUnit = () => {
-    //   return ((this.props.custom.unit || '') === '%') ? '%' : '';
-    // };
-
-    this.processValue = (value) => {
-      if (!value || value === 'N/A') {
-        return 'N/A';
-      }
-
-      const unit = ((this.props.custom.unit || '') === '%') ? '%' : '';
-      return `${value}${unit}`;
-    };
-
-    this.getHC = (id, index) => {
-      return _.get(this.props, `custom.limits[${id}][${index}].high`, 'N/A');
-    };
-    this.getLC = (id, index) => {
-      return _.get(this.props, `custom.limits[${id}][${index}].low`, 'N/A');
-    };
-
-    this.formatTooltips = (originalProps) => {
-      let newProps;
-
-      // override tooltip format
-      if (_.get(originalProps, 'data.type') !== 'pie') {
-        newProps = Object.assign({}, originalProps, {
-          tooltip: {
-            format: {
-              value: (value, ratio, id, index) => {
-                const lc = this.processValue(this.getLC(id, index));
-                const hc = this.processValue(this.getHC(id, index));
-                const cl = (lc === 'N/A' && hc === 'N/A') ? 'N/A' : `${lc}–${hc}`;
-                return `${this.processValue(value)} (${cl})`;
-              }
-            },
-            contents: customTooltip
-          }
-        });
-      } else {
-        newProps = Object.assign({}, originalProps, {
-          tooltip: {
-            format: {
-              value: (value, ratio) => {
-                return `
-                  ${value}${this.getUnit()}
-                  (${d3.format('.1%')(ratio)} of total)
-                `;
-              }
+    // override tooltip format
+    if (_.get(originalProps, 'data.type') !== 'pie') {
+      newProps = Object.assign({}, originalProps, {
+        tooltip: {
+          format: {
+            value: (value, ratio, id, index) => {
+              const lc = this.processValue(this.getLC(id, index));
+              const hc = this.processValue(this.getHC(id, index));
+              const cl = (lc === 'N/A' && hc === 'N/A') ? 'N/A' : `${lc}–${hc}`;
+              return `${this.processValue(value)} (${cl})`;
+            }
+          },
+          contents: customTooltip
+        }
+      });
+    } else {
+      newProps = Object.assign({}, originalProps, {
+        tooltip: {
+          format: {
+            value: (value, ratio) => {
+              return `
+                ${value}${this.getUnit()}
+                (${d3.format('.1%')(ratio)} of total)
+              `;
             }
           }
-        });
-      }
+        }
+      });
+    }
 
-      return newProps;
-    };
+    newProps.onrendered = this.setTitle;
+
+    return newProps;
+  };
+
+  getHC = (id, index) => {
+    return _.get(this.props, `custom.limits[${id}][${index}].high`, 'N/A');
+  };
+
+  getLC = (id, index) => {
+    return _.get(this.props, `custom.limits[${id}][${index}].low`, 'N/A');
+  };
+
+  processValue = (value) => {
+    if (!value || value === 'N/A') {
+      return 'N/A';
+    }
+
+    const unit = ((this.props.custom.unit || '') === '%') ? '%' : '';
+    return `${value}${unit}`;
+  };
+
+  setTitle = () => {
+    setTimeout(() => {
+      d3.select(this.chart.element).select('svg')
+        .insert('desc', ':first-child')
+        .text(this.props.desc);
+      d3.select(this.chart.element).select('svg')
+        .insert('title', ':first-child')
+        .text(this.props.title);
+    }, 0);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -91,5 +96,6 @@ export default class C3ChartUpdatable extends C3Chart {
 }
 
 C3ChartUpdatable.propTypes = {
-  data: PropTypes.object.isRequired
+  data: PropTypes.object.isRequired,
+  title: PropTypes.string
 };

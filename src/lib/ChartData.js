@@ -10,6 +10,7 @@ export default class ChartData {
     this.data = options.data;
     this.dataSeries = options.dataSeries;
     this.latestYear = options.latestYear;
+    this.xValues = undefined;
   }
 
   chartConfig() {
@@ -20,8 +21,10 @@ export default class ChartData {
 
     switch (this.dataSeries) {
       case 'latest':
+        this.xValues = 'Breakout category';
         return this._getConfigByBreakout();
       case 'trend':
+        this.xValues = 'Year';
         return this._getConfigByYear();
       case 'pie':
         return this._getConfigForPieChart();

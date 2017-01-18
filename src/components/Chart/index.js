@@ -8,7 +8,7 @@ import ColumnChart from './ColumnChart';
 import LineChart from './LineChart';
 import PieChart from './PieChart';
 
-const Chart = ({ config, data, latestYear }) => {
+const Chart = ({ config, data, desc, latestYear }) => {
   if (latestYear === -1) {
     return null;
   }
@@ -20,30 +20,30 @@ const Chart = ({ config, data, latestYear }) => {
 
   const chartData = new ChartData({ data, dataSeries, latestYear });
 
-  let chartElement;
-  switch (config.type) {
-    case 'bar':
-      chartElement = <BarChart chartData={chartData} />;
-      break;
-    case 'column':
-      chartElement = <ColumnChart chartData={chartData} />;
-      break;
-    case 'line':
-      chartElement = <LineChart chartData={chartData} />;
-      break;
-    case 'pie':
-      chartElement = <PieChart chartData={chartData} />;
-      break;
-    default:
-      chartElement = <div>{config.type}</div>;
-  }
-
   const title = (config.data === 'latest') ?
     `${config.title} (${latestYear} Data)` :
     config.title;
 
   const chartTitle = (!config.title) ? null :
     <h3 className={styles.chartTitle}>{title}</h3>;
+
+  let chartElement;
+  switch (config.type) {
+    case 'bar':
+      chartElement = <BarChart chartData={chartData} desc={desc} title={title} />;
+      break;
+    case 'column':
+      chartElement = <ColumnChart chartData={chartData} desc={desc} title={title} />;
+      break;
+    case 'line':
+      chartElement = <LineChart chartData={chartData} desc={desc} title={title} />;
+      break;
+    case 'pie':
+      chartElement = <PieChart chartData={chartData} desc={desc} title={title} />;
+      break;
+    default:
+      chartElement = <div>{config.type}</div>;
+  }
 
   const chartFootnote = (!config.footnote) ? null :
     <div className={styles.chartFootnote}>
@@ -67,6 +67,7 @@ const Chart = ({ config, data, latestYear }) => {
 Chart.propTypes = {
   config: PropTypes.object,
   data: PropTypes.array,
+  desc: PropTypes.string,
   latestYear: PropTypes.number
 };
 
