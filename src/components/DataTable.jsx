@@ -89,15 +89,15 @@ export default class DataTable extends Component {
           th: true
         },
         data_value: {
-          header: (unit) ? `Value (${unit})` : 'Value',
+          header: 'Value',
           align: 'right'
         },
         low_confidence_limit: {
-          header: (unit) ? `Low Confidence Limit (${unit})` : 'Low Confidence Limit',
+          header: 'Low Confidence Limit',
           align: 'right'
         },
         high_confidence_limit: {
-          header: (unit) ? `High Confidence Limit (${unit})` : 'High Confidence Limit',
+          header: 'High Confidence Limit',
           align: 'right'
         }
       };
@@ -105,6 +105,7 @@ export default class DataTable extends Component {
       const caption = captionColumns.map((column, index) => (
         <div key={index}>
           {rawData[0][column]}
+          {(column === 'data_value_type' && unit) ? ` (${unit})` : ''}
         </div>
       ));
 
@@ -137,7 +138,11 @@ export default class DataTable extends Component {
         </tr>
       ));
 
-      const tableContent = captionColumns.map(column => rawData[0][column]).join(' ');
+      let tableContent = captionColumns.map(column => rawData[0][column]).join(' ');
+
+      if (unit) {
+        tableContent = `${tableContent} (${unit})`;
+      }
 
       const summary = [
         `This table displays ${tableContent}.`,
