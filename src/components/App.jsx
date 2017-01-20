@@ -6,19 +6,7 @@ import React, { Component, PropTypes } from 'react';
 import BaseLayout from 'layouts/BaseLayout';
 import styles from 'styles/spinner.css';
 
-export default class App extends Component {
-  static propTypes = {
-    // from redux store
-    coreConfig: PropTypes.object,
-    dataSourceConfig: PropTypes.object,
-    // @TODO pass selected indicator ID
-    error: PropTypes.bool,
-    errorMessage: PropTypes.string,
-    fetching: PropTypes.bool,
-    loadConfig: PropTypes.func,
-    selectedFilters: PropTypes.object
-  };
-
+class App extends Component {
   componentWillMount() {
     // load configuration from a dataset when mounting component
     this.props.loadConfig();
@@ -73,3 +61,17 @@ export default class App extends Component {
     return null;
   }
 }
+
+App.propTypes = {
+  // from redux store
+  coreConfig: PropTypes.object,
+  dataSourceConfig: PropTypes.object,
+  // @TODO pass selected indicator ID
+  error: PropTypes.bool,
+  errorMessage: PropTypes.string,
+  fetching: PropTypes.bool,
+  loadConfig: PropTypes.func,
+  selectedFilters: PropTypes.object
+};
+
+export default App;

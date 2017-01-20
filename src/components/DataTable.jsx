@@ -25,17 +25,7 @@ const captionColumns = [
   'data_value_type'
 ];
 
-export default class DataTable extends Component {
-  static propTypes = {
-    latestYear: PropTypes.number,
-    rawData: PropTypes.array,
-    showOnlyLatest: PropTypes.bool
-  };
-
-  static defaultProps = {
-    showOnlyLatest: false
-  };
-
+class DataTable extends Component {
   constructor(props) {
     super(props);
 
@@ -195,3 +185,15 @@ export default class DataTable extends Component {
     );
   }
 }
+
+DataTable.propTypes = {
+  latestYear: PropTypes.number,
+  rawData: PropTypes.array,
+  showOnlyLatest: PropTypes.bool
+};
+
+DataTable.defaultProps = {
+  showOnlyLatest: false
+};
+
+export default DataTable;

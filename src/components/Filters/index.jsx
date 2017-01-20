@@ -8,37 +8,7 @@ import Grid from 'layouts/Grid';
 import styles from 'styles/spinner.css';
 import Filter from './Filter';
 
-export default class Filters extends Component {
-  static propTypes = {
-    // from redux store
-    error: PropTypes.bool,
-    errorMessage: PropTypes.string,
-    fetching: PropTypes.bool,
-    filters: PropTypes.arrayOf(
-      PropTypes.shape({
-        label: PropTypes.string,
-        name: PropTypes.string,
-        options: PropTypes.array,
-        optionGroups: PropTypes.array,
-        value: PropTypes.oneOfType([
-          PropTypes.string,
-          PropTypes.number
-        ])
-      })
-    ),
-    loadFilters: PropTypes.func,
-    onFilterChange: PropTypes.func,
-    selected: PropTypes.object,
-    zoomToState: PropTypes.func,
-    // from parent
-    customClass: PropTypes.string,
-    intro: PropTypes.string
-  };
-
-  static defaultProps = {
-    filters: []
-  };
-
+class Filters extends Component {
   componentWillMount() {
     if (this.props.loadFilters) {
       this.props.loadFilters();
@@ -118,3 +88,35 @@ export default class Filters extends Component {
     );
   }
 }
+
+Filters.propTypes = {
+  // from redux store
+  error: PropTypes.bool,
+  errorMessage: PropTypes.string,
+  fetching: PropTypes.bool,
+  filters: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string,
+      name: PropTypes.string,
+      options: PropTypes.array,
+      optionGroups: PropTypes.array,
+      value: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number
+      ])
+    })
+  ),
+  loadFilters: PropTypes.func,
+  onFilterChange: PropTypes.func,
+  selected: PropTypes.object,
+  zoomToState: PropTypes.func,
+  // from parent
+  customClass: PropTypes.string,
+  intro: PropTypes.string
+};
+
+Filters.defaultProps = {
+  filters: []
+};
+
+export default Filters;

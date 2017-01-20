@@ -6,28 +6,7 @@ import Grid from 'layouts/Grid';
 import { CONFIG } from 'constants';
 import styles from 'styles/spinner.css';
 
-export default class ChartArea extends Component {
-  static propTypes = {
-    // from props
-    customChildClass: PropTypes.string,
-    // from redux store
-    chartConfiguration: PropTypes.array,
-    compareToNational: PropTypes.bool,
-    error: PropTypes.bool,
-    errorMessage: PropTypes.string,
-    fetching: PropTypes.bool,
-    isFilterReady: PropTypes.bool,
-    latestYear: PropTypes.number,
-    loadData: PropTypes.func,
-    rawData: PropTypes.array,
-    selectedFilters: PropTypes.object,
-    setCompareFlag: PropTypes.func
-  };
-
-  static defaultProps = {
-    chartConfiguration: []
-  };
-
+class ChartArea extends Component {
   constructor(props) {
     super(props);
 
@@ -198,3 +177,26 @@ export default class ChartArea extends Component {
     );
   }
 }
+
+ChartArea.propTypes = {
+  // from props
+  customChildClass: PropTypes.string,
+  // from redux store
+  chartConfiguration: PropTypes.array,
+  compareToNational: PropTypes.bool,
+  error: PropTypes.bool,
+  errorMessage: PropTypes.string,
+  fetching: PropTypes.bool,
+  isFilterReady: PropTypes.bool,
+  latestYear: PropTypes.number,
+  loadData: PropTypes.func,
+  rawData: PropTypes.array,
+  selectedFilters: PropTypes.object,
+  setCompareFlag: PropTypes.func
+};
+
+ChartArea.defaultProps = {
+  chartConfiguration: []
+};
+
+export default ChartArea;

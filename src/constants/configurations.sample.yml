@@ -1,36 +1,58 @@
-# application configuration parameters
-# save as "configurations.yml" after completing
+# Application configuration parameters
+
+# SODA request options
+soda:
+  appToken: (ENTER YOUR SOCRATA APP TOKEN)
+  hostname: chronicdata.cdc.gov
+  useSecure: true
 
 # Socrata dataset configurations
 data:
-  host: ENTER SOCRATA OPEN DATA PORTAL HOSTNAME
-  appToken: ENTER SOCRATA APP TOKEN
-  datasetId: ENTER SOCRATA DATASET ID
-  # If following is set to true, it will use Socrata datasets to retrieve
-  # application configuration parameters. If set to false, it will use
-  # values from ./userConfigurableOptions.yml
+  datasetId: theu-v939
+  # If `useConfigurationDatasets` is set to true, the tool will use
+  # Socrata datasets to retrieve application configuration parameters.
+  # If so, you must also set the next 4 *ConfigDatasetId parameters.
+  # If set to false, it will use values from ./userConfigurableOptions.yml
+  # and you can safely ignore *ConfigDatasetId parameters.
   useConfigurationDatasets: false
-  appConfigDatasetId: ENTER SOCRATA DATASET ID
-  filterConfigDatasetId: ENTER SOCRATA DATASET ID
-  chartConfigDatasetId: ENTER SOCRATA DATASET ID
-  indicatorsConfigDatasetId: ENTER SOCRATA DATASET ID
+  appConfigDatasetId: (ENTER SOCRATA DATASET ID)
+  filterConfigDatasetId: (ENTER SOCRATA DATASET ID)
+  chartConfigDatasetId: (ENTER SOCRATA DATASET ID)
+  indicatorsConfigDatasetId: (ENTER SOCRATA DATASET ID)
+
+# Column IDs (keys) for the main dataset
+# Columns used as Indicator identifier (main filter)
+indicatorId: questionid
+indicatorLabel: question
+# Columns used to filter by location
+locationId: locationabbr
+locationLabel: locationdesc
+# Columns used to specify breakout catgory
+breakoutCategoryId: stratificationcategoryid1
+breakoutCategoryLabel: stratificationcategory1
+# Columns used to specify breakout values within a category
+breakoutId: stratificationid1
+breakoutLabel: stratification1
 
 # Mapbox and other map related configurations
 map:
-  tileUrl: ENTER MAPBOX TILE URL
+  # Mapbox tile style setting
+  tileUrl: https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png
   tileId: mapbox.light
-  mapboxToken: ENTER MAPBOX TOKEN
+  mapboxToken: (ENTER YOUR MAPBOX ACCESS TOKEN)
+  # attribution displayed inside Choropleth map
   attribution: |
     Map data ©
     <a href="http://openstreetmap.org">OpenStreetMap</a> contributors,
     <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>,
     Imagery © <a href="http://mapbox.com">Mapbox</a>
+  # Map view default settings
   defaults:
-    # zoom should be numeric value
+    # Sets zoom value - must be a numeric value
     zoom: 3
-    # specify longitude, then latitude value; must be a simple array
+    # Sets default center point - longitude, then latitude values; must be a simple array
     center:
       - 37.8
       - -96
-    # height in pixels, number only
+    # Sets container height, in pixels, number only
     height: 320

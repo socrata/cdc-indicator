@@ -29,14 +29,11 @@ const webpackConfig = {
       {
         test: [/\.js$/, /\.jsx$/],
         exclude: path.resolve('node_modules'),
-        loader: 'babel-loader',
-        query: {
-          presets: ['react', 'es2015', 'stage-0']
-        }
+        loader: 'babel'
       },
       {
         test: /\.json$/,
-        loader: 'json-loader'
+        loader: 'json'
       },
       {
         test: [/\.yml$/, /\.yaml$/],

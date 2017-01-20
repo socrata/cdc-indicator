@@ -8,7 +8,7 @@ import ReactDOM from 'react-dom';
 import L from 'leaflet';
 import { MapControl } from 'react-leaflet';
 
-export default class MapControlUpdatable extends MapControl {
+class MapControlUpdatable extends MapControl {
   constructor(props) {
     super(props);
 
@@ -53,3 +53,5 @@ MapControlUpdatable.propTypes = {
 MapControlUpdatable.defaultProps = {
   position: 'bottomright'
 };
+
+export default MapControlUpdatable;

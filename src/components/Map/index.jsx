@@ -5,30 +5,7 @@ import DataTable from 'components/DataTable';
 import styles from 'styles/map.css';
 import Choropleth from './Choropleth';
 
-export default class Map extends Component {
-  static propTypes = {
-    // from redux store
-    error: PropTypes.bool,
-    errorMessage: PropTypes.string,
-    fetching: PropTypes.bool,
-    filters: PropTypes.array,
-    initMap: PropTypes.func,
-    isDataReady: PropTypes.bool,
-    mapData: PropTypes.object,
-    onFilterChange: PropTypes.func,
-    onStateClick: PropTypes.func,
-    rawData: PropTypes.array,
-    selected: PropTypes.object,
-    selectedParentFilters: PropTypes.object,
-    selectedState: PropTypes.string,
-    setMapElement: PropTypes.func,
-    zoomToState: PropTypes.func,
-    // from props
-    config: PropTypes.object,
-    desc: PropTypes.string,
-    latestYear: PropTypes.number
-  };
-
+class Map extends Component {
   constructor(props) {
     super(props);
 
@@ -150,3 +127,28 @@ export default class Map extends Component {
     );
   }
 }
+
+Map.propTypes = {
+  // from redux store
+  error: PropTypes.bool,
+  errorMessage: PropTypes.string,
+  fetching: PropTypes.bool,
+  filters: PropTypes.array,
+  initMap: PropTypes.func,
+  isDataReady: PropTypes.bool,
+  mapData: PropTypes.object,
+  onFilterChange: PropTypes.func,
+  onStateClick: PropTypes.func,
+  rawData: PropTypes.array,
+  selected: PropTypes.object,
+  selectedParentFilters: PropTypes.object,
+  selectedState: PropTypes.string,
+  setMapElement: PropTypes.func,
+  zoomToState: PropTypes.func,
+  // from props
+  config: PropTypes.object,
+  desc: PropTypes.string,
+  latestYear: PropTypes.number
+};
+
+export default Map;

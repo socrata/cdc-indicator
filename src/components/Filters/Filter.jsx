@@ -20,42 +20,7 @@ function createOption(data, index) {
   );
 }
 
-export default class Filter extends Component {
-  static propTypes = {
-    label: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    options: PropTypes.arrayOf(
-      PropTypes.shape({
-        text: PropTypes.string,
-        value: PropTypes.oneOfType([
-          PropTypes.string,
-          PropTypes.number
-        ]).isRequired,
-        isDisabled: PropTypes.bool
-      })
-    ),
-    optionGroups: PropTypes.arrayOf(
-      PropTypes.shape({
-        text: PropTypes.string.isRequired,
-        options: PropTypes.arrayOf(
-          PropTypes.shape({
-            text: PropTypes.string,
-            value: PropTypes.oneOfType([
-              PropTypes.string,
-              PropTypes.number
-            ]).isRequired
-          })
-        )
-      })
-    ),
-    onChange: PropTypes.func,
-    zoomToState: PropTypes.func,
-    value: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.number
-    ]).isRequired
-  };
-
+class Filter extends Component {
   constructor(props) {
     super(props);
 
@@ -107,3 +72,40 @@ export default class Filter extends Component {
     );
   }
 }
+
+Filter.propTypes = {
+  label: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  options: PropTypes.arrayOf(
+    PropTypes.shape({
+      text: PropTypes.string,
+      value: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number
+      ]).isRequired,
+      isDisabled: PropTypes.bool
+    })
+  ),
+  optionGroups: PropTypes.arrayOf(
+    PropTypes.shape({
+      text: PropTypes.string.isRequired,
+      options: PropTypes.arrayOf(
+        PropTypes.shape({
+          text: PropTypes.string,
+          value: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.number
+          ]).isRequired
+        })
+      )
+    })
+  ),
+  onChange: PropTypes.func,
+  zoomToState: PropTypes.func,
+  value: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number
+  ]).isRequired
+};
+
+export default Filter;

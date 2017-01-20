@@ -2,7 +2,6 @@
  * Updatable Leaflet/Mapbox Choropleth Map component
  */
 
-// vendors
 import React, { Component, PropTypes } from 'react';
 import { Map, TileLayer } from 'react-leaflet';
 import L from 'leaflet';
@@ -14,18 +13,7 @@ import styles from 'styles/choropleth.css';
 import GeoJsonUpdatable from './GeoJsonUpdatable';
 import MapControlUpdatable from './MapControlUpdatable';
 
-export default class ChoroplethMap extends Component {
-  static propTypes = {
-    data: PropTypes.object.isRequired,
-    desc: PropTypes.string,
-    onClick: PropTypes.func.isRequired,
-    selectedState: PropTypes.string,
-    setMapElement: PropTypes.func,
-    title: PropTypes.string,
-    year: PropTypes.number.isRequired,
-    zoomToState: PropTypes.func
-  };
-
+class ChoroplethMap extends Component {
   constructor(props) {
     super(props);
 
@@ -321,3 +309,16 @@ export default class ChoroplethMap extends Component {
     );
   }
 }
+
+ChoroplethMap.propTypes = {
+  data: PropTypes.object.isRequired,
+  desc: PropTypes.string,
+  onClick: PropTypes.func.isRequired,
+  selectedState: PropTypes.string,
+  setMapElement: PropTypes.func,
+  title: PropTypes.string,
+  year: PropTypes.number.isRequired,
+  zoomToState: PropTypes.func
+};
+
+export default ChoroplethMap;
