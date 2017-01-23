@@ -110,7 +110,7 @@ class Map extends Component {
     return (
       <div>
         {chartTitle}
-        <DataTable rawData={rawData} />
+        <DataTable rawData={rawData} isForMap />
         {filterElement}
         <Choropleth
           data={mapData}
