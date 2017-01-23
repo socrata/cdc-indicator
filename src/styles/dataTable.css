@@ -68,3 +68,7 @@
 .closeTable:focus {
   background: #ccc;
 }
+
+.additionalCaption {
+  composes: visuallyHidden from './accessibility.css';
+}

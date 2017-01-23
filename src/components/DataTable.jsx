@@ -51,7 +51,8 @@ class DataTable extends Component {
   };
 
   render() {
-    const { latestYear,
+    const { isForMap,
+            latestYear,
             rawData,
             showOnlyLatest } = this.props;
 
@@ -99,6 +100,14 @@ class DataTable extends Component {
         </div>
       ));
 
+      let additionalCaption = 'Values over time';
+
+      if (showOnlyLatest) {
+        additionalCaption = 'Values from latest year';
+      } else if (isForMap) {
+        additionalCaption = 'Values across the United States';
+      }
+
       const header = Object.keys(columnsToRender).map((column, index) => (
         <th key={index} scope="col">
           {columnsToRender[column].header}
@@ -142,7 +151,12 @@ class DataTable extends Component {
 
       table = (
         <table className={styles.dataTable} summary={summary}>
-          <caption>{caption}</caption>
+          <caption>
+            {caption}
+            <div className={styles.additionalCaption}>
+              {additionalCaption}
+            </div>
+          </caption>
           <thead>
             <tr>{header}</tr>
           </thead>
@@ -187,6 +201,7 @@ class DataTable extends Component {
 }
 
 DataTable.propTypes = {
+  isForMap: PropTypes.bool,
   latestYear: PropTypes.number,
   rawData: PropTypes.array,
   showOnlyLatest: PropTypes.bool
