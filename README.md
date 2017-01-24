@@ -97,6 +97,79 @@ you should be able to access this tool by navigating your browser to `http://loc
 
 [Redux DevTools]: https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd
 
+## Configuring Display
+
+In addition to core application settings that is specified in `configurations.development.yml` file,
+this tool is designed to work with Socrata datasets to get title, label and other textual data.
+During development, you can set `useConfigurationDatasets` to `false` to read these parameters
+from a local YAML file, `userConfigurableOptions.yml`.
+
+### Core
+
+Expects an array of objects, with a single row.
+
+| Field Name | Description | Type | Example |
+| ---------- | ----------- | ---- | ------- |
+| `title` | Small amount of text to be used as the “title” that appears over the entire application. Can be left blank, if desired. | Text String | “CDC Indicator Explorer” [blank] |
+| `intro` | Small amount of text to be used as an introduction to the tool or to provide additional context.  Can be left blank, if desired. | Text String | “Welcome to the CDC Indicator Explorer.  Please select an indicator and any breakouts to begin exploring!” |
+| `filter_intro` | Small amount of text to be used as further introduction to the filters of the tool.  Can be left blank, if desired. | Text String | “The below indicators include the ability to filter by states and breakout categories” |
+| `data_points` | The number of datapoints, across the entire application, that will be displayed for a trendline (e.g., set “5” to show the latest 5 years worth of data) | Number | 10 |
+| `footnote` | A small amount of text, to appear as a footnote to the application; the text will remain static no matter which indicator is selected.  Can be left blank, if desired. | Text String | “Questions about the indicator can be routed to questions@cdc.gov” |
+| `source_data_label` | Small amount of text used as label heading when displaying Source Data links at the bottom of the tool. | Text String | "Source Data:" |
+| `source_system_label` | Small amount of text used as label heading when displaying Source System links at the bottom of the tool. | Text String | "Source System:" |
+
+### Filter
+
+Expects an array of objects, where objects have the following structure.
+
+
+| Field Name | Description | Type | Example |
+| ---------- | ----------- | ---- | ------- |
+| `sort` | The order of the appearance for the filter.  From left to right, appears as “1”, “2” or “3” | Number | 1 |
+| `label` | Small amount of text that can be used as context to the filter | Text String | “Select an indicator” |
+| `label_column` | The value that is displayed for each entry in the dropdown (note: Differs from the “Value Column” as this is the “human readable” version of the data) | Text (field name) | question |
+| `value_column` | Sets the actual values in which to allow the tool to filter by; may be different than the above | Text (field name) | questionid |
+| `group_by` | Optional field - allows the dropdown to be “grouped” by a value - that is, to be broken down to be more readable.  Recommended is breaking indicator into “topic” in case there are multiple indicators for a given topic | Text (field name) | topic |
+| `group_by_id` | Optional field - value that is displayed for each entry in the `group_by` | Text (field name) | topicid |
+| `default_value` | Allows the administrator to set a “default Value”, that loads when the page is first loaded.  This is the value to adjust if you want to configure which indicator loads as the first. | Text (Value from “Value column”) | PHY001 |
+
+Note that there must be at least 3 filters defined, where `value_column` and `label_column`
+match values in `configurations.development.yml` for the following key pairs:
+`indicatorId` and `indicatorLabel`; `locationId` and `locationLabel`;
+`breakoutCategoryId` and `breakoutCategoryLabel`.
+
+It is recommended that order of the filters are: indicator, location and breakout category.
+This is because whenever indicator value changes, selectable values of location and
+breakout category are updated based on selection. When location value changes,
+selectable values of breakout category are updated.
+
+### Chart
+
+Expects an array of objects, where objects have the following structure.
+Each configured indicator (using ID value) or 'default' can have up to 3 charts configured.
+
+| Field Name | Description | Type | Example |
+| ---------- | ----------- | ---- | ------- |
+| `indicator` | Using the “QuestionID” value within the dataset, designates which indicator the visualization that is on that line applies to. NOTE: Users can set this to “default”.  The “default” indicator set allows CDC to set a combination of visualizations that will appear for any indicators that do not have additional settings explicitly set.  For example, if it is decided that 5 indicators should all simply be a Trend Chart, setting the “default” to only having a Trend Chart may be the simplest option | Text (Value from “Value column”) or "default" | PHY001 |
+| `sort` | The order of the appearance for the visualization.  From left to right, appears as “1”, “2” or “3”, depending on the number of visualizations | Number | 1 |
+| `type` | The type of the visualization that will be displayed. Must be one of the following values (case sensitive): line bar column pie map | Text String | bar |
+| `data` | Designates to the tool whether this visualization should be a “trend” (using multiple years) or a “latest” (using a single year of the latest available data) If the visualization is a trendline, enter “trend” If the visualization is a map, leave this blank If the visualization is any other type, enter “latest” | Text String | latest |
+| `title` | Brief title text that appears above each visualization. | Text String | “Trend Across the U.S.” |
+| `footnote` | Configurable footnote/text that appears underneath each visualization to provide context or additional information | Text String | “Smoking rates have decreased nationwide since 2010, but remains high in Southern states such as Alabama” |
+| `published` | Binary checkbox that allows the user to hide/display visualizations easily.  This can be used to configure visualizations, and hide them without having to delete them should you want to add additional visualizations. | Boolean | true |
+
+### Data Sources
+
+Expects an array of objects, where objects have the following structure.
+
+| Field Name | Description | Type | Example |
+| ---------- | ----------- | ---- | ------- |
+| `questionid` | The “questionid” value for an indicator; allows the application to know which indicator the information is applied to.  One line per indicator | Text String | AL002 |
+| `source_label` | The text name of the source of the data for this indicator.  For example, if this indicator’s data came from the BRFSS system, this will be “BRFSS” | Text String | BRFSS |
+| `source_link` | Link to the website or other link to provide additional information on the source.  For example, if this indicator’s data came from the BRFSS system, this may be “cdc.gov/brfss” | URL | http://www.cdc.gov/brfss |
+| `data_label` | Text name of the dataset or data category that the data is a part of.  For example, if an indicator’s data is from the HRQOL subset of BRFSS data, this would be “HRQOL” | Text String | HRQOL |
+| `data_link` | Link to the source dataset or other link to provide users with access to the full dataset (I.e., not the abbreviated dataset powering the app) | URL | https:///www.socrata.com/ |
+
 ## Testing
 
 TBD
