@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import L from 'leaflet';
-import { getLatLongBounds, rowFormatter } from 'lib/utils';
-import Soda from 'lib/Soda';
+import { getLatLongBounds, rowFormatter, sendRequest } from 'lib/utils';
+import Soda from 'soda-js';
 import { setLocationFilter } from 'modules/filters';
 import { CONFIG, GEOJSON } from 'constants';
 
@@ -173,41 +173,34 @@ function fetchData() {
         'There was an error in configuration.'
       ));
     } else {
-      // use all parent filters (minus location) plus map-specific filter
-      const parentFilterCondition = Object.keys(parentFilters)
-        .filter(column => column !== CONFIG.locationId)
-        .map(column => ({
-          column,
-          operator: '=',
-          value: _.get(parentFilters, `${column}.id`, '')
-        }));
-
-      const mapFilterCondition = Object.keys(mapFilters)
-        .map(column => ({
-          column,
-          operator: '=',
-          value: _.get(mapFilters, `${column}.id`, '')
-        }));
-
-      const filterCondition = (mapFilterCondition.length === 0) ? parentFilterCondition :
-        parentFilterCondition.concat(mapFilterCondition);
-
-      // apply latest year condition
-      filterCondition.push({
-        column: 'year',
-        operator: '=',
-        value: latestYear
+      // set up API request using soda-js
+      const consumer = new Soda.Consumer(CONFIG.soda.hostname, {
+        apiToken: CONFIG.soda.appToken
       });
 
-      new Soda(CONFIG.soda)
-        .dataset(CONFIG.data.datasetId)
-        .where(filterCondition)
-        .order([
-          'year',
-          CONFIG.locationLabel,
-          CONFIG.breakoutId
-        ])
-        .fetchData()
+      const request = consumer.query()
+        .withDataset(CONFIG.data.datasetId);
+
+      // use all parent filters (minus location) plus map-specific filter
+      Object.keys(parentFilters)
+        .filter(column => column !== CONFIG.locationId)
+        .forEach((row) => {
+          request.where(`${row}='${_.get(parentFilters, `${row}.id`, '')}'`);
+        });
+
+      Object.keys(mapFilters)
+        .forEach((row) => {
+          request.where(`${row}='${_.get(mapFilters, `${row}.id`, '')}'`);
+        });
+
+      // apply latest year condition
+      request.where(`year=${latestYear}`);
+
+      // order results by year, location and breakout
+      request.order('year', CONFIG.locationLabel, CONFIG.breakoutId);
+
+      // dispatch API request and handle response
+      sendRequest(request)
         .then((response) => {
           dispatch(formatMapData(response));
         })
@@ -281,23 +274,28 @@ function fetchBreakoutValues() {
         'There was an error in configuration.'
       ));
     } else {
+      // set up API request using soda-js
+      const consumer = new Soda.Consumer(CONFIG.soda.hostname, {
+        apiToken: CONFIG.soda.appToken
+      });
+
+      const request = consumer.query()
+        .withDataset(CONFIG.data.datasetId);
+
       // don't filter by location column
-      const filterCondition = Object.keys(filters).filter(column => column !== CONFIG.locationId)
-        .map((column) => {
-          return {
-            column,
-            operator: '=',
-            value: _.get(filters, `${column}.id`, '')
-          };
+      Object.keys(filters)
+        .filter(column => column !== CONFIG.locationId)
+        .forEach((row) => {
+          request.where(`${row}='${_.get(filters, `${row}.id`, '')}'`);
         });
 
-      new Soda(CONFIG.soda)
-        .dataset(CONFIG.data.datasetId)
-        .select(CONFIG.breakoutId, CONFIG.breakoutLabel)
-        .where(filterCondition)
-        .group(CONFIG.breakoutId, CONFIG.breakoutLabel)
-        .order(CONFIG.breakoutLabel)
-        .fetchData()
+      // group by breakout ID and label to get unique values
+      request.select(CONFIG.breakoutId, CONFIG.breakoutLabel);
+      request.group(CONFIG.breakoutId, CONFIG.breakoutLabel);
+      request.order(CONFIG.breakoutLabel);
+
+      // dispatch API request and handle response
+      sendRequest(request)
         .then((response) => {
           dispatch(transformFilterData(response));
         })

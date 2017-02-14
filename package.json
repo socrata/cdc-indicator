@@ -34,6 +34,7 @@
     "url": "git+https://github.com/socrata/cdc-indicator.git"
   },
   "author": "Hiko Naito, Socrata",
+  "license": "Apache-2.0",
   "licenses": [
     {
       "type": "Apache-2.0",
@@ -84,6 +85,7 @@
     "react-redux": "^4.4.5",
     "redux": "^3.6.0",
     "redux-thunk": "^2.1.0",
+    "soda-js": "^0.2.3",
     "whatwg-fetch": "^1.0.0"
   }
 }

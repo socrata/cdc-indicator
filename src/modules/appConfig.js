@@ -1,5 +1,6 @@
 import _ from 'lodash';
-import Soda from 'lib/Soda';
+import { sendRequest } from 'lib/utils';
+import Soda from 'soda-js';
 import { CONFIG, USER_CONFIGURABLE_OPTIONS } from 'constants';
 
 // --------------------------------------------------
@@ -37,31 +38,55 @@ function setRequestStatus(status) {
 }
 
 function getCoreConfigDataset() {
-  return new Soda(CONFIG.soda)
-    .dataset(CONFIG.data.appConfigDatasetId)
-    .limit(1)
-    .fetchData();
+  // Set up a SODA request using soda-js
+  const consumer = new Soda.Consumer(CONFIG.soda.hostname, {
+    apiToken: CONFIG.soda.appToken
+  });
+
+  const request = consumer.query()
+    .withDataset(CONFIG.data.appConfigDatasetId)
+    .limit(1);
+
+  return sendRequest(request);
 }
 
 function getFilterConfigDataset() {
-  return new Soda(CONFIG.soda)
-    .dataset(CONFIG.data.filterConfigDatasetId)
-    .order('sort')
-    .fetchData();
+  // Set up a SODA request using soda-js
+  const consumer = new Soda.Consumer(CONFIG.soda.hostname, {
+    apiToken: CONFIG.soda.appToken
+  });
+
+  const request = consumer.query()
+    .withDataset(CONFIG.data.filterConfigDatasetId)
+    .order('sort');
+
+  return sendRequest(request);
 }
 
 function getChartConfigDataset() {
-  return new Soda(CONFIG.soda)
-    .dataset(CONFIG.data.chartConfigDatasetId)
+  // Set up a SODA request using soda-js
+  const consumer = new Soda.Consumer(CONFIG.soda.hostname, {
+    apiToken: CONFIG.soda.appToken
+  });
+
+  const request = consumer.query()
+    .withDataset(CONFIG.data.chartConfigDatasetId)
     .where('published=true')
-    .order('indicator', 'sort')
-    .fetchData();
+    .order('indicator', 'sort');
+
+  return sendRequest(request);
 }
 
 function getDataSourceDataset() {
-  return new Soda(CONFIG.soda)
-    .dataset(CONFIG.data.indicatorsConfigDatasetId)
-    .fetchData();
+  // Set up a SODA request using soda-js
+  const consumer = new Soda.Consumer(CONFIG.soda.hostname, {
+    apiToken: CONFIG.soda.appToken
+  });
+
+  const request = consumer.query()
+    .withDataset(CONFIG.data.indicatorsConfigDatasetId);
+
+  return sendRequest(request);
 }
 
 function formatConfig(responses) {

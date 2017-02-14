@@ -49,15 +49,13 @@ export function getLatLongBounds(geometry, padding = 0) {
   ];
 }
 
-export function convertToNumber(str) {
-  if (isNaN(parseFloat(str))) {
-    return undefined;
-  }
-
-  return _.toNumber(str);
-}
-
+/**
+ * Format a row of data values
+ * @param  {object} a data row
+ * @return {object} formatted row
+ */
 export function rowFormatter(row) {
+  // keys whose value should be converted to a number
   const convertToNumberColumns = [
     'data_value',
     'data_value_alt',
@@ -66,11 +64,26 @@ export function rowFormatter(row) {
     'year'
   ];
 
+  // a new object where values are casted to number
   const newValues = convertToNumberColumns.reduce((acc, key) => {
     return Object.assign({}, acc, {
-      [key]: convertToNumber(row[key] || undefined)
+      [key]: _.toNumber((row[key] || undefined), undefined)
     });
   }, {});
 
+  // apply (overwrite) above object to the object passed and return a new object
   return Object.assign({}, row, newValues);
+}
+
+/**
+ * Wrap soda-js query.getRows() request in a Promise
+ * @param  {object} soda - soda-js query object
+ * @return {Promise}
+ */
+export function sendRequest(soda) {
+  return new Promise((resolve, reject) => {
+    soda.getRows()
+      .on('success', (rows) => { resolve(rows); })
+      .on('error', (error) => { reject(error); });
+  });
 }

@@ -1,5 +1,6 @@
 import _ from 'lodash';
-import Soda from 'lib/Soda';
+import { sendRequest } from 'lib/utils';
+import Soda from 'soda-js';
 import { CONFIG } from 'constants';
 
 // --------------------------------------------------
@@ -51,35 +52,25 @@ function getAvailableBreakoutCategory() {
     const indicator = _.get(getState(), `filters.selected.${CONFIG.indicatorId}.id`, '');
     const location = _.get(getState(), `filters.selected.${CONFIG.locationId}.id`, '');
 
-    new Soda(CONFIG.soda)
-      .dataset(CONFIG.data.datasetId)
+    // set up API request using soda-js
+    const consumer = new Soda.Consumer(CONFIG.soda.hostname, {
+      apiToken: CONFIG.soda.appToken
+    });
+
+    const request = consumer.query()
+      .withDataset(CONFIG.data.datasetId)
       .select(CONFIG.breakoutCategoryId)
-      .where([
-        {
-          column: CONFIG.breakoutCategoryId,
-          operator: 'IS NOT NULL'
-        },
-        {
-          column: 'year',
-          operator: 'IS NOT NULL'
-        },
-        {
-          column: 'data_value',
-          operator: 'IS NOT NULL'
-        },
-        {
-          column: CONFIG.indicatorId,
-          operator: '=',
-          value: indicator
-        },
-        {
-          column: CONFIG.locationId,
-          operator: '=',
-          value: location
-        }
-      ])
-      .group(CONFIG.breakoutCategoryId)
-      .fetchData()
+      .where(
+        `${CONFIG.breakoutCategoryId} IS NOT NULL`,
+        'year IS NOT NULL',
+        'data_value IS NOT NULL',
+        `${CONFIG.indicatorId}='${indicator}'`,
+        `${CONFIG.locationId}='${location}'`
+      )
+      .group(CONFIG.breakoutCategoryId);
+
+    // dispatch API request and handle response
+    sendRequest(request)
       .then((response) => {
         const availableCategories = response.map(row => row[CONFIG.breakoutCategoryId]);
         dispatch(setAvailableCategories(availableCategories));
@@ -93,30 +84,24 @@ function getAvailableLocations() {
 
     const indicator = _.get(getState(), `filters.selected.${CONFIG.indicatorId}.id`, '');
 
-    new Soda(CONFIG.soda)
-      .dataset(CONFIG.data.datasetId)
+    // set up API request using soda-js
+    const consumer = new Soda.Consumer(CONFIG.soda.hostname, {
+      apiToken: CONFIG.soda.appToken
+    });
+
+    const request = consumer.query()
+      .withDataset(CONFIG.data.datasetId)
       .select(CONFIG.locationId)
-      .where([
-        {
-          column: CONFIG.locationId,
-          operator: 'IS NOT NULL'
-        },
-        {
-          column: 'year',
-          operator: 'IS NOT NULL'
-        },
-        {
-          column: 'data_value',
-          operator: 'IS NOT NULL'
-        },
-        {
-          column: CONFIG.indicatorId,
-          operator: '=',
-          value: indicator
-        }
-      ])
-      .group(CONFIG.locationId)
-      .fetchData()
+      .where(
+        `${CONFIG.locationId} IS NOT NULL`,
+        'year IS NOT NULL',
+        'data_value IS NOT NULL',
+        `${CONFIG.indicatorId}='${indicator}'`
+      )
+      .group(CONFIG.locationId);
+
+    // dispatch API request and handle response
+    sendRequest(request)
       .then((response) => {
         const availableLocations = response.map(row => row[CONFIG.locationId]);
         dispatch(setAvailableLocations(availableLocations));
@@ -347,22 +332,22 @@ function fetchFilterData() {
         selectColumns.unshift(config.group_by, config.group_by_id);
       }
 
-      return new Soda(CONFIG.soda)
-        .dataset(CONFIG.data.datasetId)
+      // set up API request using soda-js
+      const consumer = new Soda.Consumer(CONFIG.soda.hostname, {
+        apiToken: CONFIG.soda.appToken
+      });
+
+      const request = consumer.query()
+        .withDataset(CONFIG.data.datasetId)
         .select(selectColumns)
-        .where([
-          {
-            column: config.label_column,
-            operator: 'IS NOT NULL'
-          },
-          {
-            column: config.value_column,
-            operator: 'IS NOT NULL'
-          }
-        ])
+        .where(
+          `${config.label_column} IS NOT NULL`,
+          `${config.value_column} IS NOT NULL`
+        )
         .group(selectColumns)
-        .order(config.label_column)
-        .fetchData();
+        .order(config.label_column);
+
+      return sendRequest(request);
     });
 
     Promise.all(getFilterPromises)

@@ -1,6 +1,6 @@
 import _ from 'lodash';
-import { rowFormatter } from 'lib/utils';
-import Soda from 'lib/Soda';
+import { rowFormatter, sendRequest } from 'lib/utils';
+import Soda from 'soda-js';
 import { CONFIG } from 'constants';
 
 // --------------------------------------------------
@@ -76,57 +76,37 @@ function formatIndicatorData(response) {
 
 function fetchIndicatorData() {
   return (dispatch, getState) => {
+    // Set up a SODA request using soda-js
+    const consumer = new Soda.Consumer(CONFIG.soda.hostname, {
+      apiToken: CONFIG.soda.appToken
+    });
+
+    const request = consumer.query()
+      .withDataset(CONFIG.data.datasetId);
+
     const filters = _.get(getState(), 'filters.selected', {});
     const compareToNational = _.get(getState(), 'indicatorData.compareToNational', true);
 
     // if a state other than "US" is selected, also get "US" data
-    const filterCondition = Object.keys(filters).map(key => {
+    Object.keys(filters).forEach(key => {
       if (key === CONFIG.locationId && filters[key].id !== 'US' && compareToNational) {
-        return {
-          operator: 'OR',
-          condition: [
-            {
-              column: key,
-              operator: '=',
-              value: filters[key].id
-            },
-            {
-              column: key,
-              operator: '=',
-              value: 'US'
-            }
-          ]
-        };
+        request.where(`(${key}='${filters[key].id}' OR ${key}='US')`);
+      } else {
+        request.where(`${key}='${filters[key].id}'`);
       }
-
-      return {
-        column: key,
-        operator: '=',
-        value: filters[key].id
-      };
     });
 
     // always add following query conditions
-    filterCondition.push({
-      column: 'year',
-      operator: 'IS NOT NULL'
-    });
+    request.where('year IS NOT NULL');
 
     // only get rows where data is available
-    filterCondition.push({
-      column: 'data_value',
-      operator: 'IS NOT NULL'
-    });
+    request.where('data_value IS NOT NULL');
 
-    new Soda(CONFIG.soda)
-      .dataset(CONFIG.data.datasetId)
-      .where(filterCondition)
-      .order([
-        'year',
-        CONFIG.locationLabel,
-        CONFIG.breakoutId
-      ])
-      .fetchData()
+    // order results by year, location and breakout
+    request.order('year', CONFIG.locationLabel, CONFIG.breakoutId);
+
+    // dispatch API request and handle response
+    sendRequest(request)
       .then((response) => {
         dispatch(formatIndicatorData(response));
       })
