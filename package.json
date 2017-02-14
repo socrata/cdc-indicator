@@ -7,7 +7,8 @@
     "build": "better-npm-run build",
     "build:dev": "better-npm-run build:dev",
     "start": "better-npm-run start",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "node ./deploy.js"
   },
   "betterScripts": {
     "build": {
@@ -63,6 +64,7 @@
     "eslint-plugin-jsx-a11y": "^1.5.3",
     "eslint-plugin-react": "^5.2.2",
     "extract-text-webpack-plugin": "^1.0.1",
+    "gh-pages": "^0.12.0",
     "html-webpack-plugin": "^2.22.0",
     "json-loader": "^0.5.4",
     "path": "^0.12.7",

@@ -188,6 +188,13 @@ You will need to upload `build/app.js` to asset service, and update the asset ID
 `chronicdata.cdc.gov` repository. If there are CSS changes, copy `build/_app.css` into
 `css` directory in `chronicdata.cdc.gov` repository.
 
+### Deploying to gh-pages
+
+Running `npm run deploy` uses [gh-pages][] to deploy contents of `build` directory
+to `gh-pages` branch.
+
+[gh-pages]: https://github.com/tschaub/gh-pages
+
 ## Known Issues
 
 - HMR will reload the entire page when changes are made to a component.
