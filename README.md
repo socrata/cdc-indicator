@@ -194,4 +194,4 @@ You will need to upload `build/app.js` to asset service, and update the asset ID
 
 ## License
 
-MIT
+[Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0)
