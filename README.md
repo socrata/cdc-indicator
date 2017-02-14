@@ -67,7 +67,8 @@ map:
 [Mapbox Access Token]: https://www.mapbox.com/help/define-access-token/
 
 Once both tokens are set, running `npm start` will start `webpack-dev-server` and
-you should be able to access this tool by navigating your browser to `http://localhost:8080`.
+you should be able to access this tool by navigating your browser to
+`http://localhost:8080/cdc-indicator`.
 
 ## Application Structure
 

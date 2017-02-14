@@ -40,7 +40,7 @@ export default class C3ChartUpdatable extends C3Chart {
           format: {
             value: (value, ratio) => {
               return `
-                ${value}${this.getUnit()}
+                ${this.processValue(value)}
                 (${d3.format('.1%')(ratio)} of total)
               `;
             }
