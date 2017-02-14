@@ -7,7 +7,7 @@ import { Map, TileLayer } from 'react-leaflet';
 import L from 'leaflet';
 import d3 from 'd3';
 import _ from 'lodash';
-import { getLatLongBounds } from 'lib/helpers';
+import { getLatLongBounds } from 'lib/utils';
 import { CONFIG } from 'constants';
 import styles from 'styles/choropleth.css';
 import GeoJsonUpdatable from './GeoJsonUpdatable';
