@@ -57,6 +57,7 @@ class DataTable extends Component {
             showOnlyLatest } = this.props;
 
     let table;
+    let tableContent = 'Data Table';
     let displayData = rawData;
 
     if (showOnlyLatest) {
@@ -137,7 +138,7 @@ class DataTable extends Component {
         </tr>
       ));
 
-      let tableContent = captionColumns.map(column => rawData[0][column]).join(' ');
+      tableContent = captionColumns.map(column => rawData[0][column]).join(' ');
 
       if (unit) {
         tableContent = `${tableContent} (${unit})`;
@@ -191,6 +192,7 @@ class DataTable extends Component {
           isOpen={this.state.isModalOpen}
           onRequestClose={this.closeModal}
           style={modalStyles}
+          contentLabel={tableContent}
         >
           {table}
           <button className={styles.closeTable} onClick={this.closeModal}>Close</button>
