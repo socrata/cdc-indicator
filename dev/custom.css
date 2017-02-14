@@ -114,14 +114,6 @@ div.category ul li.active.hide {
 
 /*** css/css.css ***/
 
-@font-face {
-  font-family: 'Lato';
-  /*src: url('/api/assets/737BB4BC-5A46-4B94-AEE5-6139B1EDD593')*/
-  src: url('Lato')
-}
-
-
-
 body, h1, h2, h3, h4, h5, h6, p, li {
   font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif !important;
 }
