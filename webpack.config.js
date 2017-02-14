@@ -72,7 +72,7 @@ const webpackConfig = {
   output: {
     filename: '[name].js',
     path: path.resolve('build'),
-    publicPath: '/'
+    publicPath: '/cdc-indicator'
   },
   // Common plugins
   plugins: [
