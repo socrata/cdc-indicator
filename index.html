@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <title>CDC Disease Indicator Tool</title>
+    <meta name="description" content="CDC Disease Indicator Tool">
+    <!-- some CSS from Socrata platform is loaded to mimic how the tool behaves on ChronicData site -->
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet">
+    <link rel="stylesheet" href="dev/base.css">
+    <link rel="stylesheet" href="dev/custom.css">
+    <!-- vendors css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.2/leaflet.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+  </head>
+
+  <!-- mimics Socrata page -->
+  <body class="controller_custom_content action_custom_content_page locale_en cdc-home">
+    <div class="siteOuterWrapper">
+      <div class="siteInnerWrapper">
+        <div class="siteContentWrapper">
+          <div class="socrata-component component-Container notRendered socrata-container" id="cdc-home">
+            <!-- React mount node -->
+            <div class="socrata-component component-Container serverRendered notRendered socrata-container" id="main"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <script type="text/javascript" src="/cdc-indicator/app.js"></script></body>
+
+</html>
