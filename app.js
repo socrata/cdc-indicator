@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "b28af080e3c29edfdfc9"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "6eb1a9f6086b824c8ce0"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -49941,7 +49941,7 @@
 	          tooltip: {
 	            format: {
 	              value: function value(_value2, ratio) {
-	                return '\n                ' + _value2 + _this.getUnit() + '\n                (' + _d2.default.format('.1%')(ratio) + ' of total)\n              ';
+	                return '\n                ' + _this.processValue(_value2) + '\n                (' + _d2.default.format('.1%')(ratio) + ' of total)\n              ';
 	              }
 	            }
 	          }
