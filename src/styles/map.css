@@ -17,3 +17,4 @@
 .spinner {
   composes: spinner from './spinner.css';
 }
+

@@ -1,5 +1,6 @@
 // enable react-redux with redux-thunk middleware
 import React from 'react';
+import 'react-devtools';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { createStore, combineReducers, compose, applyMiddleware } from 'redux';

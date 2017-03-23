@@ -8,7 +8,8 @@
     "build:dev": "better-npm-run build:dev",
     "start": "better-npm-run start",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "deploy": "node ./deploy.js"
+    "deploy": "node ./deploy.js",
+    "devtools": "react-devtools"
   },
   "betterScripts": {
     "build": {
@@ -83,6 +84,7 @@
     "leaflet": "^1.0.2",
     "lodash": "^4.16.1",
     "react": "^15.1.0",
+    "react-devtools": "^2.0.12", 
     "react-dom": "^15.1.0",
     "react-redux": "^4.4.5",
     "redux": "^3.6.0",

@@ -64,6 +64,11 @@ function formatIndicatorData(response) {
       .max()
       .value();
 
+    // const earliestYear = _.chain(data)
+    //   .map(row => row.year)
+    //   .min()
+    //   .value();
+
     // filter data within the desired data points
     const dataPoints = _.get(getState(), 'appConfig.config.core.data_points');
     const filteredData = data.filter(row => row.year > (latestYear - dataPoints));

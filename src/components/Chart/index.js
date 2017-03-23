@@ -22,7 +22,7 @@ const Chart = ({ config, data, desc, latestYear }) => {
 
   const title = (config.data === 'latest') ?
     `${config.title} (${latestYear} Data)` :
-    config.title;
+    `${config.title} (2012 - 2014 Data)`;
 
   const chartTitle = (!config.title) ? null :
     <h3 className={styles.chartTitle}>{title}</h3>;
