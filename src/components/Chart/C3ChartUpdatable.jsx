@@ -14,11 +14,13 @@ function customTooltip(data, defaultTitleFormat, defaultValueFormat, color) {
 
   return this.getTooltipContent(data, customTitleFormat, defaultValueFormat, color);
 }
+
 // break scale
 function breakScale(pathString, amplitude, wavelength, periods, dist) {
   const parts = pathString.match(/(.*)(H-\d+)/);
   let first = parts[1];
   const last = parts[2];
+
   first = first.replace(/(.*?V)(\d+)/, (match, p1, p2) => {
     return p1 + (p2 - dist - (wavelength) * periods);
   });
@@ -40,23 +42,6 @@ function breakScale(pathString, amplitude, wavelength, periods, dist) {
   return newPath;
 }
 
-function modifyTransform(transformString, key, mod) {
-  let transforms = transformString;
-  transforms = transforms.match(/(\w+\((\-?\d+\.?\d*e?\-?\d*,?)+\))+/g).map((transform) => {
-    const c = transform.match(/[\w\.\-]+/g);
-    const d = c.shift();
-    let result = transform;
-    if (d === key) {
-      const newValues = c.map((num, idx) => {
-        return parseInt(num, 10) + mod[idx];
-      });
-      result = `${d}(${newValues.join(',')})`;
-    }
-    return result;
-  });
-  return [].concat(transforms).join(',');
-}
-
 export default class C3ChartUpdatable extends C3Chart {
   formatTooltips = (originalProps) => {
     let newProps;
@@ -66,10 +51,11 @@ export default class C3ChartUpdatable extends C3Chart {
         tooltip: {
           format: {
             value: (value, ratio, id, index) => {
+              const result = this.scaleValue(value);
               const lc = this.processValue(this.getLC(id, index));
               const hc = this.processValue(this.getHC(id, index));
               const cl = (lc === 'N/A' && hc === 'N/A') ? 'N/A' : `${lc}–${hc}`;
-              return `${this.processValue(value)} (${cl})`;
+              return `${this.processValue(result)} (${cl})`;
             }
           },
           contents: customTooltip
@@ -80,8 +66,9 @@ export default class C3ChartUpdatable extends C3Chart {
         tooltip: {
           format: {
             value: (value, ratio) => {
+              const result = this.scaleValue(value);
               return `
-                ${this.processValue(value)}
+                ${this.processValue(result)}
                 (${d3.format('.1%')(ratio)} of total)
               `;
             }
@@ -107,6 +94,10 @@ export default class C3ChartUpdatable extends C3Chart {
     return _.get(this.props, `custom.limits[${id}][${index}].low`, 'N/A');
   };
 
+  scaleValue = (value) => {
+    return this.props.scale ? parseFloat(this.props.scale.invert(value)).toFixed(1) : value;
+  }
+
   processValue = (value) => {
     if (!value || value === 'N/A') {
       return 'N/A';
@@ -129,35 +120,11 @@ export default class C3ChartUpdatable extends C3Chart {
 
   setBreakLine = () => {
     setTimeout(() => {
-      console.log(this.chart.element); // eslint-disable-line
-      const yaxis = d3.select(this.chart.element).select('svg')
-      .selectAll('g')
-      .filter('.c3-axis-y');
-      const xaxis = d3.select(this.chart.element).select('svg')
-      .selectAll('g')
-      .filter('.c3-axis-x');
-      console.log(xaxis.attr('transform')); // eslint-disable-line
-      xaxis.attr('transform', modifyTransform(xaxis.attr('transform'), 'translate', [0, 20]));
-      const ytick = yaxis.select('tspan').text();
-      if (ytick !== '0.0' && ytick !== '0') {
-        const yminTransform = `translate(0, ${this.chart.internal.yMin})`;
-        // insert breakline
-        const domainPath = yaxis.select('path.domain');
-        domainPath.attr('d', breakScale(domainPath.attr('d'), 14, 6, 3, 1));
-        // insert 0 at bottom of y axis
-        yaxis.insert('g', ':first-child')
-        .attr('class', 'tick test')
-        .attr('style', 'opacity: 1;')
-        .attr('transform', yminTransform)
-        .append('text')
-        .attr('x', '-9')
-        .attr('y', '0')
-        .attr('style', 'text-anchor: end;')
-        .append('tspan')
-        .attr('x', '-9')
-        .attr('dy', '3')
-        .text('0.0');
-      }
+      const domainPath = d3.select(this.chart.element).select('svg')
+                      .selectAll('g')
+                      .filter('.c3-axis-y')
+                      .select('path.domain');
+      domainPath.attr('d', breakScale(domainPath.attr('d'), 14, 5, 3, 1));
     }, 0);
   }
 
@@ -176,5 +143,6 @@ export default class C3ChartUpdatable extends C3Chart {
 
 C3ChartUpdatable.propTypes = {
   data: PropTypes.object.isRequired,
-  title: PropTypes.string
+  title: PropTypes.string,
+  scale: PropTypes.func
 };

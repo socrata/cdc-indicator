@@ -115,6 +115,17 @@ function setAvailableCategories(availableCategories) {
     const categoryFilter = filterData[CONFIG.breakoutCategoryId];
     const categoryOptions = categoryFilter.options;
 
+    // move overall, total, or all to top of list
+    const oldIndex = categoryOptions.findIndex((obj) => {
+      return obj.value === 'OVERALL'
+          || obj.value === 'TOTAL'
+          || obj.value === 'ALL';
+    });
+
+    if (oldIndex > -1) {
+      categoryOptions.splice(0, 0, categoryOptions.splice(oldIndex, 1)[0]);
+    }
+
     const newCategoryFilter = Object.assign({}, categoryFilter, {
       options: categoryOptions.map((category) => {
         return {
@@ -168,6 +179,12 @@ function setAvailableLocations(availableLocations) {
     const filterData = _.get(getState(), 'filters.data');
     const locationFilter = filterData[CONFIG.locationId];
     const locationOptions = locationFilter.options;
+
+    // set US to top of list
+    const oldIndex = locationOptions.findIndex((obj) => obj.value === 'US');
+    if (oldIndex > -1) {
+      locationOptions.splice(0, 0, locationOptions.splice(oldIndex, 1)[0]);
+    }
 
     const newLocationFilter = Object.assign({}, locationFilter, {
       options: locationOptions.map((location) => {

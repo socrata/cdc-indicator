@@ -7,6 +7,9 @@ import BarChart from './BarChart';
 import ColumnChart from './ColumnChart';
 import LineChart from './LineChart';
 import PieChart from './PieChart';
+import _ from 'lodash';
+import d3 from 'd3';
+
 
 const Chart = ({ config, data, desc, latestYear }) => {
   if (latestYear === -1) {
@@ -20,9 +23,17 @@ const Chart = ({ config, data, desc, latestYear }) => {
 
   const chartData = new ChartData({ data, dataSeries, latestYear });
 
-  const title = (config.data === 'latest') ?
-    `${config.title} (${latestYear} Data)` :
-    `${config.title} (2012 - 2014 Data)`;
+  let title = `${config.title}`;
+  if (config.data === 'latest') {
+    title = `${config.title} (${latestYear} Data)`;
+  }
+  if (config.data === 'trend') {
+    const range = _.map(chartData.data, (x) => x.year);
+    const rangeText = d3.min(range) === d3.max(range) ?
+                      `${d3.max(range)}` :
+                      `${d3.min(range)} - ${d3.max(range)}`;
+    title = `${config.title} (${rangeText} Data)`;
+  }
 
   const chartTitle = (!config.title) ? null :
     <h3 className={styles.chartTitle}>{title}</h3>;
