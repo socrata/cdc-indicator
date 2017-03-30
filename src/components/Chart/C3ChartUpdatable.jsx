@@ -54,8 +54,8 @@ export default class C3ChartUpdatable extends C3Chart {
               const result = this.scaleValue(value);
               const lc = this.processValue(this.getLC(id, index));
               const hc = this.processValue(this.getHC(id, index));
-              const cl = (lc === 'N/A' && hc === 'N/A') ? 'N/A' : `${lc}–${hc}`;
-              return `${this.processValue(result)} (${cl})`;
+              const cl = (lc === 'N/A' && hc === 'N/A') ? '' : `(${lc}–${hc})`;
+              return `${this.processValue(result)} ${cl}`;
             }
           },
           contents: customTooltip

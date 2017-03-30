@@ -37,6 +37,13 @@ class ChoroplethMap extends Component {
         .value();
     };
 
+    // check if empty values exist based on current props
+    this.hasEmptyValues = () => {
+      return _.chain(this.props.data.features)
+        .filter((row) => isNaN(row.properties.value))
+        .value().length > 0;
+    };
+
     // get outer bounds of data value
     this.getDataRange = () => {
       // round down/up to nearest integer
@@ -47,7 +54,7 @@ class ChoroplethMap extends Component {
 
     this.getColor = (d) => {
       if (isNaN(d)) {
-        return 'transparent';
+        return '#999999';
       }
       const scale = d3.scale.linear()
         .domain(this.getDataRange())
@@ -151,6 +158,12 @@ class ChoroplethMap extends Component {
         return _.round(values[index - 1] - 0.1, 1);
       });
 
+      // Add N/A to legend if empty values exist
+      if (this.hasEmptyValues()) {
+        values.push('N/A');
+        endValues.push('N/A');
+      }
+
       // if all values are integers, do not display 0-pad values
       // const isAllIntegers = values.reduce((isInteger, value) => {
       //   return isInteger && _.isInteger(value);
@@ -170,7 +183,11 @@ class ChoroplethMap extends Component {
         return (
           <li key={index}>
             <i style={{ background: color }} />
-            {displayValue}–{endValue}
+              { // return range or single value
+                (displayValue !== endValue) ?
+                  `${displayValue} – ${endValue}` :
+                  displayValue
+              }
           </li>
         );
       });
