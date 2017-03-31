@@ -15,31 +15,33 @@ function customTooltip(data, defaultTitleFormat, defaultValueFormat, color) {
   return this.getTooltipContent(data, customTitleFormat, defaultValueFormat, color);
 }
 
-// break scale
-function breakScale(pathString, amplitude, wavelength, periods, dist) {
-  const parts = pathString.match(/(.*)(H-\d+)/);
-  let first = parts[1];
-  const last = parts[2];
-
-  first = first.replace(/(.*?V)(\d+)/, (match, p1, p2) => {
-    return p1 + (p2 - dist - (wavelength) * periods);
-  });
-
-  let newPath = first;
-
+// Break Scale
+// This function redraws the vertical y axis line with a break
+function breakScale(yMin, amplitude, wavelength, periods, dist) {
+  const lineFunction = d3.svg.line()
+                      .x((d) => { return d.x; })
+                      .y((d) => { return d.y; })
+                      .interpolate('linear');
+  let breakstart = yMin - dist - (wavelength) * periods;
+  const last = { x: 0, y: yMin };
+  const lineData = [{ x: -6, y: 0 },
+                    { x: 0, y: 0 },
+                    { x: 0, y: breakstart }];
   for (let i = 0; i < periods + 1; i++) {
     if (i === 0) {
-      newPath += `l-${(amplitude / 2)},${(wavelength / 2)}`;
+      breakstart += wavelength / 2;
+      lineData.push({ x: (amplitude / 2) * -1, y: breakstart });
     } else if (i === periods) {
-      newPath += `l${(i % 2 ? '' : '-')}${(amplitude / 2)},${(wavelength / 2)}`;
+      breakstart += wavelength / 2;
+      lineData.push({ x: (i % 2 ? (amplitude / 2) : (amplitude / 2) * -1), y: breakstart });
     } else {
-      newPath += `l${(i % 2 ? '' : '-')}${amplitude},${wavelength}`;
+      breakstart += wavelength;
+      lineData.push({ x: (i % 2 ? amplitude : amplitude * -1), y: breakstart });
     }
   }
 
-  newPath += `v${dist}${last}`;
-
-  return newPath;
+  lineData.push(last);
+  return lineFunction(lineData);
 }
 
 export default class C3ChartUpdatable extends C3Chart {
@@ -120,11 +122,11 @@ export default class C3ChartUpdatable extends C3Chart {
 
   setBreakLine = () => {
     setTimeout(() => {
-      const domainPath = d3.select(this.chart.element).select('svg')
-                      .selectAll('g')
-                      .filter('.c3-axis-y')
-                      .select('path.domain');
-      domainPath.attr('d', breakScale(domainPath.attr('d'), 14, 5, 3, 1));
+      d3.select(this.chart.element).select('svg')
+        .selectAll('g')
+        .filter('.c3-axis-y')
+        .select('path.domain')
+        .attr('d', breakScale(this.chart.internal.yMin, 6, 5, 3, 3));
     }, 0);
   }
 
