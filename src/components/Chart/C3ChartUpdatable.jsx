@@ -15,35 +15,6 @@ function customTooltip(data, defaultTitleFormat, defaultValueFormat, color) {
   return this.getTooltipContent(data, customTitleFormat, defaultValueFormat, color);
 }
 
-// Break Scale
-// This function redraws the vertical y axis line with a break
-function breakScale(yMin, amplitude, wavelength, periods, dist) {
-  const lineFunction = d3.svg.line()
-                      .x((d) => { return d.x; })
-                      .y((d) => { return d.y; })
-                      .interpolate('linear');
-  let breakstart = yMin - dist - (wavelength) * periods;
-  const last = { x: 0, y: yMin };
-  const lineData = [{ x: -6, y: 0 },
-                    { x: 0, y: 0 },
-                    { x: 0, y: breakstart }];
-  for (let i = 0; i < periods + 1; i++) {
-    if (i === 0) {
-      breakstart += wavelength / 2;
-      lineData.push({ x: (amplitude / 2) * -1, y: breakstart });
-    } else if (i === periods) {
-      breakstart += wavelength / 2;
-      lineData.push({ x: (i % 2 ? (amplitude / 2) : (amplitude / 2) * -1), y: breakstart });
-    } else {
-      breakstart += wavelength;
-      lineData.push({ x: (i % 2 ? amplitude : amplitude * -1), y: breakstart });
-    }
-  }
-
-  lineData.push(last);
-  return lineFunction(lineData);
-}
-
 export default class C3ChartUpdatable extends C3Chart {
   formatTooltips = (originalProps) => {
     let newProps;
@@ -126,8 +97,44 @@ export default class C3ChartUpdatable extends C3Chart {
         .selectAll('g')
         .filter('.c3-axis-y')
         .select('path.domain')
-        .attr('d', breakScale(this.chart.internal.yMin, 6, 5, 3, 3));
+        .attr('d', this.breakScale(6, 5, 3, 3));
     }, 0);
+  }
+
+  // Break Scale
+  // This function redraws the vertical y axis line with a break
+  // @param amplitude - integer - amplitude of break
+  // @param wavelength - integer - wavelength of break
+  // @param periods - integer - how many points are in the break
+  // @param dist - integer - distance of break from bottom of y axis
+  breakScale = (amplitude, wavelength, periods, dist) => {
+    const yMin = this.chart.internal.yMin;
+    const lineFunction = d3.svg.line()
+                           .x((d) => { return d.x; })
+                           .y((d) => { return d.y; })
+                           .interpolate('linear');
+    let breakstart = yMin - dist - (wavelength) * periods;
+
+    // build points for new line
+    const lineData = [{ x: -6, y: 0 },
+                      { x: 0, y: 0 },
+                      { x: 0, y: breakstart }];
+    // break
+    for (let i = 0; i < periods + 1; i++) {
+      if (i === 0) {
+        breakstart += wavelength / 2;
+        lineData.push({ x: (amplitude / 2) * -1, y: breakstart });
+      } else if (i === periods) {
+        breakstart += wavelength / 2;
+        lineData.push({ x: (i % 2 ? (amplitude / 2) : (amplitude / 2) * -1), y: breakstart });
+      } else {
+        breakstart += wavelength;
+        lineData.push({ x: (i % 2 ? amplitude : amplitude * -1), y: breakstart });
+      }
+    }
+    // last
+    lineData.push({ x: 0, y: yMin });
+    return lineFunction(lineData);
   }
 
   componentWillReceiveProps(nextProps) {
