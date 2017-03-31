@@ -142,9 +142,17 @@ class ChoroplethMap extends Component {
       // const step = (max - min) / (numberOfItems - 1);
       const step = (max - min) / (numberOfItems);
 
-      // invalid data (max is Infinity and min is 0, resulting in Infinity)
+			// invalid data (max is Infinity and min is 0, resulting in Infinity)
       if (step === Infinity) {
-        return null;
+        const color = this.getColor('NaN');
+        return (
+          <ul className={styles.legend}>
+            <li>
+              <i style={{ background: color }} />
+              N/A
+            </li>
+          </ul>
+        );
       }
 
       const values = Array(numberOfItems).fill(0).map((value, index) =>
