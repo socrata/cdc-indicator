@@ -223,9 +223,15 @@ class ChoroplethMap extends Component {
 
       const unitInfo = (unitValue.length > 1) ? `(${unitValue})` : '';
 
-      // if both low and high limits are N/A, display a single 'N/A'
-      const cl = (isNaN(lc) && isNaN(hc)) ? 'N/A' :
-        `${isNaN(lc) ? 'N/A' : `${lc}${unit}`}–${isNaN(hc) ? 'N/A' : `${hc}${unit}`}`;
+      // if both low and high limits are N/A, suppress confidence limits
+      let ConfidenceLimits = null;
+      if (isNaN(lc) && isNaN(hc)) {
+        ConfidenceLimits = '';
+      } else {
+        const lcFormat = isNaN(lc) ? 'N/A' : `${lc}${unit}`;
+        const hcFormat = isNaN(hc) ? 'N/A' : `${hc}${unit}`;
+        ConfidenceLimits = `Confidence Limits: ${lcFormat}–${hcFormat}`;
+      }
 
       return (
         <div>
@@ -236,7 +242,7 @@ class ChoroplethMap extends Component {
             {`${this.props.year} ${valueType}: ${value}`}
           </div>
           <div>
-            {`Confidence Limits: ${cl}`}
+            {`${ConfidenceLimits}`}
           </div>
           <div>
             {unitInfo}
