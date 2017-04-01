@@ -4,17 +4,6 @@ import C3Chart from 'react-c3js';
 import d3 from 'd3';
 import _ from 'lodash';
 
-// custom tooltip content
-// this is defined here using function.. syntax because we want "this" to point to c3js
-function customTooltip(data, defaultTitleFormat, defaultValueFormat, color) {
-  // override title format
-  const customTitleFormat = (x) => {
-    return `${defaultTitleFormat(x)} Data (Confidence Limits)`;
-  };
-
-  return this.getTooltipContent(data, customTitleFormat, defaultValueFormat, color);
-}
-
 export default class C3ChartUpdatable extends C3Chart {
   formatTooltips = (originalProps) => {
     let newProps;
@@ -25,13 +14,30 @@ export default class C3ChartUpdatable extends C3Chart {
           format: {
             value: (value, ratio, id, index) => {
               const result = this.scaleValue(value);
-              const lc = this.processValue(this.getLC(id, index));
-              const hc = this.processValue(this.getHC(id, index));
-              const cl = (lc === 'N/A' && hc === 'N/A') ? '' : `(${lc}–${hc})`;
-              return `${this.processValue(result)} ${cl}`;
+              const cl = this.getCL(id, index);
+              const lc = this.processValue(cl.low);
+              const hc = this.processValue(cl.high);
+              const clFormat = (isNaN(cl.high) && isNaN(cl.low)) ? '' : `(${lc}–${hc})`;
+              return `${this.processValue(result)} ${clFormat}`;
             }
           },
-          contents: customTooltip
+          contents: (data, defaultTitleFormat, defaultValueFormat, color) => {
+            // get c3js object
+            const $$ = this.chart.internal;
+            const id = data[0].id;
+            const index = data[0].index;
+            const cl = this.getCL(id, index);
+            const customString = (isNaN(cl.high) && isNaN(cl.low))
+                                  ? 'Data'
+                                  : 'Data (Confidence Limits)';
+
+            // override title format
+            const customTitleFormat = function customTitleFormat(x) {
+              return `${defaultTitleFormat(x)} ${customString}`;
+            };
+
+            return $$.getTooltipContent(data, customTitleFormat, defaultValueFormat, color);
+          }
         }
       });
     } else {
@@ -59,13 +65,9 @@ export default class C3ChartUpdatable extends C3Chart {
     return newProps;
   };
 
-  getHC = (id, index) => {
-    return _.get(this.props, `custom.limits[${id}][${index}].high`, 'N/A');
-  };
-
-  getLC = (id, index) => {
-    return _.get(this.props, `custom.limits[${id}][${index}].low`, 'N/A');
-  };
+  getCL = (id, index) => {
+    return _.get(this.props, `custom.limits[${id}][${index}]`, 'N/A');
+  }
 
   scaleValue = (value) => {
     return this.props.scale ? parseFloat(this.props.scale.invert(value)).toFixed(1) : value;
@@ -101,12 +103,14 @@ export default class C3ChartUpdatable extends C3Chart {
     }, 0);
   }
 
-  // Break Scale
-  // This function redraws the vertical y axis line with a break
-  // @param amplitude - integer - amplitude of break
-  // @param wavelength - integer - wavelength of break
-  // @param periods - integer - how many points are in the break
-  // @param dist - integer - distance of break from bottom of y axis
+  /** Break Scale
+   * This function creates a new vertical y axis line with a break
+   * @param {number} amplitude - amplitude of break
+   * @param {number} wavelength - wavelength of break
+   * @param {number} periods - how many points are in the break
+   * @param {number} dist - distance of break from bottom of y axis
+   * @return {object} - d3 line path data generator
+   */
   breakScale = (amplitude, wavelength, periods, dist) => {
     const yMin = this.chart.internal.yMin;
     const lineFunction = d3.svg.line()
