@@ -70,7 +70,7 @@ class ChoroplethMap extends Component {
         opacity: 1,
         color: 'white',
         // dashArray: '3',
-        fillOpacity: 0.7
+        fillOpacity: 1
       };
     };
 
@@ -87,7 +87,7 @@ class ChoroplethMap extends Component {
         weight: 2,
         color: '#6ff',
         dashArray: '',
-        fillOpacity: 0.7
+        fillOpacity: 1
       });
 
       if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
