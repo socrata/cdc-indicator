@@ -69,12 +69,3 @@
   margin: 1em 0 0;
 }
 
-.breakFill > line {
-    stroke-width: 4px;
-    stroke: white;
-    stroke-opacity: 1;
-}
-.break > line {
-    stroke-width: 1px;
-    stroke: grey;
-}
