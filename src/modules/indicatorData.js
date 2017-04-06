@@ -107,8 +107,8 @@ function fetchIndicatorData() {
     // only get rows where data is available
     request.where('data_value IS NOT NULL');
 
-    // order results by year, location and breakout
-    request.order('year', CONFIG.locationLabel, CONFIG.breakoutId);
+    // order results by year descending, location and breakout
+    request.order('year desc', CONFIG.locationLabel, CONFIG.breakoutId);
 
     // dispatch API request and handle response
     sendRequest(request)

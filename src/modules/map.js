@@ -195,8 +195,8 @@ function fetchData() {
       // apply latest year condition
       request.where(`year=${latestYear}`);
 
-      // order results by year, location and breakout
-      request.order('year', CONFIG.locationLabel, CONFIG.breakoutId);
+      // order results by year descending, location and breakout
+      request.order('year desc', CONFIG.locationLabel, CONFIG.breakoutId);
 
       // dispatch API request and handle response
       sendRequest(request)
