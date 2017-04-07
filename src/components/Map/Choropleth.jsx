@@ -212,7 +212,6 @@ class ChoroplethMap extends Component {
       if (!properties) {
         return <div>Hover over a state</div>;
       }
-
       const valueType = _.get(properties, 'dataValueType');
       const hc = _.get(properties, 'highConfidence');
       const lc = _.get(properties, 'lowConfidence');
@@ -220,6 +219,7 @@ class ChoroplethMap extends Component {
       const unitValue = _.get(properties, 'unit', '');
       const unit = (unitValue.length > 1) ? '' : unitValue;
       const value = (properties.value) ? `${properties.value}${unit}` : 'N/A';
+      const stratification = _.get(properties, 'stratification1', 'N/A');
 
       const unitInfo = (unitValue.length > 1) ? `(${unitValue})` : '';
       // if both low and high limits are N/A, suppress confidence limits
@@ -239,6 +239,9 @@ class ChoroplethMap extends Component {
           </div>
           <div>
             {`${valueType} ${unitInfo}: ${value}`}
+          </div>
+          <div>
+            {`${stratification}`}
           </div>
           <div>
             {`${ConfidenceLimits}`}
