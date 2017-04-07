@@ -238,10 +238,10 @@ class ChoroplethMap extends Component {
             <strong>{`${properties.name} - ${this.props.year}`}</strong>
           </div>
           <div>
-            {`${valueType} ${unitInfo}: ${value}`}
+            {`${stratification}`}
           </div>
           <div>
-            {`${stratification}`}
+            {`${valueType} ${unitInfo}: ${value}`}
           </div>
           <div>
             {`${ConfidenceLimits}`}
