@@ -146,7 +146,8 @@ function formatMapData(response) {
         unit: dataByState[state][0].data_value_unit,
         dataValueType: dataByState[state][0].data_value_type,
         highConfidence: dataByState[state][0].high_confidence_limit,
-        lowConfidence: dataByState[state][0].low_confidence_limit
+        lowConfidence: dataByState[state][0].low_confidence_limit,
+        stratification1: dataByState[state][0].stratification1
       });
 
       return Object.assign({}, feature, { properties });
