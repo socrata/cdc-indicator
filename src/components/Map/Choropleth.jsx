@@ -176,10 +176,13 @@ class ChoroplethMap extends Component {
       // const isAllIntegers = values.reduce((isInteger, value) => {
       //   return isInteger && _.isInteger(value);
       // }, true);
-
       const legends = values.map((value, index) => {
         const color = this.getColor(value);
         let displayValue = _.toString(value);
+        // have legend start from 0
+        if (value === min) {
+          displayValue = 0;
+        }
         let endValue = _.toString(endValues[index]);
         // append ".0" if it a whole number
         if (_.isInteger(value)) {
