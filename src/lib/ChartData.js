@@ -3,7 +3,6 @@
  */
 
 import _ from 'lodash';
-import d3 from 'd3';
 import { CONFIG } from '../constants';
 
 export default class ChartData {
@@ -12,7 +11,6 @@ export default class ChartData {
     this.dataSeries = options.dataSeries;
     this.latestYear = options.latestYear;
     this.xValues = undefined;
-    this.scale = undefined;
   }
 
   chartConfig() {
@@ -61,15 +59,6 @@ export default class ChartData {
       .sortBy()
       .value();
 
-    const scaleValues = this.data.map(x => x.data_value);
-
-    this.scale = d3.scale.linear()
-                  .domain([0,
-                    d3.min(scaleValues),
-                    d3.min(scaleValues),
-                    Math.ceil(d3.max(scaleValues))])
-                  .range([0, 5, 10, 100]);
-
     // generate data array based on categories (order is important)
     const columns = [['year'].concat(years)].concat(
       _.map(groupedData, (values, key) => {
@@ -78,7 +67,7 @@ export default class ChartData {
             return null;
           }
           // return _.round(+values[year].data_value, 1);
-          return key ? this.scale(values[year].data_value) : values[year].data_value;
+          return values[year].data_value;
         }));
       })
     );
