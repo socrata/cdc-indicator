@@ -9,7 +9,6 @@ export default class C3ChartUpdatable extends C3Chart {
     let newProps;
     // override tooltip format
     if (_.get(originalProps, 'data.type') !== 'pie') {
-      debugger; // eslint-disable-line
       newProps = Object.assign({}, originalProps, {
         tooltip: {
           format: {
