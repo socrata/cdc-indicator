@@ -9,27 +9,30 @@ export default class C3ChartUpdatable extends C3Chart {
     let newProps;
     // override tooltip format
     if (_.get(originalProps, 'data.type') !== 'pie') {
+      debugger; // eslint-disable-line
       newProps = Object.assign({}, originalProps, {
         tooltip: {
           format: {
             value: (value, ratio, id, index) => {
               const result = this.scaleValue(value);
-              const cl = this.getCL(id, index);
-              const lc = this.processValue(cl.low);
-              const hc = this.processValue(cl.high);
-              const clFormat = (isNaN(cl.high) && isNaN(cl.low)) ? '' : `(${lc}–${hc})`;
-              return `${this.processValue(result)} ${clFormat}`;
+              const lc = this.processValue(this.getLC(id, index));
+              const hc = this.processValue(this.getHC(id, index));
+              const cl = (lc === 'N/A' && hc === 'N/A') ? '' : `(${lc}–${hc})`;
+              return `${this.processValue(result)} ${cl}`;
             }
           },
           contents: (data, defaultTitleFormat, defaultValueFormat, color) => {
             // get c3js object
             const $$ = this.chart.internal;
-            const id = data[0].id;
-            const index = data[0].index;
-            const cl = this.getCL(id, index);
-            const customString = (isNaN(cl.high) && isNaN(cl.low))
-                                  ? 'Data'
-                                  : 'Data (Confidence Limits)';
+            const hasConfidenceLimits = _.some(data, (obj) => {
+              const lc = this.processValue(this.getLC(obj.id, obj.index));
+              const hc = this.processValue(this.getHC(obj.id, obj.index));
+              return lc !== 'N/A' || hc !== 'N/A';
+            });
+
+            const customString = hasConfidenceLimits
+                                  ? 'Data (Confidence Limits)'
+                                  : 'Data';
 
             // override title format
             const customTitleFormat = function customTitleFormat(x) {
@@ -65,9 +68,14 @@ export default class C3ChartUpdatable extends C3Chart {
     return newProps;
   };
 
-  getCL = (id, index) => {
-    return _.get(this.props, `custom.limits[${id}][${index}]`, 'N/A');
-  }
+  getHC = (id, index) => {
+    return _.get(this.props, `custom.limits[${id}][${index}].high`, 'N/A');
+  };
+
+  getLC = (id, index) => {
+    return _.get(this.props, `custom.limits[${id}][${index}].low`, 'N/A');
+  };
+
 
   scaleValue = (value) => {
     return this.props.scale ? parseFloat(this.props.scale.invert(value)).toFixed(1) : value;

@@ -28,7 +28,7 @@ const LineChart = ({ chartData, desc, title }) => {
   // set y axis to set range from 0 to 100
   // min and max should match the range in myScale
   // rescaled data will retain original position in chart
-  // tick format will use scale to show original value on hover
+  // tick format will use scale to show original value
   chartConfig.axis.y = {
     min: 0,
     max: 100,
