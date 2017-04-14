@@ -222,7 +222,7 @@ class ChoroplethMap extends Component {
       const unitValue = _.get(properties, 'unit', '');
       const unit = (unitValue.length > 1) ? '' : unitValue;
       const value = (properties.value) ? `${properties.value}${unit}` : 'N/A';
-      const stratification = _.get(properties, 'stratification1', 'N/A');
+      const breakoutLabel = _.get(properties, `${CONFIG.breakoutLabel}`, 'N/A');
 
       const unitInfo = (unitValue.length > 1) ? `(${unitValue})` : '';
       // if both low and high limits are N/A, suppress confidence limits
@@ -241,7 +241,7 @@ class ChoroplethMap extends Component {
             <strong>{`${properties.name} - ${this.props.year}`}</strong>
           </div>
           <div>
-            {`${stratification}`}
+            {`${breakoutLabel}`}
           </div>
           <div>
             {`${valueType} ${unitInfo}: ${value}`}
