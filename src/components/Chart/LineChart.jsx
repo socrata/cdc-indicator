@@ -9,6 +9,7 @@ const LineChart = ({ chartData, desc, title }) => {
     connectNull: false
   };
 
+
   const scaleValues = chartData.data.map(x => x.data_value);
   const lowerBound = d3.min(scaleValues);
   const upperBound = Math.round(d3.max(scaleValues));
@@ -18,6 +19,7 @@ const LineChart = ({ chartData, desc, title }) => {
                   .domain([0, 0, lowerBound, upperBound])
                   .range([0, 0, 10, 100]);
 
+  // override columns
   // transform y column data using scale
   chartConfig.data.columns = chartConfig.data.columns.map((values, idxValues) => {
     return values.map((value, idxValue) => {
@@ -25,27 +27,24 @@ const LineChart = ({ chartData, desc, title }) => {
     });
   });
 
+  // function to invert ticks to original values
+  const invertValues = (d) => {
+    let retval = null;
+    if (!(d > myScale.range()[1] && d < myScale.range()[2])) {
+      retval = parseFloat(myScale.invert(d)).toFixed(1);
+    }
+    return retval;
+  };
+
   // set y axis to set range from 0 to 100
   // min and max should match the range in myScale
   // rescaled data will retain original position in chart
   // tick format will use scale to show original value
-  chartConfig.axis.y = {
-    min: 0,
-    max: 100,
-    padding: {
-      top: 20,
-      bottom: 0
-    },
-    tick: {
-      format: (d) => {
-        let retval = null;
-        if (!(d > myScale.range()[1] && d < myScale.range()[2])) {
-          retval = parseFloat(myScale.invert(d)).toFixed(1);
-        }
-        return retval;
-      }
-    }
-  };
+  chartConfig.axis.y.min = 0;
+  chartConfig.axis.y.max = 100;
+  chartConfig.axis.y.padding = { top: 20, bottom: 0 };
+  chartConfig.axis.y.tick = { format: invertValues };
+
 
   const longDesc = `This chart displays ${desc} as a line chart. ` +
     `${chartData.xValues} values are on X axis.`;
