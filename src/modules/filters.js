@@ -115,17 +115,6 @@ function setAvailableCategories(availableCategories) {
     const categoryFilter = filterData[CONFIG.breakoutCategoryId];
     const categoryOptions = categoryFilter.options;
 
-    // move overall, total, or all to top of list
-    const oldIndex = categoryOptions.findIndex((obj) => {
-      return obj.value === 'OVERALL'
-          || obj.value === 'TOTAL'
-          || obj.value === 'ALL';
-    });
-
-    if (oldIndex > -1) {
-      categoryOptions.splice(0, 0, categoryOptions.splice(oldIndex, 1)[0]);
-    }
-
     const newCategoryFilter = Object.assign({}, categoryFilter, {
       options: categoryOptions.map((category) => {
         return {
@@ -179,12 +168,6 @@ function setAvailableLocations(availableLocations) {
     const filterData = _.get(getState(), 'filters.data');
     const locationFilter = filterData[CONFIG.locationId];
     const locationOptions = locationFilter.options;
-
-    // set US to top of list
-    const oldIndex = locationOptions.findIndex((obj) => obj.value === 'US');
-    if (oldIndex > -1) {
-      locationOptions.splice(0, 0, locationOptions.splice(oldIndex, 1)[0]);
-    }
 
     const newLocationFilter = Object.assign({}, locationFilter, {
       options: locationOptions.map((location) => {
@@ -293,13 +276,16 @@ function formatFilterData(responses) {
             const groupedData = _.chain(dataByGroup)
               .groupBy(config.value_column)
               .map((dataById) => {
+                // get data by descending alpha order
+                const dataByIdDesc = _.chain(dataById).orderBy(config.label_column, 'desc').value();
                 // use the first element to set label
                 return {
-                  text: dataById[0][config.label_column],
-                  value: dataById[0][config.value_column]
+                  text: dataByIdDesc[0][config.label_column],
+                  value: dataByIdDesc[0][config.value_column],
+                  default: dataByIdDesc[0][config.value_column] === config.default_value
                 };
               })
-              .sortBy('text')
+              .sortBy('default', 'text')
               .value();
 
             return {
@@ -307,19 +293,24 @@ function formatFilterData(responses) {
               options: groupedData
             };
           })
-          .sortBy('text')
+          // set default to top of list, alpha asc order
+          .orderBy(['default', 'text'], ['desc', 'asc'])
           .value();
       } else {
         options = _.chain(data)
           .groupBy(config.value_column)
           .map((dataById) => {
+            // get data by descending alpha order
+            const dataByIdDesc = _.chain(dataById).orderBy(config.label_column, 'desc').value();
             // use the first element to set label
             return {
-              text: dataById[0][config.label_column],
-              value: dataById[0][config.value_column]
+              text: dataByIdDesc[0][config.label_column],
+              value: dataByIdDesc[0][config.value_column],
+              default: dataByIdDesc[0][config.value_column] === config.default_value
             };
           })
-          .sortBy('text')
+          // set default to top of list, alpha asc order
+          .orderBy(['default', 'text'], ['desc', 'asc'])
           .value();
       }
 
