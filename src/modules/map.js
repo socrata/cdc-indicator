@@ -108,7 +108,6 @@ export function setStateFilter(abbreviation, state) {
   return (dispatch, getState) => {
     const states = _.get(getState(), `filters.data.${CONFIG.locationId}.options`, []);
     const selectedState = _.find(states, { value: abbreviation });
-
     if (selectedState && !selectedState.isDisabled) {
       dispatch(setLocationFilter({
         id: abbreviation,
@@ -147,7 +146,8 @@ function formatMapData(response) {
         unit: dataByState[state][0].data_value_unit,
         dataValueType: dataByState[state][0].data_value_type,
         highConfidence: dataByState[state][0].high_confidence_limit,
-        lowConfidence: dataByState[state][0].low_confidence_limit
+        lowConfidence: dataByState[state][0].low_confidence_limit,
+        stratification1: dataByState[state][0].stratification1
       });
 
       return Object.assign({}, feature, { properties });
@@ -196,8 +196,8 @@ function fetchData() {
       // apply latest year condition
       request.where(`year=${latestYear}`);
 
-      // order results by year, location and breakout
-      request.order('year', CONFIG.locationLabel, CONFIG.breakoutId);
+      // order results by year descending, location and breakout
+      request.order('year desc', CONFIG.locationLabel, CONFIG.breakoutId);
 
       // dispatch API request and handle response
       sendRequest(request)

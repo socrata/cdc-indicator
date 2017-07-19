@@ -85,7 +85,7 @@ export default class ChartData {
       });
     }, {});
 
-    const yLabel = ((this.data[0].data_value_unit || '').length > 1) ?
+    const yLabel = ((this.data[0].data_value_unit || '').length > 0) ?
       `${this.data[0].data_value_type || ''} (${this.data[0].data_value_unit})` :
       (this.data[0].data_value_type || '');
 
@@ -179,7 +179,7 @@ export default class ChartData {
       });
     }, {});
 
-    const yLabel = ((this.data[0].data_value_unit || '').length > 1) ?
+    const yLabel = ((this.data[0].data_value_unit || '').length > 0) ?
       `${this.data[0].data_value_type || ''} (${this.data[0].data_value_unit})` :
       (this.data[0].data_value_type || '');
 

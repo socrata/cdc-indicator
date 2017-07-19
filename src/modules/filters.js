@@ -276,13 +276,16 @@ function formatFilterData(responses) {
             const groupedData = _.chain(dataByGroup)
               .groupBy(config.value_column)
               .map((dataById) => {
+                // get data by descending alpha order
+                const dataByIdDesc = _.chain(dataById).orderBy(config.label_column, 'desc').value();
                 // use the first element to set label
                 return {
-                  text: dataById[0][config.label_column],
-                  value: dataById[0][config.value_column]
+                  text: dataByIdDesc[0][config.label_column],
+                  value: dataByIdDesc[0][config.value_column],
+                  default: dataByIdDesc[0][config.value_column] === config.default_value
                 };
               })
-              .sortBy('text')
+              .sortBy('default', 'text')
               .value();
 
             return {
@@ -290,19 +293,24 @@ function formatFilterData(responses) {
               options: groupedData
             };
           })
-          .sortBy('text')
+          // set default to top of list, alpha asc order
+          .orderBy(['default', 'text'], ['desc', 'asc'])
           .value();
       } else {
         options = _.chain(data)
           .groupBy(config.value_column)
           .map((dataById) => {
+            // get data by descending alpha order
+            const dataByIdDesc = _.chain(dataById).orderBy(config.label_column, 'desc').value();
             // use the first element to set label
             return {
-              text: dataById[0][config.label_column],
-              value: dataById[0][config.value_column]
+              text: dataByIdDesc[0][config.label_column],
+              value: dataByIdDesc[0][config.value_column],
+              default: dataByIdDesc[0][config.value_column] === config.default_value
             };
           })
-          .sortBy('text')
+          // set default to top of list, alpha asc order
+          .orderBy(['default', 'text'], ['desc', 'asc'])
           .value();
       }
 

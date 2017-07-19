@@ -37,6 +37,13 @@ class ChoroplethMap extends Component {
         .value();
     };
 
+    // check if empty values exist based on current props
+    this.hasEmptyValues = () => {
+      return _.chain(this.props.data.features)
+        .filter((row) => isNaN(row.properties.value))
+        .value().length > 0;
+    };
+
     // get outer bounds of data value
     this.getDataRange = () => {
       // round down/up to nearest integer
@@ -47,7 +54,7 @@ class ChoroplethMap extends Component {
 
     this.getColor = (d) => {
       if (isNaN(d)) {
-        return 'transparent';
+        return '#999999';
       }
       const scale = d3.scale.linear()
         .domain(this.getDataRange())
@@ -63,7 +70,7 @@ class ChoroplethMap extends Component {
         opacity: 1,
         color: 'white',
         // dashArray: '3',
-        fillOpacity: 0.7
+        fillOpacity: 1
       };
     };
 
@@ -80,7 +87,7 @@ class ChoroplethMap extends Component {
         weight: 2,
         color: '#6ff',
         dashArray: '',
-        fillOpacity: 0.7
+        fillOpacity: 1
       });
 
       if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
@@ -135,9 +142,17 @@ class ChoroplethMap extends Component {
       // const step = (max - min) / (numberOfItems - 1);
       const step = (max - min) / (numberOfItems);
 
-      // invalid data (max is Infinity and min is 0, resulting in Infinity)
+			// invalid data (max is Infinity and min is 0, resulting in Infinity)
       if (step === Infinity) {
-        return null;
+        const color = this.getColor('NaN');
+        return (
+          <ul className={styles.legend}>
+            <li>
+              <i style={{ background: color }} />
+              N/A
+            </li>
+          </ul>
+        );
       }
 
       const values = Array(numberOfItems).fill(0).map((value, index) =>
@@ -151,14 +166,23 @@ class ChoroplethMap extends Component {
         return _.round(values[index - 1] - 0.1, 1);
       });
 
+      // Add N/A to legend if empty values exist
+      if (this.hasEmptyValues()) {
+        values.push('N/A');
+        endValues.push('N/A');
+      }
+
       // if all values are integers, do not display 0-pad values
       // const isAllIntegers = values.reduce((isInteger, value) => {
       //   return isInteger && _.isInteger(value);
       // }, true);
-
       const legends = values.map((value, index) => {
         const color = this.getColor(value);
         let displayValue = _.toString(value);
+        // have legend start from 0
+        if (value === min) {
+          displayValue = 0;
+        }
         let endValue = _.toString(endValues[index]);
         // append ".0" if it a whole number
         if (_.isInteger(value)) {
@@ -170,7 +194,11 @@ class ChoroplethMap extends Component {
         return (
           <li key={index}>
             <i style={{ background: color }} />
-            {displayValue}–{endValue}
+              { // return range or single value
+                (displayValue !== endValue) ?
+                  `${displayValue} – ${endValue}` :
+                  displayValue
+              }
           </li>
         );
       });
@@ -187,7 +215,6 @@ class ChoroplethMap extends Component {
       if (!properties) {
         return <div>Hover over a state</div>;
       }
-
       const valueType = _.get(properties, 'dataValueType');
       const hc = _.get(properties, 'highConfidence');
       const lc = _.get(properties, 'lowConfidence');
@@ -195,26 +222,32 @@ class ChoroplethMap extends Component {
       const unitValue = _.get(properties, 'unit', '');
       const unit = (unitValue.length > 1) ? '' : unitValue;
       const value = (properties.value) ? `${properties.value}${unit}` : 'N/A';
+      const breakoutLabel = _.get(properties, `${CONFIG.breakoutLabel}`, 'N/A');
 
       const unitInfo = (unitValue.length > 1) ? `(${unitValue})` : '';
-
-      // if both low and high limits are N/A, display a single 'N/A'
-      const cl = (isNaN(lc) && isNaN(hc)) ? 'N/A' :
-        `${isNaN(lc) ? 'N/A' : `${lc}${unit}`}–${isNaN(hc) ? 'N/A' : `${hc}${unit}`}`;
+      // if both low and high limits are N/A, suppress confidence limits
+      let ConfidenceLimits = null;
+      if (isNaN(lc) && isNaN(hc)) {
+        ConfidenceLimits = '';
+      } else {
+        const lcFormat = isNaN(lc) ? 'N/A' : `${lc}${unit}`;
+        const hcFormat = isNaN(hc) ? 'N/A' : `${hc}${unit}`;
+        ConfidenceLimits = `Confidence Limits: ${lcFormat}–${hcFormat}`;
+      }
 
       return (
         <div>
           <div>
-            <strong>{properties.name}</strong>
+            <strong>{`${properties.name} - ${this.props.year}`}</strong>
           </div>
           <div>
-            {`${this.props.year} ${valueType}: ${value}`}
+            {`${breakoutLabel}`}
           </div>
           <div>
-            {`Confidence Limits: ${cl}`}
+            {`${valueType} ${unitInfo}: ${value}`}
           </div>
           <div>
-            {unitInfo}
+            {`${ConfidenceLimits}`}
           </div>
         </div>
       );
