@@ -12,7 +12,7 @@ const LineChart = ({ chartData, desc, title }) => {
 
   const scaleValues = chartData.data.map(x => x.data_value);
   const lowerBound = d3.min(scaleValues);
-  const upperBound = Math.round(d3.max(scaleValues));
+  const upperBound = Math.ceil(d3.max(scaleValues));
 
   // break chart data from 0 to min
   const myScale = d3.scale.linear()
@@ -44,7 +44,6 @@ const LineChart = ({ chartData, desc, title }) => {
   chartConfig.axis.y.max = 100;
   chartConfig.axis.y.padding = { top: 20, bottom: 0 };
   chartConfig.axis.y.tick = { format: invertValues };
-
 
   const longDesc = `This chart displays ${desc} as a line chart. ` +
     `${chartData.xValues} values are on X axis.`;
