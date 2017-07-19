@@ -80,6 +80,7 @@
   },
   "dependencies": {
     "babel-polyfill": "^6.13.0",
+    "es6-promise": "^4.1.1",
     "leaflet": "^1.0.2",
     "lodash": "^4.16.1",
     "react": "^15.1.0",
