@@ -7,7 +7,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 const __ENV__ = process.env.NODE_ENV || 'development';
-const __PROD__ = __ENV__ === 'production';
+const __PROD__ = __ENV__ !== 'development';
 const __DEV__ = __ENV__ === 'development';
 const __REDUX_DEV__ = __DEV__; // && false;
 
@@ -80,6 +80,7 @@ const webpackConfig = {
       'process.env': {
         NODE_ENV: JSON.stringify(__ENV__)
       },
+      __ENV__: JSON.stringify(__ENV__),
       __DEV__: JSON.stringify(__DEV__),
       __REDUX_DEV__: JSON.stringify(__REDUX_DEV__)
     }),

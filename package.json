@@ -5,6 +5,7 @@
   "main": "src/main.jsx",
   "scripts": {
     "build": "better-npm-run build",
+    "build:staging": "better-npm-run build:staging",
     "build:dev": "better-npm-run build:dev",
     "start": "better-npm-run start",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -15,6 +16,12 @@
       "command": "webpack",
       "env": {
         "NODE_ENV": "production"
+      }
+    },
+    "build:staging": {
+      "command": "webpack",
+      "env": {
+        "NODE_ENV": "staging"
       }
     },
     "build:dev": {

@@ -1,6 +1,9 @@
+const PROD_CONFIG = (__ENV__ === 'production') ?
+  require('./configurations.production.yml') :
+  require('./configurations.staging.yml');
+
 const CONFIG = (__DEV__) ?
-  require('./configurations.development.yml') :
-  require('./configurations.production.yml');
+  require('./configurations.development.yml') : PROD_CONFIG;
 
 // load local visualizations configurations
 const USER_CONFIGURABLE_OPTIONS = (__DEV__) ?
