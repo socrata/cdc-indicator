@@ -17,7 +17,7 @@
   },
   "globals": {
     "__DEV__": false,
-    "__ENV__": false,
+    "__CONFIG__": false,
     "__REDUX_DEV__": false
   }
 }

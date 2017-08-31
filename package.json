@@ -15,13 +15,15 @@
     "build": {
       "command": "webpack",
       "env": {
-        "NODE_ENV": "production"
+        "NODE_ENV": "production",
+        "CONFIG": "production"
       }
     },
     "build:staging": {
       "command": "webpack",
       "env": {
-        "NODE_ENV": "staging"
+        "NODE_ENV": "production",
+        "CONFIG": "staging"
       }
     },
     "build:dev": {

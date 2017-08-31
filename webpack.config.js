@@ -80,7 +80,7 @@ const webpackConfig = {
       'process.env': {
         NODE_ENV: JSON.stringify(__ENV__)
       },
-      __ENV__: JSON.stringify(__ENV__),
+      __CONFIG__: JSON.stringify(process.env.CONFIG),
       __DEV__: JSON.stringify(__DEV__),
       __REDUX_DEV__: JSON.stringify(__REDUX_DEV__)
     }),

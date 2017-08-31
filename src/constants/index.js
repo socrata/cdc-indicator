@@ -1,4 +1,4 @@
-const PROD_CONFIG = (__ENV__ === 'production') ?
+const PROD_CONFIG = (__CONFIG__ === 'production') ?
   require('./configurations.production.yml') :
   require('./configurations.staging.yml');
 
