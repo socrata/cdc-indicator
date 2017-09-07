@@ -179,9 +179,9 @@ class ChoroplethMap extends Component {
       const legends = values.map((value, index) => {
         const color = this.getColor(value);
         let displayValue = _.toString(value);
-        // have legend start from 0
+        // setting legend ranges and values
         if (value === min) {
-          displayValue = 0;
+          displayValue = min;
         }
         let endValue = _.toString(endValues[index]);
         // append ".0" if it a whole number
