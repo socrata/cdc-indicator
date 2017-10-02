@@ -51,11 +51,12 @@ class ChoroplethMap extends Component {
       const max = _.ceil(this.getMaxValue());
       return [(isNaN(min) ? 0 : min), (isNaN(max) ? Infinity : max)];
     };
-
+    // setting the color if n/a
     this.getColor = (d) => {
       if (isNaN(d)) {
         return '#999999';
       }
+    // setting the color range between two colors, grdient shading
       const scale = d3.scale.linear()
         .domain(this.getDataRange())
         .range(['#FFEDA0', '#E31A1C']);

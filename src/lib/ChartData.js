@@ -7,6 +7,7 @@ import { CONFIG } from '../constants';
 
 export default class ChartData {
   constructor(options) {
+    this.test = options;
     this.data = options.data;
     this.dataSeries = options.dataSeries;
     this.latestYear = options.latestYear;
