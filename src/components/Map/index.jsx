@@ -97,7 +97,13 @@ class Map extends Component {
       );
     }
 
-    const title = `${config.title} (${latestYear} Data)`;
+    let title = `${config.title}`;
+    const yearEnd = rawData[0].yearend;
+    if (`${latestYear}` !== yearEnd) {
+      title = `${config.title} (${latestYear} - ${yearEnd} Data)`;
+    } else {
+      title = `${config.title} (${latestYear} Data)`;
+    }
 
     const chartTitle = (!config.title) ? null :
       <h3 className={styles.chartTitle}>{title}</h3>;

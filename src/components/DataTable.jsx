@@ -125,16 +125,24 @@ class DataTable extends Component {
               }
 
               if (columnsToRender[column].th) {
+                let year = '';
+                if (columnsToRender[column].header === 'Year' && +row.year !== +row.yearend) {
+                  year = `${row[column]} - ${row.yearend}`;
+                } else {
+                  year = `${row[column]}`;
+                }
                 return (
-                  <th key={i} scope="row" className={style}>{row[column] || 'N/A'}</th>
+                  <th key={i} scope="row" className={columnsToRender[column].header}>{
+                  year
+                  || 'N/A'}</th>
                 );
               }
-
               return (
                 <td key={i} className={style}>{row[column] || 'N/A'}</td>
               );
             })
           }
+
         </tr>
       ));
 

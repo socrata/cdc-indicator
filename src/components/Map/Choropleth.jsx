@@ -51,11 +51,12 @@ class ChoroplethMap extends Component {
       const max = _.ceil(this.getMaxValue());
       return [(isNaN(min) ? 0 : min), (isNaN(max) ? Infinity : max)];
     };
-
+    // setting the color if n/a
     this.getColor = (d) => {
       if (isNaN(d)) {
         return '#999999';
       }
+    // setting the color range between two colors, grdient shading
       const scale = d3.scale.linear()
         .domain(this.getDataRange())
         .range(['#FFEDA0', '#E31A1C']);
@@ -179,9 +180,9 @@ class ChoroplethMap extends Component {
       const legends = values.map((value, index) => {
         const color = this.getColor(value);
         let displayValue = _.toString(value);
-        // have legend start from 0
+        // setting legend ranges and values
         if (value === min) {
-          displayValue = 0;
+          displayValue = min;
         }
         let endValue = _.toString(endValues[index]);
         // append ".0" if it a whole number

@@ -22,11 +22,17 @@ const Chart = ({ config, data, desc, latestYear }) => {
   }
 
   const chartData = new ChartData({ data, dataSeries, latestYear });
+  const yearEnd = chartData.data[0].yearend;
 
   let title = `${config.title}`;
+  // setting title for bar chart
   if (config.data === 'latest') {
-    title = `${config.title} (${latestYear} Data)`;
+    const rangeText = `${latestYear}` !== yearEnd ?
+    `${latestYear} - ${yearEnd}` :
+    `${latestYear}`;
+    title = `${config.title} (${rangeText} Data)`;
   }
+  // setting title for trend chart
   if (config.data === 'trend') {
     const range = _.map(chartData.data, (x) => x.year);
     const rangeText = d3.min(range) === d3.max(range) ?
@@ -37,7 +43,6 @@ const Chart = ({ config, data, desc, latestYear }) => {
 
   const chartTitle = (!config.title) ? null :
     <h3 className={styles.chartTitle}>{title}</h3>;
-
   let chartElement;
   switch (config.type) {
     case 'bar':
