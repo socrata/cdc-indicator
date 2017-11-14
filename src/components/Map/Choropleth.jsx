@@ -156,14 +156,14 @@ class ChoroplethMap extends Component {
       // const test = this.getDataRange();
 
       const values = Array(numberOfItems).fill(0).map((value, index) =>
-        _.round(min + (step * (numberOfItems - 1 - index)), 4),
+        _.round(min + (step * (numberOfItems - 1 - index)), 1),
       );
 
       const endValues = values.map((value, index) => {
         if (index === 0) {
           return _.round(max, 1);
         }
-        return _.round(values[index - 1] - 0.1, 4);
+        return _.round(values[index - 1] - 0.1, 1);
       });
 
       // Add N/A to legend if empty values exist
