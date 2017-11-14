@@ -46,8 +46,8 @@ class ChoroplethMap extends Component {
     // get outer bounds of data value
     this.getDataRange = () => {
       // round down/up to nearest integer
-      const min = _.floor(this.getMinValue());
-      const max = _.ceil(this.getMaxValue());
+      const min = this.getMinValue();
+      const max = this.getMaxValue();
       return [(isNaN(min) ? 0 : min), (isNaN(max) ? Infinity : max)];
       // return [(isNaN(min) ? 0 : min), rangeOne, rangeTwo, (isNaN(max) ? Infinity : max)];
     };
@@ -156,14 +156,14 @@ class ChoroplethMap extends Component {
       // const test = this.getDataRange();
 
       const values = Array(numberOfItems).fill(0).map((value, index) =>
-        _.round(min + (step * (numberOfItems - 1 - index)), 1),
+        _.round(min + (step * (numberOfItems - 1 - index)), 4),
       );
 
       const endValues = values.map((value, index) => {
         if (index === 0) {
           return _.round(max, 1);
         }
-        return _.round(values[index - 1] - 0.1, 1);
+        return _.round(values[index - 1] - 0.1, 4);
       });
 
       // Add N/A to legend if empty values exist
