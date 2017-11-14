@@ -43,24 +43,23 @@ class ChoroplethMap extends Component {
         .filter((row) => isNaN(row.properties.value))
         .value().length > 0;
     };
-
     // get outer bounds of data value
     this.getDataRange = () => {
       // round down/up to nearest integer
       const min = _.floor(this.getMinValue());
       const max = _.ceil(this.getMaxValue());
       return [(isNaN(min) ? 0 : min), (isNaN(max) ? Infinity : max)];
+      // return [(isNaN(min) ? 0 : min), rangeOne, rangeTwo, (isNaN(max) ? Infinity : max)];
     };
     // setting the color if n/a
     this.getColor = (d) => {
       if (isNaN(d)) {
         return '#999999';
       }
-    // setting the color range between two colors, grdient shading
-      const scale = d3.scale.linear()
+      // set color range
+      const scale = d3.scale.quantile()
         .domain(this.getDataRange())
-        .range(['#FFEDA0', '#E31A1C']);
-
+        .range(['rgb(255,237,160)', 'rgb(248,184,127)', 'rgb(241,132,94)', 'rgb(234,79,61)']);
       return scale(d);
     };
 
@@ -140,9 +139,8 @@ class ChoroplethMap extends Component {
     // populate legend items
     this.getLegend = (numberOfItems) => {
       const [min, max] = this.getDataRange();
-      // const step = (max - min) / (numberOfItems - 1);
-      const step = (max - min) / (numberOfItems);
 
+      const step = (max - min) / (numberOfItems);
 			// invalid data (max is Infinity and min is 0, resulting in Infinity)
       if (step === Infinity) {
         const color = this.getColor('NaN');
@@ -155,9 +153,10 @@ class ChoroplethMap extends Component {
           </ul>
         );
       }
+      // const test = this.getDataRange();
 
       const values = Array(numberOfItems).fill(0).map((value, index) =>
-        _.round(min + (step * (numberOfItems - 1 - index)), 1)
+        _.round(min + (step * (numberOfItems - 1 - index)), 1),
       );
 
       const endValues = values.map((value, index) => {
@@ -177,6 +176,7 @@ class ChoroplethMap extends Component {
       // const isAllIntegers = values.reduce((isInteger, value) => {
       //   return isInteger && _.isInteger(value);
       // }, true);
+
       const legends = values.map((value, index) => {
         const color = this.getColor(value);
         let displayValue = _.toString(value);
@@ -193,7 +193,7 @@ class ChoroplethMap extends Component {
           endValue += '.0';
         }
         return (
-          <li key={index}>
+          <li className="legend" key={index}>
             <i style={{ background: color }} />
               { // return range or single value
                 (displayValue !== endValue) ?
@@ -203,14 +203,12 @@ class ChoroplethMap extends Component {
           </li>
         );
       });
-
       return (
-        <ul className={styles.legend}>
+        <ul className={styles.legend} id="us-map-legend-ul">
           {legends}
         </ul>
       );
     };
-
     // get info tooltip element
     this.getInfoElement = (properties) => {
       if (!properties) {

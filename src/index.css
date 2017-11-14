@@ -4,3 +4,21 @@
 body.ReactModal__Body--open {
   overflow: hidden;
 }
+#us-map-legend-ul {
+	display:flex;
+	flex-flow: column;
+}
+
+#us-map-legend-ul li:nth-child(1) { order: 4;}
+#us-map-legend-ul li:nth-child(2) { order: 3;}
+#us-map-legend-ul li:nth-child(3) { order: 2;}
+#us-map-legend-ul li:nth-child(4) { order: 1;}
+#us-map-legend-ul li:nth-child(5) { order: 5;}
+
+ul#us-map-legend-ul li:last-child:after {
+	content: "Equal Interval";
+  font-weight: bold;
+  margin-top: 5px;
+  display: block;
+  text-align: center;
+}
