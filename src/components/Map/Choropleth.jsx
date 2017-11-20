@@ -46,10 +46,10 @@ class ChoroplethMap extends Component {
     // get outer bounds of data value
     this.getDataRange = () => {
       // round down/up to nearest integer
-      const min = _.floor(this.getMinValue());
-      const max = _.ceil(this.getMaxValue());
-      // const min = this.getMinValue();
-      // const max = this.getMaxValue();
+      // const min = _.floor(this.getMinValue());
+      // const max = _.ceil(this.getMaxValue());
+      const min = this.getMinValue();
+      const max = this.getMaxValue();
       return [(isNaN(min) ? 0 : min), (isNaN(max) ? Infinity : max)];
       // return [(isNaN(min) ? 0 : min), rangeOne, rangeTwo, (isNaN(max) ? Infinity : max)];
     };
@@ -158,14 +158,17 @@ class ChoroplethMap extends Component {
       // const test = this.getDataRange();
 
       const values = Array(numberOfItems).fill(0).map((value, index) =>
-        _.round(min + (step * (numberOfItems - 1 - index)), 1),
+        // _.round(min + (step * (numberOfItems - 1 - index)), 1),
+        min + (step * (numberOfItems - 1 - index)),
       );
 
       const endValues = values.map((value, index) => {
         if (index === 0) {
-          return _.round(max, 1);
+          // return _.round(max, 1);
+          return max;
         }
-        return _.round(values[index - 1] - 0.1, 1);
+        // return _.round(values[index - 1] - 0.1, 1);
+        return values[index - 1] - 0.1;
       });
 
       // Add N/A to legend if empty values exist
@@ -181,7 +184,7 @@ class ChoroplethMap extends Component {
 
       const legends = values.map((value, index) => {
         const color = this.getColor(value);
-        let displayValue = _.toString(value);
+        let displayValue = _.round(Number(_.toString(value)), 1);
         // setting legend ranges and values
         if (value === min) {
           displayValue = min;
@@ -193,14 +196,19 @@ class ChoroplethMap extends Component {
         }
         if (_.isInteger(endValues[index])) {
           endValue += '.0';
-        }
+        } else {
+          if (_.isInteger(_.round(endValue, 1))) {
+            endValue = _.round(endValue, 1).toFixed(1);
+          } else {
+            endValue = _.round(endValue, 1);
+          } }
         return (
           <li className="legend" key={index}>
             <i style={{ background: color }} />
               { // return range or single value
-                (displayValue !== endValue) ?
+                (displayValue !== endValue && !isNaN(displayValue) && !isNaN(endValue)) ?
                   `${displayValue} – ${endValue}` :
-                  displayValue
+                  'N/A'
               }
           </li>
         );
