@@ -184,7 +184,7 @@ class ChoroplethMap extends Component {
 
       const legends = values.map((value, index) => {
         const color = this.getColor(value);
-        let displayValue = _.round(Number(_.toString(value)), 1);
+        let displayValue = _.ceil(Number(_.toString(value)), 1).toFixed(1);
         // setting legend ranges and values
         if (value === min) {
           displayValue = min;
@@ -198,9 +198,9 @@ class ChoroplethMap extends Component {
           endValue += '.0';
         } else {
           if (_.isInteger(_.round(endValue, 1))) {
-            endValue = _.round(endValue, 1).toFixed(1);
+            endValue = _.ceil(endValue, 1).toFixed(1);
           } else {
-            endValue = _.round(endValue, 1);
+            endValue = _.ceil(endValue, 2).toFixed(1);
           } }
         return (
           <li className="legend" key={index}>
