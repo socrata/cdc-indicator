@@ -187,13 +187,9 @@ class ChoroplethMap extends Component {
         let displayValue = _.ceil(Number(_.toString(value)), 1).toFixed(1);
         // setting legend ranges and values
         if (value === min) {
-          displayValue = min;
+          displayValue = _.floor(min, 1).toFixed(1);
         }
         let endValue = _.toString(endValues[index]);
-        // append ".0" if it a whole number
-        if (_.isInteger(value)) {
-          displayValue += '.0';
-        }
         if (_.isInteger(endValues[index])) {
           endValue += '.0';
         } else {
