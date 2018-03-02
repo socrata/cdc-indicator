@@ -1,7 +1,10 @@
-import _ from 'lodash';
+import _get from 'lodash/get';
+import _flow from 'lodash/fp/flow';
+import _map from 'lodash/fp/map';
+import _maxBy from 'lodash/fp/maxBy';
 import { rowFormatter, sendRequest } from 'lib/utils';
 import Soda from 'soda-js';
-import { CONFIG } from 'constants';
+import { CONFIG } from 'constants/index';
 
 // --------------------------------------------------
 // Constants
@@ -59,14 +62,17 @@ function formatIndicatorData(response) {
     const data = response.map(rowFormatter);
 
     // determine the latest year from available data
-    const latestYear = _.chain(data)
-      .map(row => row.year)
-      .max()
-      .value();
-
+    const latestYear = _flow(
+      _map(row => row.year),
+      _maxBy(x => x)
+    )(data);
+    // const latestYear = _.chain(data)
+    //   .map(row => row.year)
+    //   .max()
+    //   .value();
 
     // filter data within the desired data points
-    const dataPoints = _.get(getState(), 'appConfig.config.core.data_points');
+    const dataPoints = _get(getState(), 'appConfig.config.core.data_points');
     const filteredData = data.filter(row => row.year > (latestYear - dataPoints));
 
     dispatch(setLatestYear(latestYear));
@@ -85,11 +91,11 @@ function fetchIndicatorData() {
     const request = consumer.query()
       .withDataset(CONFIG.data.datasetId);
 
-    const filters = _.get(getState(), 'filters.selected', {});
-    const compareToNational = _.get(getState(), 'indicatorData.compareToNational', true);
+    const filters = _get(getState(), 'filters.selected', {});
+    const compareToNational = _get(getState(), 'indicatorData.compareToNational', true);
 
     // if a state other than "US" is selected, also get "US" data
-    Object.keys(filters).forEach(key => {
+    Object.keys(filters).forEach((key) => {
       if (key === CONFIG.locationId && filters[key].id !== 'US' && compareToNational) {
         request.where(`(${key}='${filters[key].id}' OR ${key}='US')`);
       } else {
@@ -111,7 +117,8 @@ function fetchIndicatorData() {
       .then((response) => {
         dispatch(formatIndicatorData(response));
       })
-      .catch(() => {
+      .catch((err) => {
+        console.log('fetchIndicatorData', err); // eslint-disable-line no-console
         dispatch(setError(
           true,
           'There was a network error while retrieving data. Please try again.'

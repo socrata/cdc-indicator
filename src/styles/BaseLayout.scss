@@ -1,3 +1,5 @@
+@import 'common';
+
 .appTitle {
   margin: 1em 0 0.3em;
   font-size: 2em;
@@ -17,28 +19,36 @@
 .mainFilter {
   position: relative;
   margin: 1em 0;
-  padding: 2em 3em;
+  padding: 2em;
   border: 1px solid #ccc;
   border-radius: 5px;
   background: #efefef;
+
+  p {
+    margin-bottom: 1em;
+    font-size: 1em;
+    line-height: 1.5;
+  }
 }
 
-.mainFilter p {
-  margin-bottom: 1em;
-  font-size: 1em;
-  line-height: 1.5;
+.chartGrid {
+  align-items: center;
 }
 
 .chartContainer {
   margin-bottom: 1em;
-  padding: 1em;
+  padding: 1em 0;
   border-bottom: 1px solid #ccc;
-  /*border-radius: 5px;*/
-}
+  max-width: 500px;
 
-.chartContainer h2 {
-  margin: 1em 0;
-  font-size: 1.6em;
+  @include medium-up {
+    margin-right: 2em;
+  }
+
+  h2 {
+    margin: 1em 0;
+    font-size: 1.6em;
+  }
 }
 
 .chartTitle {
@@ -48,20 +58,20 @@
 
 .footnote {
   margin: 2em 0;
-}
 
-.footnote p {
-  margin-bottom: 1em;
-  font-size: 1em;
-  line-height: 1.5;
-}
+  p {
+    margin-bottom: 1em;
+    font-size: 1em;
+    line-height: 1.5;
 
-.footnote p:last-child {
-  margin-bottom: 0;
-}
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
 
-.footnote .dataSources p {
-  margin-bottom: 0;
+  .dataSources p {
+    margin-bottom: 0;
+  }
 }
 
 .chartFootnote {

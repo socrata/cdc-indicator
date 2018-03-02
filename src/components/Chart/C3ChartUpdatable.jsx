@@ -1,14 +1,17 @@
 // vendors
-import { PropTypes } from 'react';
+import { findDOMNode } from 'react-dom';
 import C3Chart from 'react-c3js';
 import d3 from 'd3';
-import _ from 'lodash';
+import c3 from 'c3';
+import _get from 'lodash/get';
+// import _isEqual from 'lodash/isEqual';
+import _some from 'lodash/some';
 
-export default class C3ChartUpdatable extends C3Chart {
+class C3ChartUpdatable extends C3Chart {
   formatTooltips = (originalProps) => {
     let newProps;
     // override tooltip format
-    if (_.get(originalProps, 'data.type') !== 'pie') {
+    if (_get(originalProps, 'data.type') !== 'pie') {
       newProps = Object.assign({}, originalProps, {
         tooltip: {
           format: {
@@ -23,15 +26,15 @@ export default class C3ChartUpdatable extends C3Chart {
           contents: (data, defaultTitleFormat, defaultValueFormat, color) => {
             // get c3js object
             const $$ = this.chart.internal;
-            const hasConfidenceLimits = _.some(data, (obj) => {
+            const hasConfidenceLimits = _some(data, (obj) => {
               const lc = this.processValue(this.getLC(obj.id, obj.index));
               const hc = this.processValue(this.getHC(obj.id, obj.index));
               return lc !== 'N/A' || hc !== 'N/A';
             });
 
             const customString = hasConfidenceLimits
-                                  ? 'Data (Confidence Limits)'
-                                  : 'Data';
+              ? 'Data (Confidence Limits)'
+              : 'Data';
 
             // override title format
             const customTitleFormat = function customTitleFormat(x) {
@@ -60,25 +63,23 @@ export default class C3ChartUpdatable extends C3Chart {
 
     newProps.onrendered = this.setTitle;
 
-    if (_.get(originalProps, 'data.type') === 'line') {
+    if (_get(originalProps, 'data.type') === 'line') {
       newProps.onrendered = this.setBreakLine;
     }
+
+    // newProps.unloadBeforeLoad = true;
 
     return newProps;
   };
 
-  getHC = (id, index) => {
-    return _.get(this.props, `custom.limits[${id}][${index}].high`, 'N/A');
+  getHC = (id, index) => _get(this.props, `custom.limits[${id}][${index}].high`, 'N/A');
+  getLC = (id, index) => _get(this.props, `custom.limits[${id}][${index}].low`, 'N/A');
+
+  scaleValue = (value) => { // eslint-disable-line arrow-body-style
+    return (this.props.scale)
+      ? parseFloat(this.props.scale.invert(value)).toFixed(1)
+      : value;
   };
-
-  getLC = (id, index) => {
-    return _.get(this.props, `custom.limits[${id}][${index}].low`, 'N/A');
-  };
-
-
-  scaleValue = (value) => {
-    return this.props.scale ? parseFloat(this.props.scale.invert(value)).toFixed(1) : value;
-  }
 
   processValue = (value) => {
     if (!value || value === 'N/A') {
@@ -96,7 +97,7 @@ export default class C3ChartUpdatable extends C3Chart {
         .text(this.props.desc);
       d3.select(this.chart.element).select('svg')
         .insert('title', ':first-child')
-        .text(this.props.title);
+        .text(this.props.customTitle);
     }, 0);
   }
 
@@ -119,17 +120,19 @@ export default class C3ChartUpdatable extends C3Chart {
    * @return {object} - d3 line path data generator
    */
   breakScale = (amplitude, wavelength, periods, dist) => {
-    const yMin = this.chart.internal.yMin;
+    const { yMin } = this.chart.internal;
     const lineFunction = d3.svg.line()
-                           .x((d) => { return d.x; })
-                           .y((d) => { return d.y; })
-                           .interpolate('linear');
-    let breakstart = yMin - dist - (wavelength) * periods;
+      .x(d => d.x)
+      .y(d => d.y)
+      .interpolate('linear');
+    let breakstart = yMin - dist - ((wavelength) * periods);
 
     // build points for new line
-    const lineData = [{ x: -6, y: 0 },
-                      { x: 0, y: 0 },
-                      { x: 0, y: breakstart }];
+    const lineData = [
+      { x: -6, y: 0 },
+      { x: 0, y: 0 },
+      { x: 0, y: breakstart }
+    ];
     // break
     for (let i = 0; i < periods + 1; i++) {
       if (i === 0) {
@@ -148,11 +151,31 @@ export default class C3ChartUpdatable extends C3Chart {
     return lineFunction(lineData);
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (!_.isEqual(nextProps.data.columns, this.props.data.columns)) {
-      const props = this.formatTooltips(nextProps);
-      this.updateChart(props);
+  // override generateChart because in C3Chart (super),
+  // it doesn't have "c3" defined because we overrode componentDidMount()
+  generateChart = (mountNode, config) => {
+    const newConfig = Object.assign({ bindto: mountNode }, config);
+    return c3.generate(newConfig);
+  }
+
+  // override updateChart behavior to that of 0.1.11
+  // where charts are destroyed
+  updateChart = (config) => {
+    if (this.chart) {
+      this.destroyChart();
     }
+
+    this.chart =
+      this.generateChart(findDOMNode(this), config); // eslint-disable-line react/no-find-dom-node
+  }
+
+  componentWillReceiveProps(nextProps) {
+    // if (!_isEqual(nextProps.data.columns, this.props.data.columns)) {
+    //   const props = this.formatTooltips(nextProps);
+    //   this.updateChart(props);
+    // }
+    const props = this.formatTooltips(nextProps);
+    this.updateChart(props);
   }
 
   componentDidMount() {
@@ -161,8 +184,4 @@ export default class C3ChartUpdatable extends C3Chart {
   }
 }
 
-C3ChartUpdatable.propTypes = {
-  data: PropTypes.object.isRequired,
-  title: PropTypes.string,
-  scale: PropTypes.func
-};
+export default C3ChartUpdatable;

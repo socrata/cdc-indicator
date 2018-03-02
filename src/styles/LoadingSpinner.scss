@@ -1,0 +1,27 @@
+.spinner {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.8);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 100%;
+  min-height: 320px;
+  color: #1f77b4;
+  font-size: 24px;
+  z-index: 1000;
+
+  p {
+    margin-bottom: 1em;
+  }
+}
+
+.spinner-short {
+  @extend .spinner;
+  min-height: 0;
+}

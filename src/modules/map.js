@@ -1,9 +1,14 @@
-import _ from 'lodash';
+import _get from 'lodash/get';
+import _find from 'lodash/find';
+import _flow from 'lodash/fp/flow';
+import _map from 'lodash/fp/map';
+import _sortBy from 'lodash/fp/sortBy';
+import _groupBy from 'lodash/fp/groupBy';
 import L from 'leaflet';
 import { getLatLongBounds, rowFormatter, sendRequest } from 'lib/utils';
 import Soda from 'soda-js';
 import { setLocationFilter } from 'modules/filters';
-import { CONFIG, GEOJSON } from 'constants';
+import { CONFIG, GEOJSON } from 'constants/index';
 
 // --------------------------------------------------
 // Constants
@@ -22,9 +27,9 @@ export const SET_MAP_REQUEST_STATUS = 'SET_MAP_REQUEST_STATUS';
 // --------------------------------------------------
 
 function startsWithVowel(string) {
-  return ['a', 'e', 'i', 'o', 'u'].reduce((doesStart, vowel) => {
-    return doesStart || string.substring(0, 1).toLowerCase() === vowel;
-  }, false);
+  return ['a', 'e', 'i', 'o', 'u'].reduce((doesStart, vowel) => (
+    doesStart || string.substring(0, 1).toLowerCase() === vowel
+  ), false);
 }
 
 function setMapData(data = {}) {
@@ -79,14 +84,16 @@ function setRequestStatus(status) {
 
 export function zoomToState(state) {
   return (dispatch, getState) => {
-    const mapElement = _.get(getState(), 'map.element');
+    const mapElement = _get(getState(), 'map.element');
 
     if (mapElement) {
-      let center = CONFIG.map.defaults.center;
-      let zoom = CONFIG.map.defaults.zoom;
+      let {
+        center,
+        zoom
+      } = CONFIG.map.defaults;
 
       if (state !== 'US') {
-        const stateFeature = _.find(GEOJSON.features, {
+        const stateFeature = _find(GEOJSON.features, {
           properties: {
             abbreviation: state
           }
@@ -106,21 +113,14 @@ export function zoomToState(state) {
 
 export function setStateFilter(abbreviation, state) {
   return (dispatch, getState) => {
-    const states = _.get(getState(), `filters.data.${CONFIG.locationId}.options`, []);
-    const selectedState = _.find(states, { value: abbreviation });
+    const states = _get(getState(), `filters.data.${CONFIG.locationId}.options`, []);
+    const selectedState = _find(states, { value: abbreviation });
     if (selectedState && !selectedState.isDisabled) {
       dispatch(setLocationFilter({
         id: abbreviation,
         label: state
       }));
     }
-  };
-}
-
-export function setMapFilterAndFetchData(filter = {}) {
-  return (dispatch) => {
-    dispatch(setMapFilter(filter));
-    dispatch(fetchData());
   };
 }
 
@@ -132,12 +132,12 @@ function formatMapData(response) {
     dispatch(setMapRawData(data));
 
     // inject into GeoJSON
-    const dataByState = _.groupBy(data, CONFIG.locationId);
+    const dataByState = _groupBy(CONFIG.locationId)(data);
 
     const features = GEOJSON.features.map((feature) => {
       const state = feature.properties.abbreviation;
 
-      if (!dataByState.hasOwnProperty(state)) {
+      if (!Object.prototype.hasOwnProperty.call(dataByState, state)) {
         return feature;
       }
 
@@ -163,9 +163,9 @@ function formatMapData(response) {
 
 function fetchData() {
   return (dispatch, getState) => {
-    const parentFilters = _.get(getState(), 'filters.selected', {});
-    const mapFilters = _.get(getState(), 'map.filterSelected', {});
-    const latestYear = _.get(getState(), 'indicatorData.latestYear');
+    const parentFilters = _get(getState(), 'filters.selected', {});
+    const mapFilters = _get(getState(), 'map.filterSelected', {});
+    const latestYear = _get(getState(), 'indicatorData.latestYear');
 
     if (!latestYear) {
       dispatch(setError(
@@ -185,12 +185,12 @@ function fetchData() {
       Object.keys(parentFilters)
         .filter(column => column !== CONFIG.locationId)
         .forEach((row) => {
-          request.where(`${row}='${_.get(parentFilters, `${row}.id`, '')}'`);
+          request.where(`${row}='${_get(parentFilters, `${row}.id`, '')}'`);
         });
 
       Object.keys(mapFilters)
         .forEach((row) => {
-          request.where(`${row}='${_.get(mapFilters, `${row}.id`, '')}'`);
+          request.where(`${row}='${_get(mapFilters, `${row}.id`, '')}'`);
         });
 
       // apply latest year condition
@@ -204,13 +204,21 @@ function fetchData() {
         .then((response) => {
           dispatch(formatMapData(response));
         })
-        .catch(() => {
+        .catch((err) => {
+          console.log('fetchData', err); // eslint-disable-line no-console
           dispatch(setError(
             true,
             'There was a network error while retrieving data. Please try again.'
           ));
         });
     }
+  };
+}
+
+export function setMapFilterAndFetchData(filter = {}) {
+  return (dispatch) => {
+    dispatch(setMapFilter(filter));
+    dispatch(fetchData());
   };
 }
 
@@ -222,17 +230,24 @@ function transformFilterData(data) {
       dispatch(setMapFilterData());
       dispatch(fetchData());
     } else {
-      const options = _.chain(data)
-        .groupBy(CONFIG.breakoutId)
-        .map((dataById) => {
+      const options = _flow(
+        _groupBy(CONFIG.breakoutId),
+        _map(dataById => ({
           // use the first element to set label
-          return {
-            text: dataById[0][CONFIG.breakoutLabel],
-            value: dataById[0][CONFIG.breakoutId]
-          };
-        })
-        .sortBy('text')
-        .value();
+          text: dataById[0][CONFIG.breakoutLabel],
+          value: dataById[0][CONFIG.breakoutId]
+        })),
+        _sortBy('text')
+      )(data);
+      // const options = _.chain(data)
+      //   .groupBy(CONFIG.breakoutId)
+      //   .map(dataById => ({
+      //     // use the first element to set label
+      //     text: dataById[0][CONFIG.breakoutLabel],
+      //     value: dataById[0][CONFIG.breakoutId]
+      //   }))
+      //   .sortBy('text')
+      //   .value();
 
       // select first element by default
       dispatch(setMapFilter({
@@ -242,7 +257,7 @@ function transformFilterData(data) {
         }
       }));
 
-      const categoryLabel = _.get(
+      const categoryLabel = _get(
         getState(),
         `filters.selected.${CONFIG.breakoutCategoryId}.label`,
         'breakout value'
@@ -264,8 +279,8 @@ function transformFilterData(data) {
 
 function fetchBreakoutValues() {
   return (dispatch, getState) => {
-    const coreConfig = _.get(getState(), 'appConfig.config.core');
-    const filters = _.get(getState(), 'filters.selected', {});
+    const coreConfig = _get(getState(), 'appConfig.config.core');
+    const filters = _get(getState(), 'filters.selected', {});
 
     // get all breakout values for selected breakout category
     if (!coreConfig) {
@@ -286,7 +301,7 @@ function fetchBreakoutValues() {
       Object.keys(filters)
         .filter(column => column !== CONFIG.locationId)
         .forEach((row) => {
-          request.where(`${row}='${_.get(filters, `${row}.id`, '')}'`);
+          request.where(`${row}='${_get(filters, `${row}.id`, '')}'`);
         });
 
       // group by breakout ID and label to get unique values

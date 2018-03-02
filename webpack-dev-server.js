@@ -1,5 +1,15 @@
-var config = require("./webpack.config.js");
-config.entry.app.unshift("webpack-dev-server/client?http://localhost:8080/");
-var compiler = webpack(config);
-var server = new WebpackDevServer(compiler, {...});
-server.listen(8080);
+const config = require('./webpack.config.js');
+
+config.devServer = {
+  host: '0.0.0.0',
+  port: 8080,
+  disableHostCheck: true,
+  historyApiFallback: true,
+  compress: true,
+  watchOptions: {
+    aggregateTimeout: 300,
+    poll: 1000
+  }
+};
+
+module.exports = config;

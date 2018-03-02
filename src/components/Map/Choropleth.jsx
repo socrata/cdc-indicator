@@ -2,13 +2,24 @@
  * Updatable Leaflet/Mapbox Choropleth Map component
  */
 
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Map, TileLayer } from 'react-leaflet';
 import L from 'leaflet';
 import d3 from 'd3';
-import _ from 'lodash';
-import { getLatLongBounds } from 'lib/utils';
-import { CONFIG } from 'constants';
+import _ceil from 'lodash/ceil';
+import _floor from 'lodash/floor';
+import _get from 'lodash/get';
+import _isInteger from 'lodash/isInteger';
+import _round from 'lodash/round';
+import _toString from 'lodash/toString';
+import _flow from 'lodash/fp/flow';
+import _filter from 'lodash/fp/filter';
+import _map from 'lodash/fp/map';
+import _maxBy from 'lodash/fp/maxBy';
+import _minBy from 'lodash/fp/minBy';
+import { getLatLongBounds, t } from 'lib/utils';
+import { CONFIG } from 'constants/index';
 import styles from 'styles/choropleth.css';
 import GeoJsonUpdatable from './GeoJsonUpdatable';
 import MapControlUpdatable from './MapControlUpdatable';
@@ -23,26 +34,31 @@ class ChoroplethMap extends Component {
     };
 
     // calculate maximum/minimum value of data based on current props
-    this.getMaxValue = () => {
-      return _.chain(this.props.data.features)
-        .map((row) => row.properties.value)
-        .max()
-        .value();
-    };
+    this.getMaxValue = () => _flow(
+      _map(row => row.properties.value),
+      _maxBy(x => x)
+    )(this.props.data.features);
+    // this.getMaxValue = () => _.chain(this.props.data.features)
+    //   .map(row => row.properties.value)
+    //   .max()
+    //   .value();
 
-    this.getMinValue = () => {
-      return _.chain(this.props.data.features)
-        .map((row) => row.properties.value)
-        .min()
-        .value();
-    };
+    this.getMinValue = () => _flow(
+      _map(row => row.properties.value),
+      _minBy(x => x)
+    )(this.props.data.features);
+    // this.getMinValue = () => _.chain(this.props.data.features)
+    //   .map(row => row.properties.value)
+    //   .min()
+    //   .value();
 
     // check if empty values exist based on current props
-    this.hasEmptyValues = () => {
-      return _.chain(this.props.data.features)
-        .filter((row) => isNaN(row.properties.value))
-        .value().length > 0;
-    };
+    this.hasEmptyValues = () => (_flow(_filter(row =>
+      Number.isNaN(row.properties.value)))(this.props.data.features)).length > 0;
+    // this.hasEmptyValues = () => _.chain(this.props.data.features)
+    //   .filter(row => Number.isNaN(row.properties.value))
+    //   .value().length > 0;
+
     // get outer bounds of data value
     this.getDataRange = () => {
       // round down/up to nearest integer
@@ -50,12 +66,12 @@ class ChoroplethMap extends Component {
       // const max = _.ceil(this.getMaxValue());
       const min = this.getMinValue();
       const max = this.getMaxValue();
-      return [(isNaN(min) ? 0 : min), (isNaN(max) ? Infinity : max)];
+      return [(Number.isNaN(min) ? 0 : min), (Number.isNaN(max) ? Infinity : max)];
       // return [(isNaN(min) ? 0 : min), rangeOne, rangeTwo, (isNaN(max) ? Infinity : max)];
     };
     // setting the color if n/a
     this.getColor = (d) => {
-      if (isNaN(d)) {
+      if (Number.isNaN(d)) {
         return '#999999';
       }
       // set color range
@@ -65,21 +81,17 @@ class ChoroplethMap extends Component {
       return scale(d);
     };
 
-    this.style = (feature) => {
-      return {
-        fillColor: this.getColor(feature.properties.value),
-        weight: 1,
-        opacity: 1,
-        color: 'white',
-        // dashArray: '3',
-        fillOpacity: 1
-      };
-    };
+    this.style = feature => ({
+      fillColor: this.getColor(feature.properties.value),
+      weight: 1,
+      opacity: 1,
+      color: 'white',
+      // dashArray: '3',
+      fillOpacity: 1
+    });
 
     this.updateInfo = (properties) => {
-      this.setState({
-        properties
-      });
+      this.setState({ properties });
     };
 
     this.highlightFeature = (e) => {
@@ -134,6 +146,8 @@ class ChoroplethMap extends Component {
       layer.on({
         mouseover: this.highlightFeature,
         mouseout: this.resetHighlight,
+        touchstart: this.highlightFeature,
+        touchend: this.resetHighlight,
         click: this.selectState
       });
     };
@@ -143,7 +157,7 @@ class ChoroplethMap extends Component {
       const [min, max] = this.getDataRange();
 
       const step = (max - min) / (numberOfItems);
-			// invalid data (max is Infinity and min is 0, resulting in Infinity)
+      // invalid data (max is Infinity and min is 0, resulting in Infinity)
       if (step === Infinity) {
         const color = this.getColor('NaN');
         return (
@@ -159,8 +173,7 @@ class ChoroplethMap extends Component {
 
       const values = Array(numberOfItems).fill(0).map((value, index) =>
         // _.round(min + (step * (numberOfItems - 1 - index)), 1),
-        min + (step * (numberOfItems - 1 - index)),
-      );
+        min + (step * (numberOfItems - 1 - index)));
 
       const endValues = values.map((value, index) => {
         if (index === 0) {
@@ -184,28 +197,30 @@ class ChoroplethMap extends Component {
 
       const legends = values.map((value, index) => {
         const color = this.getColor(value);
-        let displayValue = _.ceil(Number(_.toString(value)), 1).toFixed(1);
+        let displayValue = _ceil(Number(_toString(value)), 1).toFixed(1);
         // setting legend ranges and values
         if (value === min) {
-          displayValue = _.floor(min, 1).toFixed(1);
+          displayValue = _floor(min, 1).toFixed(1);
         }
-        let endValue = _.toString(endValues[index]);
-        if (_.isInteger(endValues[index])) {
+        let endValue = _toString(endValues[index]);
+        if (_isInteger(endValues[index])) {
           endValue += '.0';
+        } else if (_isInteger(_round(endValue, 1))) {
+          endValue = _ceil(endValue, 1).toFixed(1);
         } else {
-          if (_.isInteger(_.round(endValue, 1))) {
-            endValue = _.ceil(endValue, 1).toFixed(1);
-          } else {
-            endValue = _.ceil(endValue, 2).toFixed(1);
-          } }
+          endValue = _ceil(endValue, 2).toFixed(1);
+        }
+
         return (
-          <li className="legend" key={index}>
+          <li className="legend" key={t(`${displayValue.toString()}_${endValue.toString()}`)}>
             <i style={{ background: color }} />
-              { // return range or single value
-                (displayValue !== endValue && !isNaN(displayValue) && !isNaN(endValue)) ?
-                  `${displayValue} – ${endValue}` :
-                  'N/A'
-              }
+            { // return range or single value
+              (displayValue !== endValue
+                && !Number.isNaN(displayValue)
+                && !Number.isNaN(endValue))
+                  ? `${displayValue} – ${endValue}`
+                  : 'N/A'
+            }
           </li>
         );
       });
@@ -220,23 +235,23 @@ class ChoroplethMap extends Component {
       if (!properties) {
         return <div>Hover over a state</div>;
       }
-      const valueType = _.get(properties, 'dataValueType');
-      const hc = _.get(properties, 'highConfidence');
-      const lc = _.get(properties, 'lowConfidence');
+      const valueType = _get(properties, 'dataValueType');
+      const hc = _get(properties, 'highConfidence');
+      const lc = _get(properties, 'lowConfidence');
 
-      const unitValue = _.get(properties, 'unit', '');
+      const unitValue = _get(properties, 'unit', '');
       const unit = (unitValue.length > 1) ? '' : unitValue;
       const value = (properties.value) ? `${properties.value}${unit}` : 'N/A';
-      const breakoutLabel = _.get(properties, `${CONFIG.breakoutLabel}`, 'N/A');
+      const breakoutLabel = _get(properties, `${CONFIG.breakoutLabel}`, 'N/A');
 
       const unitInfo = (unitValue.length > 1) ? `(${unitValue})` : '';
       // if both low and high limits are N/A, suppress confidence limits
       let ConfidenceLimits = null;
-      if (isNaN(lc) && isNaN(hc)) {
+      if (Number.isNaN(lc) && Number.isNaN(hc)) {
         ConfidenceLimits = '';
       } else {
-        const lcFormat = isNaN(lc) ? 'N/A' : `${lc}${unit}`;
-        const hcFormat = isNaN(hc) ? 'N/A' : `${hc}${unit}`;
+        const lcFormat = Number.isNaN(lc) ? 'N/A' : `${lc}${unit}`;
+        const hcFormat = Number.isNaN(hc) ? 'N/A' : `${hc}${unit}`;
         ConfidenceLimits = `Confidence Limits: ${lcFormat}–${hcFormat}`;
       }
 
@@ -287,7 +302,7 @@ class ChoroplethMap extends Component {
     if (!data.type) {
       return (
         <div className={styles.spinner}>
-          <i className="fa fa-circle-o-notch fa-spin"></i>
+          <i className="fa fa-circle-o-notch fa-spin" />
         </div>
       );
     }
@@ -349,14 +364,17 @@ class ChoroplethMap extends Component {
 }
 
 ChoroplethMap.propTypes = {
-  data: PropTypes.object.isRequired,
-  desc: PropTypes.string,
+  data: PropTypes.shape({
+    features: PropTypes.array, // eslint-disable-line react/forbid-prop-types
+    type: PropTypes.string
+  }).isRequired,
+  desc: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired,
-  selectedState: PropTypes.string,
-  setMapElement: PropTypes.func,
-  title: PropTypes.string,
+  selectedState: PropTypes.string.isRequired,
+  setMapElement: PropTypes.func.isRequired,
+  title: PropTypes.string.isRequired,
   year: PropTypes.number.isRequired,
-  zoomToState: PropTypes.func
+  zoomToState: PropTypes.func.isRequired
 };
 
 export default ChoroplethMap;

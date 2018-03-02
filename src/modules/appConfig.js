@@ -1,7 +1,9 @@
-import _ from 'lodash';
+import _groupBy from 'lodash/groupBy';
+import _isArray from 'lodash/isArray';
+import _keyBy from 'lodash/keyBy';
 import { sendRequest } from 'lib/utils';
 import Soda from 'soda-js';
-import { CONFIG, USER_CONFIGURABLE_OPTIONS } from 'constants';
+import { CONFIG, USER_CONFIGURABLE_OPTIONS } from 'constants/index';
 
 // --------------------------------------------------
 // Constants
@@ -10,6 +12,8 @@ import { CONFIG, USER_CONFIGURABLE_OPTIONS } from 'constants';
 export const SET_CONFIG = 'SET_CONFIG';
 export const SET_ERROR = 'SET_ERROR';
 export const SET_REQUEST_STATUS = 'SET_REQUEST_STATUS';
+export const MOBILE_VIEW_ACTIVATED = 'MOBILE_VIEW_ACTIVATED';
+export const DESKTOP_VIEW_ACTIVATED = 'DESKTOP_VIEW_ACTIVATED';
 
 // --------------------------------------------------
 // Actions
@@ -34,6 +38,18 @@ function setRequestStatus(status) {
   return {
     type: SET_REQUEST_STATUS,
     status
+  };
+}
+
+export function createMobileViewActivated() {
+  return {
+    type: MOBILE_VIEW_ACTIVATED
+  };
+}
+
+export function createDesktopViewActivated() {
+  return {
+    type: DESKTOP_VIEW_ACTIVATED
   };
 }
 
@@ -91,13 +107,15 @@ function getDataSourceDataset() {
 
 function formatConfig(responses) {
   return (dispatch) => {
-    const [coreConfig,
-           filterConfig,
-           chartConfig,
-           dataSourceConfig] = responses;
+    const [
+      coreConfig,
+      filterConfig,
+      chartConfig,
+      dataSourceConfig
+    ] = responses;
 
     // make sure we got core configuration
-    if (!coreConfig || !_.isArray(coreConfig) || coreConfig.length < 1) {
+    if (!coreConfig || !_isArray(coreConfig) || coreConfig.length < 1) {
       dispatch(setError(
         true,
         'Configuration error - core configurations could not be retrieved.'
@@ -121,16 +139,19 @@ function formatConfig(responses) {
     }
 
     // group chartConfig by indicator
-    const chart = _.groupBy(chartConfig, 'indicator');
+    const chart = _groupBy(chartConfig, 'indicator');
 
     // set data source object
-    const dataSource = _.keyBy(dataSourceConfig, CONFIG.indicatorId);
+    const dataSource = _keyBy(dataSourceConfig, CONFIG.indicatorId);
 
     // save config object
-    dispatch(setConfig({ core, filter, chart, dataSource }));
+    dispatch(setConfig({
+      core,
+      filter,
+      chart,
+      dataSource
+    }));
     dispatch(setRequestStatus(false));
-
-    return;
   };
 }
 
@@ -162,14 +183,13 @@ function fetchAppConfig() {
       .then((responses) => {
         dispatch(formatConfig(responses));
       })
-      .catch(() => {
+      .catch((err) => {
+        console.log('fetchAppConfig', err); // eslint-disable-line no-console
         dispatch(setError(
           true,
           'There was a network error while retrieving data. Please try again.'
         ));
       });
-
-    return;
   };
 }
 
@@ -184,34 +204,43 @@ export function fetchConfig() {
 // Action Handlers
 // --------------------------------------------------
 const actionsMap = {
-  [SET_CONFIG]: (state, action) => (
-    { ...state, config: action.config }
-  ),
-  [SET_ERROR]: (state, action) => (
-    {
-      ...state,
-      error: action.error,
-      errorMessage: action.errorMessage,
-      fetching: false
-    }
-  ),
-  [SET_REQUEST_STATUS]: (state, action) => (
-    {
-      ...state,
-      error: false,
-      fetching: action.status
-    }
-  )
+  [SET_CONFIG]: (state, action) => ({
+    ...state,
+    config: action.config
+  }),
+  [SET_ERROR]: (state, action) => ({
+    ...state,
+    error: action.error,
+    errorMessage: action.errorMessage,
+    fetching: false
+  }),
+  [SET_REQUEST_STATUS]: (state, action) => ({
+    ...state,
+    error: false,
+    fetching: action.status
+  }),
+  [MOBILE_VIEW_ACTIVATED]: state => ({
+    ...state,
+    isDesktopView: false
+  }),
+  [DESKTOP_VIEW_ACTIVATED]: state => ({
+    ...state,
+    isDesktopView: true
+  })
 };
 
 // --------------------------------------------------
 // Reducers
 // --------------------------------------------------
 const initialState = {
-  config: {},
+  config: {
+    core: {},
+    dataSource: {}
+  },
   error: false,
   errorMessage: '',
-  fetching: true
+  fetching: true,
+  isDesktopView: false
 };
 
 export default function appConfigReducer(state = initialState, action) {

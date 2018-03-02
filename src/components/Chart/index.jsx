@@ -1,17 +1,22 @@
-import React, { PropTypes } from 'react';
-import DataTable from 'components/DataTable';
+import React from 'react';
+import PropTypes from 'prop-types';
+import _map from 'lodash/map';
+import d3 from 'd3';
+import DataTable from 'containers/DataTable';
 import ChartData from 'lib/ChartData';
-import styles from 'styles/BaseLayout.css';
+import styles from 'styles/BaseLayout.scss';
 import 'c3/c3.css';
 import BarChart from './BarChart';
 import ColumnChart from './ColumnChart';
 import LineChart from './LineChart';
 import PieChart from './PieChart';
-import _ from 'lodash';
-import d3 from 'd3';
 
-
-const Chart = ({ config, data, desc, latestYear }) => {
+const Chart = ({
+  config,
+  data,
+  desc,
+  latestYear
+}) => {
   if (latestYear === -1) {
     return null;
   }
@@ -27,22 +32,21 @@ const Chart = ({ config, data, desc, latestYear }) => {
   let title = `${config.title}`;
   // setting title for bar chart
   if (config.data === 'latest') {
-    const rangeText = `${latestYear}` !== yearEnd ?
-    `${latestYear} - ${yearEnd}` :
-    `${latestYear}`;
+    const rangeText = (`${latestYear}` !== yearEnd)
+      ? `${latestYear} - ${yearEnd}`
+      : `${latestYear}`;
     title = `${config.title} (${rangeText} Data)`;
   }
   // setting title for trend chart
   if (config.data === 'trend') {
-    const range = _.map(chartData.data, (x) => x.year);
-    const rangeText = d3.min(range) === d3.max(range) ?
-                      `${d3.max(range)}` :
-                      `${d3.min(range)} - ${d3.max(range)}`;
+    const range = _map(chartData.data, x => x.year);
+    const rangeText = (d3.min(range) === d3.max(range))
+      ? `${d3.max(range)}`
+      : `${d3.min(range)} - ${d3.max(range)}`;
     title = `${config.title} (${rangeText} Data)`;
   }
 
-  const chartTitle = (!config.title) ? null :
-    <h3 className={styles.chartTitle}>{title}</h3>;
+  const chartTitle = (!config.title) ? null : <h3 className={styles.chartTitle}>{title}</h3>;
   let chartElement;
   switch (config.type) {
     case 'bar':
@@ -61,10 +65,13 @@ const Chart = ({ config, data, desc, latestYear }) => {
       chartElement = <div>{config.type}</div>;
   }
 
-  const chartFootnote = (!config.footnote) ? null :
-    <div className={styles.chartFootnote}>
-      <p>{config.footnote}</p>
-    </div>;
+  const chartFootnote = (!config.footnote)
+    ? null
+    : (
+      <div className={styles.chartFootnote}>
+        <p>{config.footnote}</p>
+      </div>
+    );
 
   return (
     <div>
@@ -81,10 +88,25 @@ const Chart = ({ config, data, desc, latestYear }) => {
 };
 
 Chart.propTypes = {
-  config: PropTypes.object,
-  data: PropTypes.array,
-  desc: PropTypes.string,
-  latestYear: PropTypes.number
+  config: PropTypes.shape({
+    data: PropTypes.string,
+    footnote: PropTypes.string,
+    indicator: PropTypes.string,
+    published: PropTypes.bool,
+    sort: PropTypes.string,
+    title: PropTypes.string,
+    type: PropTypes.string
+  }).isRequired,
+  data: PropTypes.arrayOf(PropTypes.shape({
+    data_value: PropTypes.number,
+    data_value_type: PropTypes.string,
+    data_value_unit: PropTypes.string,
+    high_confidence_limit: PropTypes.number,
+    low_confidence_limit: PropTypes.number,
+    year: PropTypes.number
+  })).isRequired,
+  desc: PropTypes.string.isRequired,
+  latestYear: PropTypes.number.isRequired
 };
 
 export default Chart;

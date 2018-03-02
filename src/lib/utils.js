@@ -3,7 +3,11 @@
  */
 
 // vendors
-import _ from 'lodash';
+import _flattenDepth from 'lodash/flattenDepth';
+import _map from 'lodash/map';
+import _max from 'lodash/max';
+import _min from 'lodash/min';
+import _toNumber from 'lodash/toNumber';
 
 /**
  * Find South-West and North-East bounds of a GeoJSON Polygon or MultiPolygon geometry.
@@ -23,7 +27,7 @@ export function getLatLongBounds(geometry, padding = 0) {
       break;
     case 'MultiPolygon':
       // flatten at 2 levels to combine [long, lat] pairs into a single array
-      coordinates = _.flattenDepth(geometry.coordinates, 2);
+      coordinates = _flattenDepth(geometry.coordinates, 2);
       break;
     default:
       // unexpected type passed
@@ -31,20 +35,18 @@ export function getLatLongBounds(geometry, padding = 0) {
   }
 
   // use lodash chain to make it simpler to find min/max values
-  const long = _.chain(coordinates)
-    .map((coord) => coord[0]);
-  const lat = _.chain(coordinates)
-    .map((coord) => coord[1]);
+  const long = _map(coordinates, coord => coord[0]);
+  const lat = _map(coordinates, coord => coord[1]);
 
   // return as a 2-dimensional array, in [Lat, Long] pairs (not Long, Lat)
   return [
     [
-      lat.min().value() - padding,
-      long.min().value() - padding
+      _min(lat) - padding,
+      _min(long) - padding
     ],
     [
-      lat.max().value() + padding,
-      long.max().value() + padding
+      _max(lat) + padding,
+      _max(long) + padding
     ]
   ];
 }
@@ -65,11 +67,11 @@ export function rowFormatter(row) {
   ];
 
   // a new object where values are casted to number
-  const newValues = convertToNumberColumns.reduce((acc, key) => {
-    return Object.assign({}, acc, {
-      [key]: _.toNumber((row[key] || undefined), undefined)
-    });
-  }, {});
+  const newValues = convertToNumberColumns.reduce((acc, key) => (
+    Object.assign({}, acc, {
+      [key]: _toNumber((row[key] || undefined), undefined)
+    })
+  ), {});
 
   // apply (overwrite) above object to the object passed and return a new object
   return Object.assign({}, row, newValues);
@@ -86,4 +88,17 @@ export function sendRequest(soda) {
       .on('success', (rows) => { resolve(rows); })
       .on('error', (error) => { reject(error); });
   });
+}
+
+/**
+ * Helper to convert a string to lower case snake_case
+ * @param  {string} str - string to convert
+ * @return {string}
+ */
+export function t(str = '') {
+  if (typeof str !== 'string') {
+    return str;
+  }
+
+  return str.toLowerCase().replace(/\W+/g, '_');
 }

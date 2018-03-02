@@ -1,5 +1,5 @@
 coreConfig:
-  - data_points: 5
+  - data_points: '5'
     filter_intro: These filters affect all charts below.
     footnote: Configurations were loaded from a local file.
     intro: Intro paragraph

@@ -1,7 +1,7 @@
-import React from 'react';
+import PropTypes from 'prop-types';
 import { GeoJSON } from 'react-leaflet';
 
-export default class GeoJsonUpdatable extends GeoJSON {
+class GeoJsonUpdatable extends GeoJSON {
   componentWillReceiveProps(nextProps) {
     if (nextProps.data !== this.props.data) {
       this.leafletElement.clearLayers();
@@ -16,5 +16,10 @@ export default class GeoJsonUpdatable extends GeoJSON {
 }
 
 GeoJsonUpdatable.propTypes = {
-  data: React.PropTypes.object.isRequired
+  data: PropTypes.shape({
+    features: PropTypes.array, // eslint-disable-line react/forbid-prop-types
+    type: PropTypes.string
+  }).isRequired
 };
+
+export default GeoJsonUpdatable;

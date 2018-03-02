@@ -4,6 +4,7 @@
 body.ReactModal__Body--open {
   overflow: hidden;
 }
+
 #us-map-legend-ul {
 	display:flex;
 	flex-flow: column;

@@ -1,3 +1,6 @@
+// load US States GeoJSON
+import GEOJSON from './us-states-geojson.js';
+
 const PROD_CONFIG = (__CONFIG__ === 'production') ?
   require('./configurations.production.yml') :
   require('./configurations.staging.yml');
@@ -10,11 +13,11 @@ const USER_CONFIGURABLE_OPTIONS = (__DEV__) ?
   require('./userConfigurableOptions.yml') :
   {};
 
-// load US States GeoJSON
-import GEOJSON from './us-states-geojson.js';
+const DESKTOP_BREAKPOINT = 960;
 
 export {
   CONFIG,
+  DESKTOP_BREAKPOINT,
   USER_CONFIGURABLE_OPTIONS,
   GEOJSON
 };

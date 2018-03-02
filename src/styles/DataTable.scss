@@ -1,0 +1,93 @@
+@import 'common';
+
+.data-table {
+  width: auto;
+  margin-bottom: 1em;
+  background: #fff;
+  font-size: 1.3em;
+  border-collapse: collapse;
+
+  caption {
+    margin-bottom: 1em;
+    font-size: 1.2em;
+    font-weight: bold;
+  }
+
+  th,
+  td {
+    padding: 0.5em 1em;
+    border: 1px solid #000;
+  }
+
+  th {
+    font-weight: bold;
+  }
+
+  thead {
+    background: #efefef;
+  }
+
+  tbody {
+    th {
+      font-weight: normal;
+      text-align: left;
+    }
+
+    td {
+      text-align: left;
+
+      &.right {
+        text-align: right;
+      }
+    }
+  }
+}
+
+.link-container {
+  margin: 0.5em 0;
+  text-align: right;
+}
+
+.open-table {
+  background: transparent;
+  border: 0;
+  font-family: inherit;
+  font-size: 0.8em;
+
+  &:hover, &:active, &:focus {
+    text-decoration: underline;
+  }
+}
+
+.close-table {
+  padding: 0.2em;
+  border: 1px solid #666;
+  background: #efefef;
+  font-size: 1.2em;
+
+  &:hover, &:active, &:focus {
+    background: #ccc;
+  }
+}
+
+.visually-hidden {
+  @include visually-hidden;
+}
+
+.mobile-view {
+  .title {
+    font-size: 1.2em;
+    font-weight: bold;
+    line-height: 1.5;
+    margin-bottom: 1em;
+    text-align: center;
+  }
+
+  .cell {
+    border-bottom: 1px solid #efefef;
+    font-size: 1.2em;
+    line-height: 1.5;
+    margin-bottom: 1em;
+    padding-bottom: 1em;
+  }
+}

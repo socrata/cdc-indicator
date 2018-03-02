@@ -1,7 +1,13 @@
-import _ from 'lodash';
+import _find from 'lodash/find';
+import _get from 'lodash/get';
+import _flow from 'lodash/fp/flow';
+import _groupBy from 'lodash/fp/groupBy';
+import _map from 'lodash/fp/map';
+import _orderBy from 'lodash/fp/orderBy';
+import _sortBy from 'lodash/fp/sortBy';
 import { sendRequest } from 'lib/utils';
 import Soda from 'soda-js';
-import { CONFIG } from 'constants';
+import { CONFIG } from 'constants/index';
 
 // --------------------------------------------------
 // Constants
@@ -45,12 +51,64 @@ function setRequestStatus(status) {
   };
 }
 
+function setAvailableCategories(availableCategories) {
+  return (dispatch, getState) => {
+    const filterData = _get(getState(), 'filters.data');
+    const categoryFilter = filterData[CONFIG.breakoutCategoryId];
+    const categoryOptions = categoryFilter.options;
+
+    const newCategoryFilter = Object.assign({}, categoryFilter, {
+      options: categoryOptions.map(category => ({
+        text: category.text,
+        value: category.value,
+        isDisabled: availableCategories.indexOf(category.value) === -1
+      }))
+    });
+
+    dispatch(setFilterData(Object.assign({}, filterData, {
+      [CONFIG.breakoutCategoryId]: newCategoryFilter
+    })));
+
+    // see if current selection or default choice is a valid choice
+    const selected = _get(getState(), `filters.selected.${CONFIG.breakoutCategoryId}`, {});
+
+    // if there is no current selection or current selection if no available, try default
+    if (!selected || availableCategories.indexOf(selected.id) === -1) {
+      const filterConfig = _get(getState(), 'appConfig.config.filter', []);
+      const categoryFilterConfig = _find(filterConfig, {
+        value_column: CONFIG.breakoutCategoryId
+      });
+      let selection;
+      if (categoryFilterConfig &&
+          availableCategories.indexOf(categoryFilterConfig.default_value) > -1) {
+        selection = _find(newCategoryFilter.options, {
+          value: categoryFilterConfig.default_value
+        });
+      } else {
+        // if default is not available, select first element
+        selection = _find(newCategoryFilter.options, {
+          isDisabled: false
+        });
+      }
+
+      dispatch(setFilter({
+        [CONFIG.breakoutCategoryId]: {
+          id: selection.value,
+          label: selection.text
+        }
+      }));
+    }
+
+    dispatch(setRequestStatus(false));
+  };
+}
+
 function getAvailableBreakoutCategory() {
   return (dispatch, getState) => {
     dispatch(setRequestStatus(true));
 
-    const indicator = _.get(getState(), `filters.selected.${CONFIG.indicatorId}.id`, '');
-    const location = _.get(getState(), `filters.selected.${CONFIG.locationId}.id`, '');
+    const indicator = _get(getState(), `filters.selected.${CONFIG.indicatorId}.id`, '');
+    const location = _get(getState(), `filters.selected.${CONFIG.locationId}.id`, '');
 
     // set up API request using soda-js
     const consumer = new Soda.Consumer(CONFIG.soda.hostname, {
@@ -78,11 +136,63 @@ function getAvailableBreakoutCategory() {
   };
 }
 
+function setAvailableLocations(availableLocations) {
+  return (dispatch, getState) => {
+    const filterData = _get(getState(), 'filters.data');
+    const locationFilter = filterData[CONFIG.locationId];
+    const locationOptions = locationFilter.options;
+
+    const newLocationFilter = Object.assign({}, locationFilter, {
+      options: locationOptions.map(location => ({
+        text: location.text,
+        value: location.value,
+        isDisabled: availableLocations.indexOf(location.value) === -1
+      }))
+    });
+
+    dispatch(setFilterData(Object.assign({}, filterData, {
+      [CONFIG.locationId]: newLocationFilter
+    })));
+
+    // see if current selection or default choice is a valid choice
+    const selected = _get(getState(), `filters.selected.${CONFIG.locationId}`, {});
+    let selectedLocation = selected.id;
+
+    // if there is no current selection or current selection if no available, try default
+    if (!selected || availableLocations.indexOf(selectedLocation) === -1) {
+      const filterConfig = _get(getState(), 'appConfig.config.filter', []);
+      const locationFilterConfig = _find(filterConfig, { value_column: CONFIG.locationId });
+      let selection;
+      if (locationFilterConfig &&
+          availableLocations.indexOf(locationFilterConfig.default_value) > -1) {
+        selection = _find(newLocationFilter.options, {
+          value: locationFilterConfig.default_value
+        });
+      } else {
+        // if default is not available, select first element
+        selection = _find(newLocationFilter.options, {
+          isDisabled: false
+        });
+      }
+
+      selectedLocation = selection.value;
+      dispatch(setFilter({
+        [CONFIG.locationId]: {
+          id: selection.value,
+          label: selection.text
+        }
+      }));
+    }
+
+    dispatch(getAvailableBreakoutCategory());
+  };
+}
+
 function getAvailableLocations() {
   return (dispatch, getState) => {
     dispatch(setRequestStatus(true));
 
-    const indicator = _.get(getState(), `filters.selected.${CONFIG.indicatorId}.id`, '');
+    const indicator = _get(getState(), `filters.selected.${CONFIG.indicatorId}.id`, '');
 
     // set up API request using soda-js
     const consumer = new Soda.Consumer(CONFIG.soda.hostname, {
@@ -109,114 +219,6 @@ function getAvailableLocations() {
   };
 }
 
-function setAvailableCategories(availableCategories) {
-  return (dispatch, getState) => {
-    const filterData = _.get(getState(), 'filters.data');
-    const categoryFilter = filterData[CONFIG.breakoutCategoryId];
-    const categoryOptions = categoryFilter.options;
-
-    const newCategoryFilter = Object.assign({}, categoryFilter, {
-      options: categoryOptions.map((category) => {
-        return {
-          text: category.text,
-          value: category.value,
-          isDisabled: availableCategories.indexOf(category.value) === -1
-        };
-      })
-    });
-
-    dispatch(setFilterData(Object.assign({}, filterData, {
-      [CONFIG.breakoutCategoryId]: newCategoryFilter
-    })));
-
-    // see if current selection or default choice is a valid choice
-    const selected = _.get(getState(), `filters.selected.${CONFIG.breakoutCategoryId}`, {});
-
-    // if there is no current selection or current selection if no available, try default
-    if (!selected || availableCategories.indexOf(selected.id) === -1) {
-      const filterConfig = _.get(getState(), 'appConfig.config.filter', []);
-      const categoryFilterConfig = _.find(filterConfig, {
-        value_column: CONFIG.breakoutCategoryId
-      });
-      let selection;
-      if (categoryFilterConfig &&
-          availableCategories.indexOf(categoryFilterConfig.default_value) > -1) {
-        selection = _.find(newCategoryFilter.options, {
-          value: categoryFilterConfig.default_value
-        });
-      } else {
-        // if default is not available, select first element
-        selection = _.find(newCategoryFilter.options, {
-          isDisabled: false
-        });
-      }
-
-      dispatch(setFilter({
-        [CONFIG.breakoutCategoryId]: {
-          id: selection.value,
-          label: selection.text
-        }
-      }));
-    }
-
-    dispatch(setRequestStatus(false));
-  };
-}
-
-function setAvailableLocations(availableLocations) {
-  return (dispatch, getState) => {
-    const filterData = _.get(getState(), 'filters.data');
-    const locationFilter = filterData[CONFIG.locationId];
-    const locationOptions = locationFilter.options;
-
-    const newLocationFilter = Object.assign({}, locationFilter, {
-      options: locationOptions.map((location) => {
-        return {
-          text: location.text,
-          value: location.value,
-          isDisabled: availableLocations.indexOf(location.value) === -1
-        };
-      })
-    });
-
-    dispatch(setFilterData(Object.assign({}, filterData, {
-      [CONFIG.locationId]: newLocationFilter
-    })));
-
-    // see if current selection or default choice is a valid choice
-    const selected = _.get(getState(), `filters.selected.${CONFIG.locationId}`, {});
-    let selectedLocation = selected.id;
-
-    // if there is no current selection or current selection if no available, try default
-    if (!selected || availableLocations.indexOf(selectedLocation) === -1) {
-      const filterConfig = _.get(getState(), 'appConfig.config.filter', []);
-      const locationFilterConfig = _.find(filterConfig, { value_column: CONFIG.locationId });
-      let selection;
-      if (locationFilterConfig &&
-          availableLocations.indexOf(locationFilterConfig.default_value) > -1) {
-        selection = _.find(newLocationFilter.options, {
-          value: locationFilterConfig.default_value
-        });
-      } else {
-        // if default is not available, select first element
-        selection = _.find(newLocationFilter.options, {
-          isDisabled: false
-        });
-      }
-
-      selectedLocation = selection.value;
-      dispatch(setFilter({
-        [CONFIG.locationId]: {
-          id: selection.value,
-          label: selection.text
-        }
-      }));
-    }
-
-    dispatch(getAvailableBreakoutCategory());
-  };
-}
-
 export function setLocationFilter(filter) {
   return (dispatch) => {
     dispatch(setRequestStatus(true));
@@ -235,7 +237,7 @@ export function setIndicatorFilter(filter) {
 
 function formatFilterData(responses) {
   return (dispatch, getState) => {
-    const filterConfig = _.get(getState(), 'appConfig.config.filter', []);
+    const filterConfig = _get(getState(), 'appConfig.config.filter', []);
 
     // set this while we are looping through filter raw data
     let indicatorFilter;
@@ -247,10 +249,13 @@ function formatFilterData(responses) {
       // side effect
       if (config.value_column === CONFIG.indicatorId) {
         let defaultValue = config.default_value;
-        let defaultLabel = _.chain(data)
-          .find({ [config.value_column]: config.default_value })
-          .get(config.label_column)
-          .value();
+        let defaultLabel = _get(_find(data, {
+          [config.value_column]: config.default_value
+        }), config.label_column);
+        // let defaultLabel = _.chain(data)
+        //   .find({ [config.value_column]: config.default_value })
+        //   .get(config.label_column)
+        //   .value();
 
         // if matching default value wasn't found, use the first element
         if (!defaultLabel) {
@@ -266,52 +271,96 @@ function formatFilterData(responses) {
       }
 
       if (config.group_by_id) {
-        optionGroups = _.chain(data)
+        optionGroups = _flow(
           // group by ID column first, in case value is not unique per ID
-          .groupBy(config.group_by_id)
-          .map((dataByGroup) => {
+          _groupBy(config.group_by_id),
+          _map((dataByGroup) => {
             // get group value from first element
             const groupLabel = dataByGroup[0][config.group_by];
             // again, group by ID first in case value is not unique for any given ID
-            const groupedData = _.chain(dataByGroup)
-              .groupBy(config.value_column)
-              .map((dataById) => {
+            const groupedData = _flow(
+              _groupBy(config.value_column),
+              _map((dataById) => {
                 // get data by descending alpha order
-                const dataByIdDesc = _.chain(dataById).orderBy(config.label_column, 'desc').value();
+                const dataByIdDesc = _orderBy(config.label_column, 'desc', dataById);
                 // use the first element to set label
                 return {
                   text: dataByIdDesc[0][config.label_column],
                   value: dataByIdDesc[0][config.value_column],
                   default: dataByIdDesc[0][config.value_column] === config.default_value
                 };
-              })
-              .sortBy('default', 'text')
-              .value();
+              }),
+              _sortBy(['default', 'text'])
+            )(dataByGroup);
 
             return {
               text: groupLabel,
               options: groupedData
             };
-          })
+          }),
           // set default to top of list, alpha asc order
-          .orderBy(['default', 'text'], ['desc', 'asc'])
-          .value();
+          _orderBy(['default', 'text'], ['desc', 'asc'])
+        )(data);
+        // optionGroups = _.chain(data)
+        //   // group by ID column first, in case value is not unique per ID
+        //   .groupBy(config.group_by_id)
+        //   .map((dataByGroup) => {
+        //     // get group value from first element
+        //     const groupLabel = dataByGroup[0][config.group_by];
+        //     // again, group by ID first in case value is not unique for any given ID
+        //     const groupedData = _.chain(dataByGroup)
+        //       .groupBy(config.value_column)
+        //       .map((dataById) => {
+        //         // get data by descending alpha order
+        //         const dataByIdDesc = _.chain(dataById).orderBy(config.label_column, 'desc')
+        //          .value();
+        //         // use the first element to set label
+        //         return {
+        //           text: dataByIdDesc[0][config.label_column],
+        //           value: dataByIdDesc[0][config.value_column],
+        //           default: dataByIdDesc[0][config.value_column] === config.default_value
+        //         };
+        //       })
+        //       .sortBy('default', 'text')
+        //       .value();
+
+        //     return {
+        //       text: groupLabel,
+        //       options: groupedData
+        //     };
+        //   })
+        //   // set default to top of list, alpha asc order
+        //   .orderBy(['default', 'text'], ['desc', 'asc'])
+        //   .value();
       } else {
-        options = _.chain(data)
-          .groupBy(config.value_column)
-          .map((dataById) => {
+        options = _flow(
+          _groupBy(config.value_column),
+          _map((dataById) => {
             // get data by descending alpha order
-            const dataByIdDesc = _.chain(dataById).orderBy(config.label_column, 'desc').value();
+            const dataByIdDesc = _orderBy(config.label_column, 'desc', dataById);
             // use the first element to set label
             return {
               text: dataByIdDesc[0][config.label_column],
               value: dataByIdDesc[0][config.value_column],
               default: dataByIdDesc[0][config.value_column] === config.default_value
             };
-          })
-          // set default to top of list, alpha asc order
-          .orderBy(['default', 'text'], ['desc', 'asc'])
-          .value();
+          }),
+          _orderBy(['default', 'text'], ['desc', 'asc'])
+        )(data);
+        // options = _.chain(data)
+        //   .groupBy(config.value_column)
+        //   .map((dataById) => {
+        //     // get data by descending alpha order
+        //     const dataByIdDesc = _.chain(dataById).orderBy(config.label_column, 'desc').value();
+        //     // use the first element to set label
+        //     return {
+        //       text: dataByIdDesc[0][config.label_column],
+        //       value: dataByIdDesc[0][config.value_column],
+        //       default: dataByIdDesc[0][config.value_column] === config.default_value
+        //     };
+        //   })
+        //   .orderBy(['default', 'text'], ['desc', 'asc'])
+        //   .value();
       }
 
       return Object.assign({}, acc, {
@@ -332,7 +381,7 @@ function formatFilterData(responses) {
 
 function fetchFilterData() {
   return (dispatch, getState) => {
-    const filterConfig = _.get(getState(), 'appConfig.config.filter', []);
+    const filterConfig = _get(getState(), 'appConfig.config.filter', []);
     const getFilterPromises = filterConfig.map((config) => {
       const selectColumns = [config.value_column, config.label_column];
 
@@ -362,7 +411,8 @@ function fetchFilterData() {
       .then((responses) => {
         dispatch(formatFilterData(responses));
       })
-      .catch(() => {
+      .catch((err) => {
+        console.log('fetchFilterData', err); // eslint-disable-line no-console
         dispatch(setError(
           true,
           'There was a network error while retrieving data. Please try again.'

@@ -3,7 +3,8 @@
  */
 
 // vendors
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
 import L from 'leaflet';
 import { MapControl } from 'react-leaflet';
@@ -19,13 +20,15 @@ class MapControlUpdatable extends MapControl {
   }
 
   componentWillMount() {
-    const { position,
-            children } = this.props;
+    const {
+      position,
+      children
+    } = this.props;
     const legend = L.control({ position });
     const jsx = <div>{children}</div>;
 
     legend.onAdd = () => {
-      const div = this.state.div;
+      const { div } = this.state;
       ReactDOM.render(jsx, div);
       return div;
     };

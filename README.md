@@ -79,8 +79,7 @@ you should be able to access this tool by navigating your browser to
 ├── src                         # application source code
 │   ├── components              # reusable components
 │   ├── constants               # static data, such as configurations
-│   ├── containers              # container components
-│   ├── layouts                 # layout components for major structures
+│   ├── containers              # container components, connected to Redux store
 │   ├── lib                     # custom helper libraries
 │   ├── modules                 # redux store modules, includes constants, actions and reducers
 │   ├── reducers                # collection of reducers from all modules

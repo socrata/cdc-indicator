@@ -45,7 +45,7 @@
 
 .compareCheckbox {
   display: inline-block;
-  margin-bottom: 1em;
+  margin: 1em 0;
 }
 
 .compareCheckbox input {

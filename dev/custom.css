@@ -132,10 +132,10 @@ body {
 .siteOuterWrapper {
   border-top: 6px solid #075290;
   background-color: #FFFFFF;
-  min-width: 950px;
+  /*min-width: 950px;*/
 }
 .siteInnerWrapper {
-  width: 1185px;
+  /*width: 1185px;*/
 }
 
 #siteHeader .appLogo a {
@@ -344,7 +344,7 @@ body {
 }
 
 .siteContentWrapper {
-  padding: 0;
+  padding: 0 2em;
   /*CDC Footer is 95px tall*/
   padding-bottom: 95px !important;
 }
@@ -1741,7 +1741,7 @@ VIDEOS PAGE
 /* Responsive Design */
 @media only screen and (min-width: 0px) and (max-width: 1200px) {
   .siteInnerWrapper {
-    width: 950px;
+    /*width: 950px;*/
   }
   .cdc-home #intro .component-Carousel {
     width: 440px;

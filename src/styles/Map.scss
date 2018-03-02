@@ -1,0 +1,9 @@
+@import 'BaseLayout';
+
+.mapFilter {
+  @extend .mainFilter;
+  margin: 0;
+  padding: 0.5em 0;
+  border: 0;
+  background: transparent;
+}

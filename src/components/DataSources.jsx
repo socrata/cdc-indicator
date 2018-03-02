@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 
 function createElement(label, url, text, style) {
   if (!url && !text) {
@@ -11,12 +12,13 @@ function createElement(label, url, text, style) {
       {label}:
       {' '}
       {
-        (!url) ? textElement :
-          <a
-            href={url}
-            target="_blank"
-            rel="noopener noreferrer"
-          >{textElement}</a>
+        (!url)
+          ? textElement
+          : (
+            <a href={url} target="_blank" rel="noopener noreferrer">
+              {textElement}
+            </a>
+          )
       }
     </p>
   );
@@ -28,11 +30,20 @@ function createElement(label, url, text, style) {
   );
 }
 
-const DataSources = ({ childClassName, dataLabel, dataSource, sourceLabel }) => {
-  const { data_label,
-          data_link,
-          source_label,
-          source_link } = dataSource;
+const DataSources = ({
+  childClassName,
+  dataLabel,
+  dataSource,
+  sourceLabel
+}) => {
+  /* eslint-disable camelcase */
+  const {
+    data_label,
+    data_link,
+    source_label,
+    source_link
+  } = dataSource;
+  /* eslint-enable camelcase */
 
   const sourceElement = createElement(sourceLabel, source_link, source_label, childClassName);
   const dataElement = createElement(dataLabel, data_link, data_label, childClassName);
@@ -46,10 +57,15 @@ const DataSources = ({ childClassName, dataLabel, dataSource, sourceLabel }) => 
 };
 
 DataSources.propTypes = {
-  childClassName: PropTypes.string,
-  dataLabel: PropTypes.string,
-  dataSource: PropTypes.object,
-  sourceLabel: PropTypes.string
+  childClassName: PropTypes.string.isRequired,
+  dataLabel: PropTypes.string.isRequired,
+  dataSource: PropTypes.shape({
+    data_label: PropTypes.string,
+    data_link: PropTypes.string,
+    source_label: PropTypes.string,
+    source_link: PropTypes.string
+  }).isRequired,
+  sourceLabel: PropTypes.string.isRequired
 };
 
 export default DataSources;

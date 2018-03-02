@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import C3ChartUpdatable from './C3ChartUpdatable';
 
 const PieChart = ({ chartData, desc, title }) => {
@@ -9,14 +10,14 @@ const PieChart = ({ chartData, desc, title }) => {
     `${chartData.xValues} values are displayed as slices.`;
 
   return (
-    <C3ChartUpdatable {...chartConfig} desc={longDesc} title={title} />
+    <C3ChartUpdatable {...chartConfig} desc={longDesc} customTitle={title} />
   );
 };
 
 PieChart.propTypes = {
-  chartData: PropTypes.object,
-  desc: PropTypes.string,
-  title: PropTypes.string
+  chartData: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  desc: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired
 };
 
 export default PieChart;

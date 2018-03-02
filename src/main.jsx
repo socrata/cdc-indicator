@@ -1,15 +1,21 @@
 // enable react-redux with redux-thunk middleware
 import React from 'react';
-import { render } from 'react-dom';
+import ReactDOM from 'react-dom';
+import { AppContainer } from 'react-hot-loader';
 import { Provider } from 'react-redux';
 import { createStore, combineReducers, compose, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
-
-import AppConfigurationContainer from 'containers/AppConfigurationContainer'; // renders App
+import a11y from 'react-a11y';
 import * as reducers from 'reducers';
+import App from 'containers/App'; // renders App
 
 // import styles that bypasses CSS Modules
 import './index.css';
+
+// enable a11y helper during DEV
+if (__DEV__) {
+  a11y(React, ReactDOM);
+}
 
 const reducer = combineReducers(reducers);
 let middleware = applyMiddleware(thunk);
@@ -30,10 +36,12 @@ const store = createStore(reducer, middleware);
 const MOUNT_ELEMENT = document.getElementById('main');
 
 let renderFn = () => {
-  render(
-    <Provider store={store}>
-      <AppConfigurationContainer />
-    </Provider>,
+  ReactDOM.render(
+    <AppContainer>
+      <Provider store={store}>
+        <App />
+      </Provider>
+    </AppContainer>,
     MOUNT_ELEMENT
   );
 };
@@ -44,7 +52,7 @@ if (__DEV__ && module.hot) {
   const renderError = (error) => {
     const RedBox = require('redbox-react').default; // eslint-disable-line global-require
 
-    render(<RedBox error={error} />, MOUNT_ELEMENT);
+    ReactDOM.render(<RedBox error={error} />, MOUNT_ELEMENT);
   };
   renderFn = () => {
     try {
