@@ -57,7 +57,10 @@ const webpackConfig = {
             use: [
               {
                 loader: 'css-loader',
-                options: { importLoaders: 2 }
+                options: {
+                  minimize: true,
+                  importLoaders: 2
+                }
               },
               { loader: 'postcss-loader' },
               {
@@ -104,6 +107,7 @@ const webpackConfig = {
                 loader: 'css-loader',
                 options: {
                   modules: true,
+                  minimize: true,
                   importLoaders: 2,
                   localIdentName: '[name]__[local]__[hash:base64:5]'
                 }
@@ -206,7 +210,6 @@ if (__PROD__) {
     }),
     // optimize output JS
     new webpack.optimize.OccurrenceOrderPlugin(),
-    new webpack.optimize.DedupePlugin(),
     new webpack.optimize.UglifyJsPlugin({
       compress: {
         unused: true,
