@@ -53,8 +53,10 @@ class ChoroplethMap extends Component {
     //   .value();
 
     // check if empty values exist based on current props
-    this.hasEmptyValues = () => (_flow(_filter(row =>
-      Number.isNaN(row.properties.value)))(this.props.data.features)).length > 0;
+    this.hasEmptyValues = () => _filter((row =>
+      row.properties.value === undefined
+        || Number.isNaN(row.properties.value)), this.props.data.features)
+      .length > 0;
     // this.hasEmptyValues = () => _.chain(this.props.data.features)
     //   .filter(row => Number.isNaN(row.properties.value))
     //   .value().length > 0;
@@ -71,7 +73,7 @@ class ChoroplethMap extends Component {
     };
     // setting the color if n/a
     this.getColor = (d) => {
-      if (Number.isNaN(d)) {
+      if (d === undefined || Number.isNaN(d) || d === 'N/A') {
         return '#999999';
       }
       // set color range
@@ -185,10 +187,13 @@ class ChoroplethMap extends Component {
       });
 
       // Add N/A to legend if empty values exist
-      if (this.hasEmptyValues()) {
-        values.push('N/A');
-        endValues.push('N/A');
-      }
+      // if (this.hasEmptyValues()) {
+      //   values.push('N/A');
+      //   endValues.push('N/A');
+      // }
+      // always add N/A to ensure "Equal Interval" is at the bottom
+      values.push('N/A');
+      endValues.push('N/A');
 
       // if all values are integers, do not display 0-pad values
       // const isAllIntegers = values.reduce((isInteger, value) => {
