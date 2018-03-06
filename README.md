@@ -34,14 +34,27 @@ None.
 After you have cloned this project and changed your working directory,
 install dependencies by running `npm install`.
 
-Before running this tool even locally, you must copy a sample configuraiton file
+Before running this tool even locally, you must copy a sample configuration file
 for development and set a few parameters.
 
 ```bash
 $ cp src/constants/configurations.sample.yml src/constants/configurations.development.yml
 ```
 
-Sample configuraiton file contains enough settings to get you up and running,
+You'll also need versions of that file for staging and production, so create them via the same
+technique:
+
+```bash
+$ cp src/constants/configurations.sample.yml src/constants/configurations.staging.yml
+$ cp src/constants/configurations.sample.yml src/constants/configurations.production.yml
+```
+
+Note that those two files will need to be modified in order to build successfully for either staging
+or production. Since these files are gitignore'd out of the repo intentionally, check with the
+current maintainers for their copies of these files to ensure you have current credentials and
+settings.
+
+The sample configuration file contains enough settings to get you up and running,
 except you must provide your own [Socrata App Token][] and [Mapbox Access Token][].
 Once copied, open `configurations.development.yml` and enter your application tokens.
 
