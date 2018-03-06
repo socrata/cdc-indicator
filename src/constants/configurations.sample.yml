@@ -3,7 +3,9 @@
 # SODA request options
 soda:
   appToken: (ENTER YOUR SOCRATA APP TOKEN)
-  hostname: chronicdata.cdc.gov
+  hostname: chronicdata-stage.demo.socrata.com
+  # For production:
+  # hostname: chronicdata.cdc.gov
   useSecure: true
 
 # Socrata dataset configurations
