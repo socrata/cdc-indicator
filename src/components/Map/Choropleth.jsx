@@ -68,7 +68,11 @@ class ChoroplethMap extends Component {
       // const max = _.ceil(this.getMaxValue());
       const min = this.getMinValue();
       const max = this.getMaxValue();
-      return [(Number.isNaN(min) ? 0 : min), (Number.isNaN(max) ? Infinity : max)];
+
+      return [
+        (min === undefined || Number.isNaN(min) ? 0 : min),
+        (max === undefined || Number.isNaN(max) ? Infinity : max)
+      ];
       // return [(isNaN(min) ? 0 : min), rangeOne, rangeTwo, (isNaN(max) ? Infinity : max)];
     };
     // setting the color if n/a
@@ -159,9 +163,10 @@ class ChoroplethMap extends Component {
       const [min, max] = this.getDataRange();
 
       const step = (max - min) / (numberOfItems);
+
       // invalid data (max is Infinity and min is 0, resulting in Infinity)
       if (step === Infinity) {
-        const color = this.getColor('NaN');
+        const color = this.getColor(NaN);
         return (
           <ul className={styles.legend}>
             <li>
