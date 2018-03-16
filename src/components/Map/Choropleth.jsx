@@ -30,6 +30,7 @@ class ChoroplethMap extends Component {
 
     // store properties of hovered layer in state to update info component
     this.state = {
+      layer: undefined,
       properties: undefined
     };
 
@@ -115,6 +116,7 @@ class ChoroplethMap extends Component {
       }
 
       this.updateInfo(layer.feature.properties);
+      this.setState({ layer });
     };
 
     this.resetHighlight = (e) => {
@@ -148,13 +150,38 @@ class ChoroplethMap extends Component {
       );
     };
 
+    // this.onTouchMove = (e) => {
+    //   e.preventDefault();
+    // };
+
+    this.onTouchStart = (e) => {
+      // determine if this is the first time a state is touched,
+      // in which case just highlight the state
+      if (_get(this.state.layer, 'feature.properties.abbreviation')
+        !== _get(e.target, 'feature.properties.abbreviation')) {
+        // reset previous style
+        if (this.state.layer !== undefined) {
+          this.leafletElement.resetStyle(this.state.layer);
+        }
+        this.updateInfo();
+
+        // then highlight new state
+        this.highlightFeature(e);
+        this.setState({ layer: e.target });
+      } else {
+        // select state if it is already highlighted
+        this.selectState(e);
+      }
+    };
+
     this.onEachFeature = (feature, layer) => {
       layer.on({
         mouseover: this.highlightFeature,
         mouseout: this.resetHighlight,
-        touchstart: this.highlightFeature,
-        touchend: this.resetHighlight,
-        click: this.selectState
+        // touchmove: this.onTouchMove,
+        // touchend: this.onTouchStart,
+        // click: this.selectState
+        click: this.onTouchStart
       });
     };
 
