@@ -259,9 +259,7 @@ class DataTable extends Component {
               textAlign: 'right'
             }}
           >
-            <button styleName="close-table" onClick={this.closeModal}>
-              <span className="fa fa-close" />
-            </button>
+            <button styleName="close-table" onClick={this.closeModal}>X</button>
           </div>
           <div
             style={{
