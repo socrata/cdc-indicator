@@ -22,6 +22,7 @@ const modalStyles = {
     bottom: 'auto',
     marginRight: '-50%',
     maxHeight: '80%',
+    overflow: 'hidden',
     transform: 'translate(-50%, -50%)'
   }
 };
@@ -253,7 +254,24 @@ class DataTable extends Component {
           style={modalStyles}
           contentLabel={tableContent}
         >
-          {table}
+          <div
+            style={{
+              textAlign: 'right'
+            }}
+          >
+            <button styleName="close-table" onClick={this.closeModal}>
+              <span className="fa fa-close" />
+            </button>
+          </div>
+          <div
+            style={{
+              overflow: 'auto',
+              maxHeight: '74vh',
+              margin: '10px 0'
+            }}
+          >
+            {table}
+          </div>
           <button styleName="close-table" onClick={this.closeModal}>Close</button>
         </Modal>
       </div>
