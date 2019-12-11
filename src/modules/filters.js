@@ -116,7 +116,7 @@ function getAvailableBreakoutCategory() {
     });
 
     const request = consumer.query()
-      .withDataset(CONFIG.data.datasetId)
+      .withDataset(CONFIG.app_data.datasetId)
       .select(CONFIG.breakoutCategoryId)
       .where(
         `${CONFIG.breakoutCategoryId} IS NOT NULL`,
@@ -200,7 +200,7 @@ function getAvailableLocations() {
     });
 
     const request = consumer.query()
-      .withDataset(CONFIG.data.datasetId)
+      .withDataset(CONFIG.app_data.datasetId)
       .select(CONFIG.locationId)
       .where(
         `${CONFIG.locationId} IS NOT NULL`,
@@ -395,7 +395,7 @@ function fetchFilterData() {
       });
 
       const request = consumer.query()
-        .withDataset(CONFIG.data.datasetId)
+        .withDataset(CONFIG.app_data.datasetId)
         .select(selectColumns)
         .where(
           `${config.label_column} IS NOT NULL`,

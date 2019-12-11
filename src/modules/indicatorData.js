@@ -89,7 +89,7 @@ function fetchIndicatorData() {
     });
 
     const request = consumer.query()
-      .withDataset(CONFIG.data.datasetId);
+      .withDataset(CONFIG.app_data.datasetId);
 
     const filters = _get(getState(), 'filters.selected', {});
     const compareToNational = _get(getState(), 'indicatorData.compareToNational', true);

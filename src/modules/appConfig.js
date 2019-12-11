@@ -60,7 +60,7 @@ function getCoreConfigDataset() {
   });
 
   const request = consumer.query()
-    .withDataset(CONFIG.data.appConfigDatasetId)
+    .withDataset(CONFIG.app_data.appConfigDatasetId)
     .limit(1);
 
   return sendRequest(request);
@@ -73,7 +73,7 @@ function getFilterConfigDataset() {
   });
 
   const request = consumer.query()
-    .withDataset(CONFIG.data.filterConfigDatasetId)
+    .withDataset(CONFIG.app_data.filterConfigDatasetId)
     .order('sort');
 
   return sendRequest(request);
@@ -86,7 +86,7 @@ function getChartConfigDataset() {
   });
 
   const request = consumer.query()
-    .withDataset(CONFIG.data.chartConfigDatasetId)
+    .withDataset(CONFIG.app_data.chartConfigDatasetId)
     .where('published=true')
     .order('indicator', 'sort');
 
@@ -100,7 +100,7 @@ function getDataSourceDataset() {
   });
 
   const request = consumer.query()
-    .withDataset(CONFIG.data.indicatorsConfigDatasetId);
+    .withDataset(CONFIG.app_data.indicatorsConfigDatasetId);
 
   return sendRequest(request);
 }
@@ -129,8 +129,8 @@ function formatConfig(responses) {
     // ensure that we have at minimum indicator, location and breakout category filters in config
     const filterColumns = filter.map(row => row.value_column);
     if (filterColumns.indexOf(CONFIG.indicatorId) < 0 ||
-        filterColumns.indexOf(CONFIG.locationId) < 0 ||
-        filterColumns.indexOf(CONFIG.breakoutCategoryId) < 0) {
+      filterColumns.indexOf(CONFIG.locationId) < 0 ||
+      filterColumns.indexOf(CONFIG.breakoutCategoryId) < 0) {
       dispatch(setError(
         true,
         'Configuration error - filter configuration does not contain required columns.'
@@ -158,7 +158,7 @@ function formatConfig(responses) {
 function fetchAppConfig() {
   return (dispatch) => {
     // return constants if not using datasets to set these configuration parameters
-    if (!CONFIG.data.useConfigurationDatasets) {
+    if (!CONFIG.app_data.useConfigurationDatasets) {
       dispatch(formatConfig([
         USER_CONFIGURABLE_OPTIONS.coreConfig,
         USER_CONFIGURABLE_OPTIONS.filterConfig,

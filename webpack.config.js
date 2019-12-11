@@ -14,9 +14,7 @@ console.log(`NODE_ENV set to ${__ENV__}`);
 const webpackConfig = {
   entry: {
     app: ['./src/main.jsx'],
-    polyfills: __PROD__
-      ? ['es6-promise', 'babel-polyfill', 'whatwg-fetch']
-      : []
+    polyfills: ['es6-promise', 'babel-polyfill', 'whatwg-fetch']
   },
   output: {
     filename: '[name].js',
@@ -58,7 +56,6 @@ const webpackConfig = {
               {
                 loader: 'css-loader',
                 options: {
-                  minimize: true,
                   importLoaders: 2
                 }
               },
@@ -106,10 +103,10 @@ const webpackConfig = {
               {
                 loader: 'css-loader',
                 options: {
-                  modules: true,
-                  minimize: true,
                   importLoaders: 2,
-                  localIdentName: '[name]__[local]__[hash:base64:5]'
+                  modules: {
+                    localIdentName: '[name]__[local]__[hash:base64:5]'
+                  }
                 }
               },
               { loader: 'postcss-loader' },
