@@ -14,7 +14,7 @@ console.log(`NODE_ENV set to ${__ENV__}`);
 const webpackConfig = {
   entry: {
     app: ['./src/main.jsx'],
-    polyfills: (__PROD__) ? ['es6-promise', 'babel-polyfill', 'whatwg-fetch'] : []
+    polyfills: ['es6-promise', 'babel-polyfill', 'whatwg-fetch']
   },
   output: {
     filename: '[name].js',
@@ -27,9 +27,7 @@ const webpackConfig = {
       {
         test: /\.jsx?$|\.js$/,
         enforce: 'pre',
-        exclude: [
-          /node_modules/
-        ],
+        exclude: [/node_modules/],
         include: [path.resolve('./src/')],
         loader: 'eslint-loader'
       },
@@ -51,14 +49,13 @@ const webpackConfig = {
         test: /\.css$|\.scss$/,
         include: path.resolve('./src/index.css'),
         // enable ExtractTextPlugin for production
-        use: (__PROD__)
+        use: __PROD__
           ? ExtractTextPlugin.extract({
             fallback: 'style-loader',
             use: [
               {
                 loader: 'css-loader',
                 options: {
-                  minimize: true,
                   importLoaders: 2
                 }
               },
@@ -71,45 +68,45 @@ const webpackConfig = {
               }
             ]
           })
-          // indentation here is technically wrong, but this is easier to see
-          : [
-              { loader: 'style-loader' },
-              {
-                loader: 'css-loader',
-                options: {
-                  sourceMap: true,
-                  importLoaders: 2
-                }
-              },
-              {
-                loader: 'postcss-loader',
-                options: { sourceMap: true }
-              },
-              {
-                loader: 'sass-loader',
-                options: {
-                  sourceMap: true,
-                  includePaths: ['src/styles']
-                }
+          : // indentation here is technically wrong, but this is easier to see
+          [
+            { loader: 'style-loader' },
+            {
+              loader: 'css-loader',
+              options: {
+                sourceMap: true,
+                importLoaders: 2
               }
-            ]
+            },
+            {
+              loader: 'postcss-loader',
+              options: { sourceMap: true }
+            },
+            {
+              loader: 'sass-loader',
+              options: {
+                sourceMap: true,
+                includePaths: ['src/styles']
+              }
+            }
+          ]
       },
       {
         // this one uses css modules
         test: /\.css$|\.scss$/,
         include: path.resolve('./src/styles'),
         exclude: path.resolve('./src/index.css'),
-        use: (__PROD__)
+        use: __PROD__
           ? ExtractTextPlugin.extract({
             fallback: 'style-loader',
             use: [
               {
                 loader: 'css-loader',
                 options: {
-                  modules: true,
-                  minimize: true,
                   importLoaders: 2,
-                  localIdentName: '[name]__[local]__[hash:base64:5]'
+                  modules: {
+                    localIdentName: '[name]__[local]__[hash:base64:5]'
+                  }
                 }
               },
               { loader: 'postcss-loader' },
@@ -121,46 +118,42 @@ const webpackConfig = {
               }
             ]
           })
-          // in DEV, skip ExtractTextPlugin and enable sourceMap
-          : [
-              { loader: 'style-loader' },
-              {
-                loader: 'css-loader',
-                options: {
-                  sourceMap: true,
-                  modules: true,
-                  importLoaders: 2,
+          : // in DEV, skip ExtractTextPlugin and enable sourceMap
+          [
+            { loader: 'style-loader' },
+            {
+              loader: 'css-loader',
+              options: {
+                sourceMap: true,
+                importLoaders: 2,
+                modules: {
                   localIdentName: '[name]__[local]__[hash:base64:5]'
                 }
-              },
-              {
-                loader: 'postcss-loader',
-                options: { sourceMap: true }
-              },
-              {
-                loader: 'sass-loader',
-                options: {
-                  sourceMap: true,
-                  includePaths: ['src/styles']
-                }
               }
-            ]
+            },
+            {
+              loader: 'postcss-loader',
+              options: { sourceMap: true }
+            },
+            {
+              loader: 'sass-loader',
+              options: {
+                sourceMap: true,
+                includePaths: ['src/styles']
+              }
+            }
+          ]
       },
       // process vendor CSS w/o CSS Modules or SASS
       {
         test: /\.css$/,
         include: path.resolve('./node_modules'),
-        use: (__PROD__)
+        use: __PROD__
           ? ExtractTextPlugin.extract({
             fallback: 'style-loader',
-            use: [
-              { loader: 'css-loader' }
-            ]
+            use: [{ loader: 'css-loader' }]
           })
-          : [
-              { loader: 'style-loader' },
-              { loader: 'css-loader' }
-            ]
+          : [{ loader: 'style-loader' }, { loader: 'css-loader' }]
       }
     ]
   },
@@ -182,10 +175,7 @@ const webpackConfig = {
   ],
   resolve: {
     extensions: ['.js', '.jsx'],
-    modules: [
-      'src',
-      'node_modules'
-    ],
+    modules: ['src', 'node_modules'],
     alias: {
       react: path.resolve('./node_modules/react')
     }
@@ -221,13 +211,12 @@ if (__PROD__) {
       output: {
         comments: false
       }
-    })
+    }),
   );
 
-// add live development support plugins
+  // add live development support plugins
 } else {
-  webpackConfig.plugins.push(
-    new webpack.NamedModulesPlugin()
+  webpackConfig.plugins.push(new webpack.NamedModulesPlugin(),
     // new webpack.NoErrorsPlugin(),
   );
 }

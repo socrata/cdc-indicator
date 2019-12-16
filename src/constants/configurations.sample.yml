@@ -9,7 +9,7 @@ soda:
   useSecure: true
 
 # Socrata dataset configurations
-data:
+app_data:
   datasetId: gidg-5ei2
   # If `useConfigurationDatasets` is set to true, the tool will use
   # Socrata datasets to retrieve application configuration parameters.

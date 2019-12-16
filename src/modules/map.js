@@ -179,7 +179,7 @@ function fetchData() {
       });
 
       const request = consumer.query()
-        .withDataset(CONFIG.data.datasetId);
+        .withDataset(CONFIG.app_data.datasetId);
 
       // use all parent filters (minus location) plus map-specific filter
       Object.keys(parentFilters)
@@ -295,7 +295,7 @@ function fetchBreakoutValues() {
       });
 
       const request = consumer.query()
-        .withDataset(CONFIG.data.datasetId);
+        .withDataset(CONFIG.app_data.datasetId);
 
       // don't filter by location column
       Object.keys(filters)
