@@ -63,7 +63,9 @@ const webpackConfig = {
               {
                 loader: 'sass-loader',
                 options: {
-                  includePaths: ['src/styles']
+                  sassOptions: {
+                    includePaths: ['src/styles']
+                  }
                 }
               }
             ]
@@ -86,7 +88,9 @@ const webpackConfig = {
               loader: 'sass-loader',
               options: {
                 sourceMap: true,
-                includePaths: ['src/styles']
+                sassOptions: {
+                  includePaths: ['src/styles']
+                }
               }
             }
           ]
@@ -113,7 +117,9 @@ const webpackConfig = {
               {
                 loader: 'sass-loader',
                 options: {
-                  includePaths: ['src/styles']
+                  sassOptions: {
+                    includePaths: ['src/styles']
+                  }
                 }
               }
             ]
@@ -139,7 +145,9 @@ const webpackConfig = {
               loader: 'sass-loader',
               options: {
                 sourceMap: true,
-                includePaths: ['src/styles']
+                sassOptions: {
+                  includePaths: ['src/styles']
+                }
               }
             }
           ]
@@ -216,7 +224,7 @@ if (__PROD__) {
 
   // add live development support plugins
 } else {
-  webpackConfig.plugins.push(new webpack.NamedModulesPlugin(),
+  webpackConfig.plugins.push(new webpack.NamedModulesPlugin()
     // new webpack.NoErrorsPlugin(),
   );
 }
