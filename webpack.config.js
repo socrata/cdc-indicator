@@ -1,7 +1,7 @@
 const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const __ENV__ = process.env.NODE_ENV || 'development';
 const __PROD__ = __ENV__ !== 'development';
@@ -21,6 +21,9 @@ const webpackConfig = {
     path: path.resolve('build'),
     publicPath: '/cdc-indicator',
     jsonpFunction: 'cdcIndicatorApp'
+  },
+  optimization: {
+    minimize: (__PROD__)
   },
   module: {
     rules: [
@@ -50,26 +53,26 @@ const webpackConfig = {
         include: path.resolve('./src/index.css'),
         // enable ExtractTextPlugin for production
         use: __PROD__
-          ? ExtractTextPlugin.extract({
-            fallback: 'style-loader',
-            use: [
-              {
-                loader: 'css-loader',
-                options: {
-                  importLoaders: 2
-                }
-              },
-              { loader: 'postcss-loader' },
-              {
-                loader: 'sass-loader',
-                options: {
-                  sassOptions: {
-                    includePaths: ['src/styles']
-                  }
+          ? [
+            {
+              loader: MiniCssExtractPlugin.loader
+            },
+            {
+              loader: 'css-loader',
+              options: {
+                importLoaders: 2
+              }
+            },
+            { loader: 'postcss-loader' },
+            {
+              loader: 'sass-loader',
+              options: {
+                sassOptions: {
+                  includePaths: ['src/styles']
                 }
               }
-            ]
-          })
+            }
+          ]
           : // indentation here is technically wrong, but this is easier to see
           [
             { loader: 'style-loader' },
@@ -101,29 +104,28 @@ const webpackConfig = {
         include: path.resolve('./src/styles'),
         exclude: path.resolve('./src/index.css'),
         use: __PROD__
-          ? ExtractTextPlugin.extract({
-            fallback: 'style-loader',
-            use: [
-              {
-                loader: 'css-loader',
-                options: {
-                  importLoaders: 2,
-                  modules: {
-                    localIdentName: '[name]__[local]__[hash:base64:5]'
-                  }
-                }
-              },
-              { loader: 'postcss-loader' },
-              {
-                loader: 'sass-loader',
-                options: {
-                  sassOptions: {
-                    includePaths: ['src/styles']
-                  }
-                }
+          ? [{
+            loader: MiniCssExtractPlugin.loader
+          },
+          {
+            loader: 'css-loader',
+            options: {
+              importLoaders: 2,
+              modules: {
+                localIdentName: '[name]__[local]__[hash:base64:5]'
               }
-            ]
-          })
+            }
+          },
+          { loader: 'postcss-loader' },
+          {
+            loader: 'sass-loader',
+            options: {
+              sassOptions: {
+                includePaths: ['src/styles']
+              }
+            }
+          }
+          ]
           : // in DEV, skip ExtractTextPlugin and enable sourceMap
           [
             { loader: 'style-loader' },
@@ -157,10 +159,10 @@ const webpackConfig = {
         test: /\.css$/,
         include: path.resolve('./node_modules'),
         use: __PROD__
-          ? ExtractTextPlugin.extract({
-            fallback: 'style-loader',
-            use: [{ loader: 'css-loader' }]
-          })
+          ? [
+            MiniCssExtractPlugin.loader,
+            'css-loader'
+          ]
           : [{ loader: 'style-loader' }, { loader: 'css-loader' }]
       }
     ]
@@ -179,6 +181,11 @@ const webpackConfig = {
       filename: 'index.html',
       template: 'src/index.template.html',
       inject: true
+    }),
+    new MiniCssExtractPlugin({
+      filename: '_[name].css',
+      chunkFilename: '_[id].css',
+      ignoreOrder: false
     })
   ],
   resolve: {
@@ -203,23 +210,12 @@ const webpackConfig = {
 if (__PROD__) {
   webpackConfig.plugins.push(
     // extract CSS modules to a separate file
-    new ExtractTextPlugin('_[name].css', {
-      allChunks: true
+    new MiniCssExtractPlugin({
+      filename: '_[name].css',
+      chunkFilename: __PROD__ ? '[id].[hash].css' : '[id].css'
     }),
     // optimize output JS
-    new webpack.optimize.OccurrenceOrderPlugin(),
-    new webpack.optimize.UglifyJsPlugin({
-      compress: {
-        unused: true,
-        dead_code: true,
-        drop_console: true,
-        warnings: false,
-        comparisons: false
-      },
-      output: {
-        comments: false
-      }
-    }),
+    new webpack.optimize.OccurrenceOrderPlugin()
   );
 
   // add live development support plugins
