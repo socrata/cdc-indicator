@@ -71,8 +71,8 @@ soda:
 
 ```yaml
 map:
-  tileUrl: https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png
-  tileId: mapbox.light
+  tileUrl: https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}
+  tileId: mapbox/light-v10
   mapboxToken: (ENTER YOUR MAPBOX ACCESS TOKEN)
 ```
 
