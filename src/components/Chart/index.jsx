@@ -39,7 +39,7 @@ const Chart = ({
   }
   // setting title for trend chart
   if (config.data === 'trend') {
-    const range = _map(chartData.data, x => x.year);
+    const range = _map(chartData.data, (x) => x.year);
     const rangeText = (d3.min(range) === d3.max(range))
       ? `${d3.max(range)}`
       : `${d3.min(range)} - ${d3.max(range)}`;

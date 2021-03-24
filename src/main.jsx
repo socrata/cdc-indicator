@@ -3,7 +3,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
 import { Provider } from 'react-redux';
-import { createStore, combineReducers, compose, applyMiddleware } from 'redux';
+import {
+  createStore, combineReducers, compose, applyMiddleware
+} from 'redux';
 import thunk from 'redux-thunk';
 import a11y from 'react-a11y';
 import * as reducers from 'reducers';

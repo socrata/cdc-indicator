@@ -10,8 +10,7 @@ const LineChart = ({ chartData, desc, title }) => {
     connectNull: false
   };
 
-
-  const scaleValues = chartData.data.map(x => x.data_value);
+  const scaleValues = chartData.data.map((x) => x.data_value);
   const lowerBound = d3.min(scaleValues);
   const upperBound = Math.ceil(d3.max(scaleValues));
 
@@ -22,10 +21,12 @@ const LineChart = ({ chartData, desc, title }) => {
 
   // override columns
   // transform y column data using scale
-  chartConfig.data.columns = chartConfig.data.columns.map((values, idxValues) =>
-    values.map((value, idxValue) => { // eslint-disable-line arrow-body-style
+  // eslint-disable-next-line arrow-body-style
+  chartConfig.data.columns = chartConfig.data.columns.map((values, idxValues) => {
+    return values.map((value, idxValue) => { // eslint-disable-line arrow-body-style
       return (idxValues > 0 && idxValue > 0) ? myScale(value) : value;
-    }));
+    });
+  });
 
   // function to invert ticks to original values
   const invertValues = (d) => {
@@ -45,8 +46,8 @@ const LineChart = ({ chartData, desc, title }) => {
   chartConfig.axis.y.padding = { top: 20, bottom: 0 };
   chartConfig.axis.y.tick = { format: invertValues };
 
-  const longDesc = `This chart displays ${desc} as a line chart. ` +
-    `${chartData.xValues} values are on X axis.`;
+  const longDesc = `This chart displays ${desc} as a line chart. `
+    + `${chartData.xValues} values are on X axis.`;
 
   return (
     <C3ChartUpdatable {...chartConfig} desc={longDesc} customTitle={title} scale={myScale} />

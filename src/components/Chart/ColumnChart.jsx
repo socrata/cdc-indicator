@@ -7,8 +7,8 @@ const ColumnChart = ({ chartData, desc, title }) => {
   chartConfig.data.type = 'bar';
   chartConfig.padding = { bottom: 30 };
 
-  const longDesc = `This chart displays ${desc} as a column chart. ` +
-    `${chartData.xValues} values are on X axis.`;
+  const longDesc = `This chart displays ${desc} as a column chart. `
+    + `${chartData.xValues} values are on X axis.`;
 
   return (
     <C3ChartUpdatable {...chartConfig} desc={longDesc} customTitle={title} />

@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.3.0
+
+### Changed
+- Specify node.js version to 14
+- Resolved dependency vulnerabilities by running `npm audit fix`
+
 ## 0.2.0
 
 ### Added

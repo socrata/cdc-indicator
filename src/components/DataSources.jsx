@@ -9,8 +9,7 @@ function createElement(label, url, text, style) {
   const textElement = text || 'Link';
   const element = (
     <p>
-      {label}:
-      {' '}
+      {`${label}: `}
       {
         (!url)
           ? textElement

@@ -19,17 +19,21 @@ function createOption(data, index) {
   const disabled = (isDisabled) ? '(No data available)' : '';
   return (
     <option key={index} value={value} disabled={isDisabled || false}>
-      {text || value} {disabled}
+      {`${text || value} ${disabled}`}
     </option>
   );
 }
 
 class Filter extends Component {
   handleChange = (event) => {
-    this.props.onChange(event);
+    const {
+      name, onChange, zoomToState
+    } = this.props;
 
-    if (this.props.name === CONFIG.locationId) {
-      this.props.zoomToState(event.target.value);
+    onChange(event);
+
+    if (name === CONFIG.locationId) {
+      zoomToState(event.target.value);
     }
   }
 
@@ -59,6 +63,7 @@ class Filter extends Component {
     // <select> is enclosed in <label>, but eslint does not recognize this
     // React handles onChange and does not fire unless the value changed
     /* eslint-disable jsx-a11y/label-has-for */
+    /* eslint-disable jsx-a11y/label-has-associated-control */
     /* eslint-disable jsx-a11y/no-onchange */
     return (
       <div className={styles.filter}>
@@ -77,6 +82,7 @@ class Filter extends Component {
       </div>
     );
     /* eslint-enable jsx-a11y/no-onchange */
+    /* eslint-enable jsx-a11y/label-has-associated-control */
     /* eslint-enable jsx-a11y/label-has-for */
   }
 }

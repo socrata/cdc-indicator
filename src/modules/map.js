@@ -141,16 +141,17 @@ function formatMapData(response) {
         return feature;
       }
 
-      const properties = Object.assign({}, feature.properties, {
+      const properties = {
+        ...feature.properties,
         value: dataByState[state][0].data_value,
         unit: dataByState[state][0].data_value_unit,
         dataValueType: dataByState[state][0].data_value_type,
         highConfidence: dataByState[state][0].high_confidence_limit,
         lowConfidence: dataByState[state][0].low_confidence_limit,
         stratification1: dataByState[state][0].stratification1
-      });
+      };
 
-      return Object.assign({}, feature, { properties });
+      return { ...feature, properties };
     });
 
     dispatch(setMapData({
@@ -183,7 +184,7 @@ function fetchData() {
 
       // use all parent filters (minus location) plus map-specific filter
       Object.keys(parentFilters)
-        .filter(column => column !== CONFIG.locationId)
+        .filter((column) => column !== CONFIG.locationId)
         .forEach((row) => {
           request.where(`${row}='${_get(parentFilters, `${row}.id`, '')}'`);
         });
@@ -232,7 +233,7 @@ function transformFilterData(data) {
     } else {
       const options = _flow(
         _groupBy(CONFIG.breakoutId),
-        _map(dataById => ({
+        _map((dataById) => ({
           // use the first element to set label
           text: dataById[0][CONFIG.breakoutLabel],
           value: dataById[0][CONFIG.breakoutId]
@@ -299,7 +300,7 @@ function fetchBreakoutValues() {
 
       // don't filter by location column
       Object.keys(filters)
-        .filter(column => column !== CONFIG.locationId)
+        .filter((column) => column !== CONFIG.locationId)
         .forEach((row) => {
           request.where(`${row}='${_get(filters, `${row}.id`, '')}'`);
         });

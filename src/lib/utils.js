@@ -35,8 +35,8 @@ export function getLatLongBounds(geometry, padding = 0) {
   }
 
   // use lodash chain to make it simpler to find min/max values
-  const long = _map(coordinates, coord => coord[0]);
-  const lat = _map(coordinates, coord => coord[1]);
+  const long = _map(coordinates, (coord) => coord[0]);
+  const lat = _map(coordinates, (coord) => coord[1]);
 
   // return as a 2-dimensional array, in [Lat, Long] pairs (not Long, Lat)
   return [
@@ -68,13 +68,14 @@ export function rowFormatter(row) {
 
   // a new object where values are casted to number
   const newValues = convertToNumberColumns.reduce((acc, key) => (
-    Object.assign({}, acc, {
+    {
+      ...acc,
       [key]: _toNumber((row[key] || undefined), undefined)
-    })
+    }
   ), {});
 
   // apply (overwrite) above object to the object passed and return a new object
-  return Object.assign({}, row, newValues);
+  return { ...row, ...newValues };
 }
 
 /**

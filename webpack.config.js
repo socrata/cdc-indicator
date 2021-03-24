@@ -228,7 +228,6 @@ if (__PROD__) {
 // Set watch to true for hot loading
 if (__DEV__) {
   webpackConfig.entry.app.unshift('react-hot-loader/patch');
-  webpackConfig.watch = true;
 }
 
 module.exports = webpackConfig;

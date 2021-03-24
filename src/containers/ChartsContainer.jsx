@@ -6,7 +6,7 @@ import _isEqual from 'lodash/isEqual';
 import Chart from 'components/Chart';
 import MapContainer from 'containers/MapContainer';
 import Grid from 'components/Grid';
-import { fetchData, setCompareFlag } from 'modules/indicatorData';
+import { fetchData, setCompareFlag as setCompareFlagFn } from 'modules/indicatorData';
 import { CONFIG } from 'constants/index';
 import styles from 'styles/spinner.css';
 
@@ -19,41 +19,48 @@ class ChartsContainer extends Component {
     };
 
     this.onChange = (event) => {
-      this.props.setCompareFlag(event.target.checked);
-      this.props.loadData();
+      const { loadData, setCompareFlag } = this.props;
+      setCompareFlag(event.target.checked);
+      loadData();
     };
   }
 
-  componentWillMount() {
+  // eslint-disable-next-line camelcase
+  UNSAFE_componentWillMount() {
+    const { isFilterReady, loadData } = this.props;
     // when component will be mounted and filters are already loaded, load data
-    if (this.props.isFilterReady) {
-      this.props.loadData();
+    if (isFilterReady) {
+      loadData();
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  // eslint-disable-next-line camelcase
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    const { fetching, isFilterReady, selectedFilters } = this.props;
+
     // save old chart configurations
-    if (this.props.fetching === nextProps.fetching && nextProps.chartConfiguration.length > 0) {
+    if (fetching === nextProps.fetching && nextProps.chartConfiguration.length > 0) {
       this.setState({
         oldChartConfiguration: nextProps.chartConfiguration
       });
     }
 
     // when filter gets loaded (goes from true to false), load data
-    if (!this.props.isFilterReady && nextProps.isFilterReady) {
+    if (!isFilterReady && nextProps.isFilterReady) {
       nextProps.loadData();
     }
 
     // when new filter is selected, reload data (filter must have been ready before this check)
-    if (nextProps.isFilterReady &&
-        !_isEqual(nextProps.selectedFilters, this.props.selectedFilters)) {
+    if (nextProps.isFilterReady
+      && !_isEqual(nextProps.selectedFilters, selectedFilters)) {
       nextProps.loadData();
     }
   }
 
   shouldComponentUpdate(nextProps) {
-    return this.props.fetching !== nextProps.fetching ||
-      this.props.isFilterReady !== nextProps.isFilterReady;
+    const { fetching, isFilterReady } = this.props;
+    return fetching !== nextProps.fetching
+      || isFilterReady !== nextProps.isFilterReady;
   }
 
   render() {
@@ -70,6 +77,10 @@ class ChartsContainer extends Component {
       rawData,
       selectedFilters
     } = this.props;
+
+    const {
+      oldChartConfiguration
+    } = this.state;
 
     // only render after filters are ready
     // if (!isFilterReady) {
@@ -95,7 +106,7 @@ class ChartsContainer extends Component {
     // render "now loading" message while fetching
     let nowLoadingElement;
     if (fetching || !isFilterReady) {
-      renderChartConfiguration = this.state.oldChartConfiguration;
+      renderChartConfiguration = oldChartConfiguration;
       nowLoadingElement = (
         <div className={styles.spinnerOverlay}>
           <p>
@@ -122,7 +133,7 @@ class ChartsContainer extends Component {
     const selectedDataType = _get(rawData, '[0].data_value_type');
 
     const sectionTitle = [selectedIndicator, selectedLocation, selectedDataType]
-      .filter(row => row !== undefined && row !== '')
+      .filter((row) => row !== undefined && row !== '')
       .join(' – ');
 
     // display checkbox to indicate whether to include national-level data in charts
@@ -135,6 +146,7 @@ class ChartsContainer extends Component {
       && _get(selectedFilters, `[${CONFIG.locationId}].id`, 'US') !== 'US') {
       // <input> is enclosed in <label>, but eslint does not recognize this
       /* eslint-disable jsx-a11y/label-has-for */
+      /* eslint-disable jsx-a11y/label-has-associated-control */
       compareElement = (
         <label className={styles.compareCheckbox}>
           <input
@@ -145,6 +157,7 @@ class ChartsContainer extends Component {
           Compare to U.S. nationwide data if available.
         </label>
       );
+      /* eslint-enable jsx-a11y/label-has-associated-control */
       /* eslint-enable jsx-a11y/label-has-for */
     }
 
@@ -254,12 +267,12 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   loadData: () => {
     dispatch(fetchData());
   },
   setCompareFlag: (status) => {
-    dispatch(setCompareFlag(status));
+    dispatch(setCompareFlagFn(status));
   }
 });
 

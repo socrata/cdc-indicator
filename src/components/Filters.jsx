@@ -13,9 +13,11 @@ import { t } from 'lib/utils';
 import styles from 'styles/Filters.scss';
 
 class Filters extends Component {
-  componentWillMount() {
-    if (this.props.loadFilters) {
-      this.props.loadFilters();
+  // eslint-disable-next-line camelcase
+  UNSAFE_componentWillMount() {
+    const { loadFilters } = this.props;
+    if (loadFilters) {
+      loadFilters();
     }
   }
 
@@ -66,7 +68,7 @@ class Filters extends Component {
       }
 
       return undefined;
-    }).filter(row => row !== undefined);
+    }).filter((row) => row !== undefined);
 
     return (
       <div className={customClass}>
