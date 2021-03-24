@@ -1,8 +1,11 @@
 {
   "name": "cdc-indicator",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "CDC Disease Indicator Tool",
   "main": "src/main.jsx",
+  "engines": {
+    "node": ">=14 <15"
+  },
   "scripts": {
     "build": "better-npm-run build",
     "build:staging": "better-npm-run build:staging",
@@ -33,7 +36,7 @@
       }
     },
     "start": {
-      "command": "webpack-dev-server --config ./webpack-dev-server.js --inline --hot",
+      "command": "webpack serve --config ./webpack-dev-server.js --inline --hot",
       "env": {
         "NODE_ENV": "development"
       }
@@ -56,7 +59,7 @@
   },
   "homepage": "https://github.com/socrata/cdc-indicator#readme",
   "devDependencies": {
-    "@webpack-cli/migrate": "^0.1.9",
+    "@webpack-cli/migrate": "^1.1.2",
     "autoprefixer": "^8.0.0",
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.2.1",
@@ -67,24 +70,22 @@
     "babel-preset-stage-2": "^6.24.1",
     "better-npm-run": "^0.1.0",
     "css-loader": "^3.4.0",
-    "eslint": "^4.19.1",
-    "eslint-config-airbnb": "^16.1.0",
-    "eslint-loader": "^3.0.3",
+    "eslint": "^7.20.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-loader": "^4.0.2",
     "eslint-plugin-import": "^2.8.0",
-    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-react": "^7.5.1",
-    "extract-text-webpack-plugin": "^3.0.2",
     "file-loader": "^5.0.2",
-    "file-system": "^2.2.2",
     "gh-pages": "^1.1.0",
     "html-webpack-plugin": "^3.2.0",
     "js-yaml": "^3.13.1",
     "json-loader": "^0.5.7",
     "mini-css-extract-plugin": "^0.9.0",
-    "node-sass": "^4.13.0",
+    "node-sass": "^4.14.1",
     "path": "^0.12.7",
     "postcss-loader": "^3.0.0",
-    "prop-types": "^15.6.0",
+    "prop-types": "^15.7.2",
     "react-a11y": "^1.0.0",
     "react-c3js": "0.1.20",
     "react-css-modules": "^4.7.11",
@@ -95,8 +96,8 @@
     "sass-loader": "^8.0.0",
     "style-loader": "^1.0.2",
     "webpack": "^4.41.4",
-    "webpack-cli": "^3.3.10",
-    "webpack-dev-server": "^3.10.1",
+    "webpack-cli": "^4.5.0",
+    "webpack-dev-server": "^3.11.2",
     "yaml-loader": "^0.5.0"
   },
   "dependencies": {
@@ -106,13 +107,13 @@
     "d3": "^3.5.17",
     "es6-promise": "^4.2.4",
     "leaflet": "^1.0.2",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "react": "^16.3.0",
-    "react-dom": "^16.3.0",
+    "react-dom": "^16.14.0",
     "react-redux": "^5.1.2",
     "redux": "^4.0.4",
     "redux-thunk": "^2.2.0",
-    "soda-js": "^0.2.3",
+    "soda-js": "github:takahiko-naito/soda-js#build-0.2.4",
     "whatwg-fetch": "^2.0.3"
   }
 }

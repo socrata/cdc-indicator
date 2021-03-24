@@ -57,17 +57,19 @@ function setAvailableCategories(availableCategories) {
     const categoryFilter = filterData[CONFIG.breakoutCategoryId];
     const categoryOptions = categoryFilter.options;
 
-    const newCategoryFilter = Object.assign({}, categoryFilter, {
-      options: categoryOptions.map(category => ({
+    const newCategoryFilter = {
+      ...categoryFilter,
+      options: categoryOptions.map((category) => ({
         text: category.text,
         value: category.value,
         isDisabled: availableCategories.indexOf(category.value) === -1
       }))
-    });
+    };
 
-    dispatch(setFilterData(Object.assign({}, filterData, {
+    dispatch(setFilterData({
+      ...filterData,
       [CONFIG.breakoutCategoryId]: newCategoryFilter
-    })));
+    }));
 
     // see if current selection or default choice is a valid choice
     const selected = _get(getState(), `filters.selected.${CONFIG.breakoutCategoryId}`, {});
@@ -79,8 +81,8 @@ function setAvailableCategories(availableCategories) {
         value_column: CONFIG.breakoutCategoryId
       });
       let selection;
-      if (categoryFilterConfig &&
-          availableCategories.indexOf(categoryFilterConfig.default_value) > -1) {
+      if (categoryFilterConfig
+        && availableCategories.indexOf(categoryFilterConfig.default_value) > -1) {
         selection = _find(newCategoryFilter.options, {
           value: categoryFilterConfig.default_value
         });
@@ -130,7 +132,7 @@ function getAvailableBreakoutCategory() {
     // dispatch API request and handle response
     sendRequest(request)
       .then((response) => {
-        const availableCategories = response.map(row => row[CONFIG.breakoutCategoryId]);
+        const availableCategories = response.map((row) => row[CONFIG.breakoutCategoryId]);
         dispatch(setAvailableCategories(availableCategories));
       });
   };
@@ -142,17 +144,19 @@ function setAvailableLocations(availableLocations) {
     const locationFilter = filterData[CONFIG.locationId];
     const locationOptions = locationFilter.options;
 
-    const newLocationFilter = Object.assign({}, locationFilter, {
-      options: locationOptions.map(location => ({
+    const newLocationFilter = {
+      ...locationFilter,
+      options: locationOptions.map((location) => ({
         text: location.text,
         value: location.value,
         isDisabled: availableLocations.indexOf(location.value) === -1
       }))
-    });
+    };
 
-    dispatch(setFilterData(Object.assign({}, filterData, {
+    dispatch(setFilterData({
+      ...filterData,
       [CONFIG.locationId]: newLocationFilter
-    })));
+    }));
 
     // see if current selection or default choice is a valid choice
     const selected = _get(getState(), `filters.selected.${CONFIG.locationId}`, {});
@@ -163,8 +167,8 @@ function setAvailableLocations(availableLocations) {
       const filterConfig = _get(getState(), 'appConfig.config.filter', []);
       const locationFilterConfig = _find(filterConfig, { value_column: CONFIG.locationId });
       let selection;
-      if (locationFilterConfig &&
-          availableLocations.indexOf(locationFilterConfig.default_value) > -1) {
+      if (locationFilterConfig
+        && availableLocations.indexOf(locationFilterConfig.default_value) > -1) {
         selection = _find(newLocationFilter.options, {
           value: locationFilterConfig.default_value
         });
@@ -213,7 +217,7 @@ function getAvailableLocations() {
     // dispatch API request and handle response
     sendRequest(request)
       .then((response) => {
-        const availableLocations = response.map(row => row[CONFIG.locationId]);
+        const availableLocations = response.map((row) => row[CONFIG.locationId]);
         dispatch(setAvailableLocations(availableLocations));
       });
   };
@@ -363,14 +367,15 @@ function formatFilterData(responses) {
         //   .value();
       }
 
-      return Object.assign({}, acc, {
+      return {
+        ...acc,
         [config.value_column]: {
           label: config.label,
           name: config.value_column,
           options,
           optionGroups
         }
-      });
+      };
     }, {});
 
     dispatch(setFilterData(filterData));

@@ -53,7 +53,9 @@ const BaseLayout = ({
 BaseLayout.propTypes = {
   config: PropTypes.shape({
     data_points: PropTypes.string,
+    filter_intro: PropTypes.string,
     footnote: PropTypes.string,
+    intro: PropTypes.string,
     source_data_label: PropTypes.string,
     source_system_label: PropTypes.string,
     title: PropTypes.string

@@ -127,10 +127,10 @@ function formatConfig(responses) {
     const filter = [].concat(...filterConfig);
 
     // ensure that we have at minimum indicator, location and breakout category filters in config
-    const filterColumns = filter.map(row => row.value_column);
-    if (filterColumns.indexOf(CONFIG.indicatorId) < 0 ||
-      filterColumns.indexOf(CONFIG.locationId) < 0 ||
-      filterColumns.indexOf(CONFIG.breakoutCategoryId) < 0) {
+    const filterColumns = filter.map((row) => row.value_column);
+    if (filterColumns.indexOf(CONFIG.indicatorId) < 0
+      || filterColumns.indexOf(CONFIG.locationId) < 0
+      || filterColumns.indexOf(CONFIG.breakoutCategoryId) < 0) {
       dispatch(setError(
         true,
         'Configuration error - filter configuration does not contain required columns.'
@@ -219,11 +219,11 @@ const actionsMap = {
     error: false,
     fetching: action.status
   }),
-  [MOBILE_VIEW_ACTIVATED]: state => ({
+  [MOBILE_VIEW_ACTIVATED]: (state) => ({
     ...state,
     isDesktopView: false
   }),
-  [DESKTOP_VIEW_ACTIVATED]: state => ({
+  [DESKTOP_VIEW_ACTIVATED]: (state) => ({
     ...state,
     isDesktopView: true
   })

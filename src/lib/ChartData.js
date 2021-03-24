@@ -50,14 +50,15 @@ export default class ChartData {
     // group data
     const groupedData = _flow(
       // group by location and breakout IDs
-      _groupBy(row => `${row[CONFIG.locationId]}:${row[CONFIG.breakoutId]}`),
+      _groupBy((row) => `${row[CONFIG.locationId]}:${row[CONFIG.breakoutId]}`),
       _reduce((acc, array) => {
         // use label columns for display
         const key = `${array[0][CONFIG.locationLabel]} - ${array[0][CONFIG.breakoutLabel]}`;
-        return Object.assign({}, acc, {
+        return {
+          ...acc,
           // keyBy ensures we get just one result (last occurrence)
           [key]: _keyBy('year')(array)
-        });
+        };
       }, {})
     )(this.data);
     // const groupedData = _.chain(this.data)
@@ -74,7 +75,7 @@ export default class ChartData {
     //   .value();
 
     // generate x axis values
-    const years = _flow(_sortBy(x => x))(_keys(_groupBy('year', this.data)));
+    const years = _flow(_sortBy((x) => x))(_keys(_groupBy('year', this.data)));
     // const years = _.chain(this.data)
     //   .groupBy('year')
     //   .keys()
@@ -82,8 +83,8 @@ export default class ChartData {
     //   .value();
 
     // generate data array based on categories (order is important)
-    const columns = [['year'].concat(years)].concat(_map(groupedData, (values, key) =>
-      [key].concat(years.map((year) => {
+    const columns = [['year'].concat(years)].concat(_map(groupedData,
+      (values, key) => [key].concat(years.map((year) => {
         if (!values[year] || !values[year].data_value) {
           return null;
         }
@@ -92,7 +93,8 @@ export default class ChartData {
       }))));
 
     const limits = _reduce((acc, values, key) => (
-      Object.assign({}, acc, {
+      ({
+        ...acc,
         [key]: years.map((year) => {
           const hc = _get(values, `[${year}].high_confidence_limit`);
           const lc = _get(values, `[${year}].low_confidence_limit`);
@@ -104,9 +106,9 @@ export default class ChartData {
       })
     ), {})(groupedData);
 
-    const yLabel = ((this.data[0].data_value_unit || '').length > 0) ?
-      `${this.data[0].data_value_type || ''} (${this.data[0].data_value_unit})` :
-      (this.data[0].data_value_type || '');
+    const yLabel = ((this.data[0].data_value_unit || '').length > 0)
+      ? `${this.data[0].data_value_type || ''} (${this.data[0].data_value_unit})`
+      : (this.data[0].data_value_type || '');
 
     return {
       size: {
@@ -144,7 +146,7 @@ export default class ChartData {
   // generate C3 configuration object, when major axis is breakout categories
   _getConfigByBreakout() {
     // work with latest year's data
-    const data = this.data.filter(row => row.year === this.latestYear);
+    const data = this.data.filter((row) => row.year === this.latestYear);
 
     // group data by state (main data series),
     // then by breakout, and get values from the latest year
@@ -153,14 +155,16 @@ export default class ChartData {
       _reduce((groupByLocation, valuesByLocation) => {
         const location = valuesByLocation[0][CONFIG.locationLabel];
 
-        return Object.assign({}, groupByLocation, {
+        return {
+          ...groupByLocation,
           [location]: _flow(
             _groupBy(CONFIG.breakoutId),
             _reduce((groupByBreakout, valuesByBreakout) => {
               const value = valuesByBreakout[0];
               const breakout = value[CONFIG.breakoutLabel];
 
-              return Object.assign({}, groupByBreakout, {
+              return {
+                ...groupByBreakout,
                 [breakout]: {
                   value: value.data_value,
                   limits: {
@@ -168,10 +172,10 @@ export default class ChartData {
                     low: value.low_confidence_limit
                   }
                 }
-              });
+              };
             }, {})
           )(valuesByLocation)
-        });
+        };
       }, {})
     )(data);
     // const groupedData = _.chain(data)
@@ -204,8 +208,8 @@ export default class ChartData {
     // generate x axis values
     const categories = _flow(
       _keyBy(CONFIG.breakoutId),
-      _mapFp(value => value[CONFIG.breakoutLabel]),
-      _sortBy(x => x)
+      _mapFp((value) => value[CONFIG.breakoutLabel]),
+      _sortBy((x) => x)
     )(data);
     // const categories = _.chain(data)
     //   .keyBy(CONFIG.breakoutId)
@@ -214,19 +218,21 @@ export default class ChartData {
     //   .value();
 
     // generate data array based on categories (order is important)
-    const columns = _map(groupedData, (value, key) =>
-      [key].concat(categories.map(breakout => _get(value, `${breakout}.value`, null))));
+    const columns = _map(groupedData, (value, key) => [key].concat(categories.map(
+      (breakout) => _get(value, `${breakout}.value`, null)
+    )));
 
     // generate data array based on categories (order is important)
     const limits = _reduce((acc, value, key) => (
-      Object.assign({}, acc, {
-        [key]: categories.map(breakout => _get(value, `${breakout}.limits`, null))
-      })
+      {
+        ...acc,
+        [key]: categories.map((breakout) => _get(value, `${breakout}.limits`, null))
+      }
     ), {})(groupedData);
 
-    const yLabel = ((this.data[0].data_value_unit || '').length > 0) ?
-      `${this.data[0].data_value_type || ''} (${this.data[0].data_value_unit})` :
-      (this.data[0].data_value_type || '');
+    const yLabel = ((this.data[0].data_value_unit || '').length > 0)
+      ? `${this.data[0].data_value_type || ''} (${this.data[0].data_value_unit})`
+      : (this.data[0].data_value_type || '');
 
     return {
       size: {
@@ -290,9 +296,10 @@ export default class ChartData {
           value = data.data_value;
         }
 
-        return Object.assign({}, groupedByBreakout, {
+        return {
+          ...groupedByBreakout,
           [breakout]: { value, label }
-        });
+        };
       }, {})
     )(groupedData);
     // const transformedData = _.chain(groupedData)
@@ -321,9 +328,10 @@ export default class ChartData {
     const columns = (_flow(
       _groupBy(CONFIG.breakoutId),
       _keys(),
-      _sortBy(x => x)
-    )(groupedData)).map(breakout =>
-      [transformedData[breakout].label].concat(transformedData[breakout].value));
+      _sortBy((x) => x)
+    )(groupedData)).map(
+      (breakout) => [transformedData[breakout].label].concat(transformedData[breakout].value)
+    );
     // const columns = _.chain(groupedData)
     //   .groupBy(CONFIG.breakoutId)
     //   .keys()

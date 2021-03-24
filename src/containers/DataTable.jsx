@@ -45,10 +45,11 @@ class DataTable extends Component {
 
   // when Modal is closed, put focus back on the original link that was used
   closeModal = () => {
+    const { originalLink } = this.state;
     this.setState({
       isModalOpen: false
     });
-    this.state.originalLink.focus();
+    originalLink.focus();
   };
 
   openModal = (event) => {
@@ -67,12 +68,16 @@ class DataTable extends Component {
       showOnlyLatest
     } = this.props;
 
+    const {
+      isModalOpen
+    } = this.state;
+
     let table;
     let tableContent = 'Data Table';
     let displayData = rawData;
 
     if (showOnlyLatest) {
-      displayData = rawData.filter(row => row.year === latestYear);
+      displayData = rawData.filter((row) => row.year === latestYear);
     }
 
     if (rawData.length > 0) {
@@ -105,7 +110,7 @@ class DataTable extends Component {
         }
       };
 
-      const caption = captionColumns.map(column => (
+      const caption = captionColumns.map((column) => (
         <div key={t(rawData[0][column])}>
           {rawData[0][column]}
           {(column === 'data_value_type' && unit) ? ` (${unit})` : ''}
@@ -121,7 +126,7 @@ class DataTable extends Component {
       }
 
       if (isDesktopView) {
-        const header = Object.keys(columnsToRender).map(column => (
+        const header = Object.keys(columnsToRender).map((column) => (
           <th key={t(columnsToRender[column].header)} scope="col">
             {columnsToRender[column].header}
           </th>
@@ -160,7 +165,7 @@ class DataTable extends Component {
         ));
         /* eslint-enable react/no-array-index-key */
 
-        tableContent = captionColumns.map(column => rawData[0][column]).join(' ');
+        tableContent = captionColumns.map((column) => rawData[0][column]).join(' ');
 
         if (unit) {
           tableContent = `${tableContent} (${unit})`;
@@ -203,13 +208,13 @@ class DataTable extends Component {
                   }
                   return (
                     <div key={`cell-${i}`}>
-                      {columnsToRender[column].header}: {year || 'N/A'}
+                      {`${columnsToRender[column].header}: ${year || 'N/A'}`}
                     </div>
                   );
                 }
                 return (
                   <div key={`cell-${i}`}>
-                    {columnsToRender[column].header}: {row[column] || 'N/A'}
+                    {`${columnsToRender[column].header}: ${row[column] || 'N/A'}`}
                   </div>
                 );
               })
@@ -229,7 +234,7 @@ class DataTable extends Component {
     }
 
     let hiddenTable;
-    if (!this.state.isModalOpen) {
+    if (!isModalOpen) {
       hiddenTable = (
         <div styleName="visually-hidden">
           {table}
@@ -244,12 +249,13 @@ class DataTable extends Component {
           styleName="open-table"
           onClick={this.openModal}
           aria-hidden="true"
+          type="button"
         >
           View data as a table
         </button>
         {hiddenTable}
         <Modal
-          isOpen={this.state.isModalOpen}
+          isOpen={isModalOpen}
           onRequestClose={this.closeModal}
           style={modalStyles}
           contentLabel={tableContent}
@@ -259,7 +265,7 @@ class DataTable extends Component {
               textAlign: 'right'
             }}
           >
-            <button styleName="close-table" onClick={this.closeModal}>X</button>
+            <button styleName="close-table" onClick={this.closeModal} type="button">X</button>
           </div>
           <div
             style={{
@@ -270,7 +276,7 @@ class DataTable extends Component {
           >
             {table}
           </div>
-          <button styleName="close-table" onClick={this.closeModal}>Close</button>
+          <button styleName="close-table" onClick={this.closeModal} type="button">Close</button>
         </Modal>
       </div>
     );
@@ -300,7 +306,7 @@ DataTable.defaultProps = {
   showOnlyLatest: false
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   isDesktopView: _get(state, 'appConfig.isDesktopView')
 });
 

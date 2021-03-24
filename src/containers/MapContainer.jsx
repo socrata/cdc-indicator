@@ -27,22 +27,27 @@ class MapContainer extends Component {
   }
 
   componentDidMount() {
-    if (this.props.isDataReady) {
-      this.props.initMap();
+    const { isDataReady, initMap } = this.props;
+    if (isDataReady) {
+      initMap();
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  // eslint-disable-next-line camelcase
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    const { isDataReady, initMap, selectedParentFilters } = this.props;
+    const { didFilterChange } = this.state;
+
     // if filter (other than location) changed, get ready to re-init map
-    if (!_isEqual(nextProps.selectedParentFilters, this.props.selectedParentFilters)) {
+    if (!_isEqual(nextProps.selectedParentFilters, selectedParentFilters)) {
       this.setState({
         didFilterChange: true
       });
     }
 
     // reinitialize map when data is ready (new 'latestYear' is ready)
-    if (!this.props.isDataReady && nextProps.isDataReady && this.state.didFilterChange) {
-      this.props.initMap();
+    if (!isDataReady && nextProps.isDataReady && didFilterChange) {
+      initMap();
       this.setState({
         didFilterChange: false
       });
@@ -112,7 +117,7 @@ class MapContainer extends Component {
     }
 
     let title = `${config.title}`;
-    const yearEnd = rawData[0].yearend;
+    const { yearend: yearEnd } = rawData[0];
     if (`${latestYear}` !== yearEnd) {
       title = `${config.title} (${latestYear} - ${yearEnd} Data)`;
     } else {
@@ -177,7 +182,8 @@ MapContainer.propTypes = {
     data_value_unit: PropTypes.string,
     high_confidence_limit: PropTypes.number,
     low_confidence_limit: PropTypes.number,
-    year: PropTypes.number
+    year: PropTypes.number,
+    yearend: PropTypes.sring
   })).isRequired,
   selected: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
   selectedParentFilters: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
@@ -207,7 +213,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   initMap: () => {
     dispatch(initMapContainer());
   },

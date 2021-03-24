@@ -63,8 +63,8 @@ function formatIndicatorData(response) {
 
     // determine the latest year from available data
     const latestYear = _flow(
-      _map(row => row.year),
-      _maxBy(x => x)
+      _map((row) => row.year),
+      _maxBy((x) => x)
     )(data);
     // const latestYear = _.chain(data)
     //   .map(row => row.year)
@@ -73,7 +73,7 @@ function formatIndicatorData(response) {
 
     // filter data within the desired data points
     const dataPoints = _get(getState(), 'appConfig.config.core.data_points');
-    const filteredData = data.filter(row => row.year > (latestYear - dataPoints));
+    const filteredData = data.filter((row) => row.year > (latestYear - dataPoints));
 
     dispatch(setLatestYear(latestYear));
     dispatch(setRawData(filteredData));

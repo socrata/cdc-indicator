@@ -24,6 +24,7 @@ import styles from 'styles/choropleth.css';
 import GeoJsonUpdatable from './GeoJsonUpdatable';
 import MapControlUpdatable from './MapControlUpdatable';
 
+/* eslint-disable react/destructuring-assignment */
 class ChoroplethMap extends Component {
   constructor(props) {
     super(props);
@@ -36,8 +37,8 @@ class ChoroplethMap extends Component {
 
     // calculate maximum/minimum value of data based on current props
     this.getMaxValue = () => _flow(
-      _map(row => row.properties.value),
-      _maxBy(x => x)
+      _map((row) => row.properties.value),
+      _maxBy((x) => x)
     )(this.props.data.features);
     // this.getMaxValue = () => _.chain(this.props.data.features)
     //   .map(row => row.properties.value)
@@ -45,8 +46,8 @@ class ChoroplethMap extends Component {
     //   .value();
 
     this.getMinValue = () => _flow(
-      _map(row => row.properties.value),
-      _minBy(x => x)
+      _map((row) => row.properties.value),
+      _minBy((x) => x)
     )(this.props.data.features);
     // this.getMinValue = () => _.chain(this.props.data.features)
     //   .map(row => row.properties.value)
@@ -54,9 +55,8 @@ class ChoroplethMap extends Component {
     //   .value();
 
     // check if empty values exist based on current props
-    this.hasEmptyValues = () => _filter((row =>
-      row.properties.value === undefined
-        || Number.isNaN(row.properties.value)), this.props.data.features)
+    this.hasEmptyValues = () => _filter(((row) => row.properties.value === undefined
+      || Number.isNaN(row.properties.value)), this.props.data.features)
       .length > 0;
     // this.hasEmptyValues = () => _.chain(this.props.data.features)
     //   .filter(row => Number.isNaN(row.properties.value))
@@ -88,7 +88,7 @@ class ChoroplethMap extends Component {
       return scale(d);
     };
 
-    this.style = feature => ({
+    this.style = (feature) => ({
       fillColor: this.getColor(feature.properties.value),
       weight: 1,
       opacity: 1,
@@ -205,9 +205,9 @@ class ChoroplethMap extends Component {
       }
       // const test = this.getDataRange();
 
-      const values = Array(numberOfItems).fill(0).map((value, index) =>
+      const values = Array(numberOfItems).fill(0).map((value, index) => min
+        + (step * (numberOfItems - 1 - index)));
         // _.round(min + (step * (numberOfItems - 1 - index)), 1),
-        min + (step * (numberOfItems - 1 - index)));
 
       const endValues = values.map((value, index) => {
         if (index === 0) {
@@ -255,8 +255,8 @@ class ChoroplethMap extends Component {
               (displayValue !== endValue
                 && !Number.isNaN(displayValue)
                 && !Number.isNaN(endValue))
-                  ? `${displayValue} – ${endValue}`
-                  : 'N/A'
+                ? `${displayValue} – ${endValue}`
+                : 'N/A'
             }
           </li>
         );
@@ -390,7 +390,7 @@ class ChoroplethMap extends Component {
           styles={styles.infoBottomLeft}
         >
           <div>
-            <button onClick={this.resetMapView}>
+            <button type="button" onClick={this.resetMapView}>
               Reset Map
             </button>
           </div>
@@ -399,6 +399,7 @@ class ChoroplethMap extends Component {
     );
   }
 }
+/* eslint-enable react/destructuring-assignment */
 
 ChoroplethMap.propTypes = {
   data: PropTypes.shape({

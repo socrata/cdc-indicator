@@ -16,8 +16,8 @@ const BarChart = ({ chartData, desc, title }) => {
     chartConfig.axis.y.label.position = 'outer-center';
   }
 
-  const longDesc = `This chart displays ${desc} as a bar chart. ` +
-    `${chartData.xValues} values are on X axis.`;
+  const longDesc = `This chart displays ${desc} as a bar chart. `
+    + `${chartData.xValues} values are on X axis.`;
 
   return (
     <C3ChartUpdatable {...chartConfig} desc={longDesc} customTitle={title} />

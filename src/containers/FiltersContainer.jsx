@@ -14,17 +14,16 @@ import { zoomToState } from 'modules/map';
 import Filters from 'components/Filters';
 import { CONFIG } from 'constants/index';
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   error: _get(state, 'filters.error'),
   errorMessage: _get(state, 'filters.errorMessage'),
   fetching: _get(state, 'filters.fetching'),
   // filters: state.filters.data,
-  filters: _get(state, 'appConfig.config.filter').map(row =>
-    _get(state, `filters.data[${row.value_column}]`)),
+  filters: _get(state, 'appConfig.config.filter').map((row) => _get(state, `filters.data[${row.value_column}]`)),
   selected: _get(state, 'filters.selected')
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   loadFilters: () => {
     dispatch(fetchFilters());
   },

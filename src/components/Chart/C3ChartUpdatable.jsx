@@ -12,7 +12,8 @@ class C3ChartUpdatable extends C3Chart {
     let newProps;
     // override tooltip format
     if (_get(originalProps, 'data.type') !== 'pie') {
-      newProps = Object.assign({}, originalProps, {
+      newProps = {
+        ...originalProps,
         tooltip: {
           format: {
             value: (value, ratio, id, index) => {
@@ -44,9 +45,10 @@ class C3ChartUpdatable extends C3Chart {
             return $$.getTooltipContent(data, customTitleFormat, defaultValueFormat, color);
           }
         }
-      });
+      };
     } else {
-      newProps = Object.assign({}, originalProps, {
+      newProps = {
+        ...originalProps,
         tooltip: {
           format: {
             value: (value, ratio) => {
@@ -58,7 +60,7 @@ class C3ChartUpdatable extends C3Chart {
             }
           }
         }
-      });
+      };
     }
 
     newProps.onrendered = this.setTitle;
@@ -73,6 +75,7 @@ class C3ChartUpdatable extends C3Chart {
   };
 
   getHC = (id, index) => _get(this.props, `custom.limits[${id}][${index}].high`, 'N/A');
+
   getLC = (id, index) => _get(this.props, `custom.limits[${id}][${index}].low`, 'N/A');
 
   scaleValue = (value) => { // eslint-disable-line arrow-body-style
@@ -122,8 +125,8 @@ class C3ChartUpdatable extends C3Chart {
   breakScale = (amplitude, wavelength, periods, dist) => {
     const { yMin } = this.chart.internal;
     const lineFunction = d3.svg.line()
-      .x(d => d.x)
-      .y(d => d.y)
+      .x((d) => d.x)
+      .y((d) => d.y)
       .interpolate('linear');
     let breakstart = yMin - dist - ((wavelength) * periods);
 
@@ -154,7 +157,10 @@ class C3ChartUpdatable extends C3Chart {
   // override generateChart because in C3Chart (super),
   // it doesn't have "c3" defined because we overrode componentDidMount()
   generateChart = (mountNode, config) => {
-    const newConfig = Object.assign({ bindto: mountNode }, config);
+    const newConfig = {
+      bindto: mountNode,
+      ...config
+    };
     return c3.generate(newConfig);
   }
 
@@ -165,8 +171,8 @@ class C3ChartUpdatable extends C3Chart {
       this.destroyChart();
     }
 
-    this.chart =
-      this.generateChart(findDOMNode(this), config); // eslint-disable-line react/no-find-dom-node
+    // eslint-disable-next-line react/no-find-dom-node
+    this.chart = this.generateChart(findDOMNode(this), config);
   }
 
   componentWillReceiveProps(nextProps) {

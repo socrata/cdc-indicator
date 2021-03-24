@@ -17,9 +17,11 @@ import BaseLayout from 'components/BaseLayout';
 import { DESKTOP_BREAKPOINT } from 'constants/index';
 
 class App extends Component {
-  componentWillMount() {
+  // eslint-disable-next-line camelcase
+  UNSAFE_componentWillMount() {
+    const { loadConfig } = this.props;
     // load configuration from a dataset when mounting component
-    this.props.loadConfig();
+    loadConfig();
   }
 
   componentDidMount() {
@@ -32,12 +34,13 @@ class App extends Component {
   }
 
   updateDimensionsCallback = () => {
+    const { isDesktopView, setViewAsDesktop, setViewAsMobile } = this.props;
     const { width } = this.containerDivRef.getBoundingClientRect();
     // only fire the action if the view isn't already set as desktop or not desktop
-    if (!this.props.isDesktopView && width >= DESKTOP_BREAKPOINT) {
-      this.props.setViewAsDesktop();
-    } else if (this.props.isDesktopView && width < DESKTOP_BREAKPOINT) {
-      this.props.setViewAsMobile();
+    if (!isDesktopView && width >= DESKTOP_BREAKPOINT) {
+      setViewAsDesktop();
+    } else if (isDesktopView && width < DESKTOP_BREAKPOINT) {
+      setViewAsMobile();
     }
   };
 
@@ -98,7 +101,7 @@ App.propTypes = {
   setViewAsMobile: PropTypes.func.isRequired
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   coreConfig: _get(state, 'appConfig.config.core'),
   dataSourceConfig: _get(state, 'appConfig.config.dataSource'),
   error: _get(state, 'appConfig.error'),
@@ -108,7 +111,7 @@ const mapStateToProps = state => ({
   selectedFilters: _get(state, 'filters.selected')
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   loadConfig: () => {
     dispatch(fetchConfig());
   },
